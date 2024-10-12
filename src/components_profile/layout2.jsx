@@ -7,7 +7,7 @@ const Layout2 = ({ children, isLogout }) => {
             {/* Header */}
             <header className="bg-[#0092BC] text-white p-7">
                 <div className="max-w-6xl mx-auto flex justify-between items-center">
-                    <Link to="/rpractica" className="text-5xl font-bold italic">ULINK</Link>
+                    <Link to="/search" className="text-5xl font-bold italic">ULINK</Link>
                     {/* Solo muestra los botones si no es una página de Logout */}
                     {!isLogout && (
                         <div className="flex items-center space-x-4">

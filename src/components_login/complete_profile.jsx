@@ -95,14 +95,14 @@ const CompleteProfile = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#DAEDF2] flex items-center justify-center">
+        <div className="min-h-screen bg-[#DAEDF2] flex items-center justify-center font-Ubuntu">
             <form onSubmit={handleSubmit} className="bg-white shadow-lg rounded-lg px-16 pt-12 pb-12 mb-8 w-full max-w-md">
-                <h2 className="text-4xl font-bold mb-8 text-blue-800 text-center">Completar Perfil</h2>
+                <h2 className="text-4xl font-Rubik font-bold mb-8 text-[#0092BC] text-center">Completar Perfil</h2>
 
                 {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
                 <div className="mb-6">
-                    <label className="block text-blue-700 text-sm font-bold mb-2" htmlFor="fecha_nacimiento">
+                    <label className="block text-[#0092BC] text-sm font-bold mb-2" htmlFor="fecha_nacimiento">
                         Fecha de Nacimiento
                     </label>
                     <input
@@ -117,7 +117,7 @@ const CompleteProfile = () => {
                 </div>
 
                 <div className="mb-6">
-                    <label className="block text-blue-700 text-sm font-bold mb-2" htmlFor="ano_ingreso">
+                    <label className="block text-[#0092BC] text-sm font-bold mb-2" htmlFor="ano_ingreso">
                         Año de Ingreso Universitario
                     </label>
                     <input
@@ -132,7 +132,7 @@ const CompleteProfile = () => {
                 </div>
 
                 <div className="mb-6">
-                    <label className="block text-blue-700 text-sm font-bold mb-2" htmlFor="id_carrera">
+                    <label className="block text-[#0092BC] text-sm font-bold mb-2" htmlFor="id_carrera">
                         ID de Carrera
                     </label>
                     <input
@@ -148,7 +148,7 @@ const CompleteProfile = () => {
                 </div>
 
                 <div className="mb-6">
-                    <label className="block text-blue-700 text-sm font-bold mb-2" htmlFor="fotoPerfil">
+                    <label className="block text-[#0092BC] text-sm font-bold mb-2" htmlFor="fotoPerfil">
                         Foto de Perfil
                     </label>
                     <input
@@ -163,7 +163,7 @@ const CompleteProfile = () => {
 
                 <div className="flex items-center justify-center">
                     <button
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded focus:outline-none focus:shadow-outline transition duration-300"
+                        className="bg-[#0092BC] hover:bg-blue-700 text-white font-bold py-3 px-8 rounded focus:outline-none focus:shadow-outline transition duration-300"
                         type="submit"
                     >
                         Terminar
