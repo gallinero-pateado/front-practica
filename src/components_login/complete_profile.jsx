@@ -95,7 +95,7 @@ const CompleteProfile = () => {
     };
 
     return (
-        <div className="min-h-screen bg-sky-100 flex items-center justify-center">
+        <div className="min-h-screen bg-[#DAEDF2] flex items-center justify-center">
             <form onSubmit={handleSubmit} className="bg-white shadow-lg rounded-lg px-16 pt-12 pb-12 mb-8 w-full max-w-md">
                 <h2 className="text-4xl font-bold mb-8 text-blue-800 text-center">Completar Perfil</h2>
 

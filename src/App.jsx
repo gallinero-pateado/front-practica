@@ -7,7 +7,7 @@ import LoginEm from './components_login/login_em'; //Login para empresa
 import RegisterEm from './components_login/register_em'; //Register para empresa
 import CompleteProfile from './components_login/complete_profile';
 import PasswordResetForm from './components_login/password_recovery';
-import Layout2 from './components_profile/layout2'; // Layout para perfil
+import Layout2 from './components_profile/layout2'; // Layout para el resto de cosas 
 import UserProfile from './components_profile/user-profile';
 import EditProfile from './components_profile/edit-profile';
 import Logout from './components_profile/logout';

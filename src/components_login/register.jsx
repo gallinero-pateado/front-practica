@@ -24,6 +24,7 @@ const Register = () => {
         setError('');
         setSuccess('');
 
+        // Comprobar coincidencia en las contraseñas
         if (formData.password !== formData.confirmPassword) {
             setError('Las contraseñas no coinciden');
             return;
@@ -36,7 +37,6 @@ const Register = () => {
                 nombres: formData.nombres,
                 apellidos: formData.apellidos,
             });
-
             setSuccess('Usuario registrado correctamente');
         } catch (error) {
             if (error.response) {
@@ -48,14 +48,15 @@ const Register = () => {
         }
     };
 
+    // Para registrarse como empresa, lleva a otra ruta
     const handleRegisterAsCompany = () => {
         navigate('/register_em');
     };
 
     return (
-        <div className="min-h-screen bg-sky-100 flex flex-col items-center justify-center">
+        <div className="min-h-screen bg-[#DAEDF2] flex flex-col items-center justify-center">
             <div className="bg-white shadow-lg rounded-lg px-16 pt-12 pb-12 mb-8 w-full max-w-md">
-                <h2 className="text-4xl font-bold mb-8 text-blue-800 text-center">Registro</h2>
+                <h2 className="text-4xl font-bold mb-8 text-[#0092BC] text-center">Registro</h2>
 
                 {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
                 {success && <p className="text-green-500 text-sm mb-4">{success}</p>}
@@ -63,11 +64,11 @@ const Register = () => {
                 <form onSubmit={handleSubmit}>
                     {/* Nombres */}
                     <div className="mb-6">
-                        <label className="block text-blue-700 text-sm font-bold mb-2" htmlFor="nombres">
+                        <label className="block text-[#0092BC] text-sm font-bold mb-2" htmlFor="nombres">
                             Nombres
                         </label>
                         <input
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
+                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-[#0092BC]"
                             id="nombres"
                             name="nombres"
                             type="text"
@@ -80,11 +81,11 @@ const Register = () => {
 
                     {/* Apellidos */}
                     <div className="mb-6">
-                        <label className="block text-blue-700 text-sm font-bold mb-2" htmlFor="apellidos">
+                        <label className="block text-[#0092BC] text-sm font-bold mb-2" htmlFor="apellidos">
                             Apellidos
                         </label>
                         <input
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
+                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-[#0092BC]"
                             id="apellidos"
                             name="apellidos"
                             type="text"
@@ -97,11 +98,11 @@ const Register = () => {
 
                     {/* Email */}
                     <div className="mb-6">
-                        <label className="block text-blue-700 text-sm font-bold mb-2" htmlFor="email">
+                        <label className="block text-[#0092BC] text-sm font-bold mb-2" htmlFor="email">
                             Email
                         </label>
                         <input
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
+                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-[#0092BC]"
                             id="email"
                             name="email"
                             type="email"
@@ -114,11 +115,11 @@ const Register = () => {
 
                     {/* Contraseña */}
                     <div className="mb-6">
-                        <label className="block text-blue-700 text-sm font-bold mb-2" htmlFor="password">
+                        <label className="block text-[#0092BC] text-sm font-bold mb-2" htmlFor="password">
                             Contraseña
                         </label>
                         <input
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
+                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-[#0092BC]"
                             id="password"
                             name="password"
                             type="password"
@@ -131,11 +132,11 @@ const Register = () => {
 
                     {/* Confirmar Contraseña */}
                     <div className="mb-6">
-                        <label className="block text-blue-700 text-sm font-bold mb-2" htmlFor="confirmPassword">
+                        <label className="block text-[#0092BC] text-sm font-bold mb-2" htmlFor="confirmPassword">
                             Confirmar Contraseña
                         </label>
                         <input
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
+                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-[#0092BC]"
                             id="confirmPassword"
                             name="confirmPassword"
                             type="password"
@@ -148,14 +149,14 @@ const Register = () => {
 
                     <div className="flex flex-col items-center justify-center mt-3 w-full max-w-md">
                         <button
-                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded focus:outline-none focus:shadow-outline transition duration-300 mb-2"
+                            className="bg-[#A3D9D3] hover:bg-[#0092BC] text-white font-bold py-3 px-8 rounded focus:outline-none focus:shadow-outline transition duration-300 mb-2"
                             type="submit"
                         >
                             Registrarse
                         </button>
 
                         <button
-                            className="bg-sky-500 hover:bg-gray-700 text-white font-bold py-4 px-8 rounded-lg focus:outline-none focus:shadow-outline transition duration-300"
+                            className="bg-[#0092BC] hover:bg-[#A3D9D3] text-white font-bold py-4 px-8 rounded-lg focus:outline-none focus:shadow-outline transition duration-300"
                             onClick={handleRegisterAsCompany}
                         >
                             Registrarse como Empresa

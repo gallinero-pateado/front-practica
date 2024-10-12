@@ -44,20 +44,20 @@ const RegisterEm = () => {
     };
 
     return (
-        <div className="min-h-screen bg-sky-100 flex flex-col items-center justify-center py-12">
+        <div className="min-h-screen bg-[#DAEDF2] flex flex-col items-center justify-center py-12">
             <form onSubmit={handleSubmit} className="bg-white shadow-lg rounded-lg px-16 pt-12 pb-12 mb-8 w-full max-w-md">
-                <h2 className="text-4xl font-bold mb-8 text-blue-800 text-center">Registro de Empresa</h2>
+                <h2 className="text-4xl font-bold mb-8 text-[#0092BC] text-center font-ubuntu">Registro de Empresa</h2>
 
                 {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-                {success && <p className="text-green-500 text-sm mb-4">{success}</p>}
+                {success && <p className="text-[#A3D9D3] text-sm mb-4">{success}</p>}
 
                 {/* Información de la empresa */}
                 <div className="mb-6">
-                    <label className="block text-blue-700 text-sm font-bold mb-2" htmlFor="Nombre_empresa">
+                    <label className="block text-[#0092BC] text-sm font-bold mb-2" htmlFor="Nombre_empresa">
                         Nombre de la Empresa
                     </label>
                     <input
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-[#0092BC]"
                         id="Nombre_empresa"
                         name="Nombre_empresa"
                         type="text"
@@ -69,11 +69,11 @@ const RegisterEm = () => {
                 </div>
 
                 <div className="mb-6">
-                    <label className="block text-blue-700 text-sm font-bold mb-2" htmlFor="Email_empresa">
+                    <label className="block text-[#0092BC] text-sm font-bold mb-2" htmlFor="Email_empresa">
                         Correo de Contacto
                     </label>
                     <input
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-[#0092BC]"
                         id="Email_empresa"
                         name="Email_empresa"
                         type="email"
@@ -85,11 +85,11 @@ const RegisterEm = () => {
                 </div>
 
                 <div className="mb-6">
-                    <label className="block text-blue-700 text-sm font-bold mb-2" htmlFor="Password">
+                    <label className="block text-[#0092BC] text-sm font-bold mb-2" htmlFor="Password">
                         Contraseña
                     </label>
                     <input
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-[#0092BC]"
                         id="Password"
                         name="Password"
                         type="password"
@@ -104,22 +104,21 @@ const RegisterEm = () => {
             {/* Botones fuera del formulario */}
             <div className="flex flex-col items-center justify-center w-full max-w-md">
                 <button
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded focus:outline-none focus:shadow-outline transition duration-300 mb-4 inline-block"
-                    type="button"  // Cambiado a type="button" para evitar submit
+                    className="bg-[#0092BC] hover:bg-[#007B9D] text-white font-bold py-3 px-6 rounded focus:outline-none focus:shadow-outline transition duration-300 mb-4 inline-block"
+                    type="button"
                     onClick={handleSubmit}
                 >
                     Registrarse
                 </button>
 
                 <button
-                    className="bg-sky-500 hover:bg-gray-700 text-white font-bold py-4 px-8 rounded-lg focus:outline-none focus:shadow-outline transition duration-300 inline-block"
+                    className="bg-[#A3D9D3] hover:bg-[#92BFB0] text-white font-bold py-4 px-8 rounded-lg focus:outline-none focus:shadow-outline transition duration-300 inline-block"
                     type="button"
                     onClick={handleRegisterAsStudent}
                 >
                     Registrarse como Estudiante
                 </button>
             </div>
-
         </div>
     );
 };

@@ -4,16 +4,16 @@ import bodyImage from '../imagen/body.jpg';
 
 const Layout = () => {
     return (
-        <div className="flex flex-col min-h-screen bg-sky-100">
+        <div className="flex flex-col min-h-screen bg-[#DAEDF2] font-ubuntu">
             {/* Header */}
-            <header className="bg-blue-600 text-white p-6">
+            <header className="bg-[#0092BC] text-white p-6">
                 <div className="flex justify-between items-center mx-auto">
                     <h1 className="text-5xl font-bold italic">ULINK</h1>
                     <div>
-                        <a href="/register" className="bg-sky-300 text-blue-800 px-8 py-3 rounded mr-5 font-bold italic text-lg hover:bg-sky-400 transition duration-300">
+                        <a href="/register" className="bg-[#A3D9D3] text-[#0092BC] px-8 py-3 rounded mr-5 font-bold italic text-lg hover:bg-[#0092BC] transition duration-300">
                             Sign Up
                         </a>
-                        <a href="/" className="bg-blue-800 text-white px-9 py-3 rounded font-bold italic text-lg hover:bg-blue-400 transition duration-300">
+                        <a href="/" className="bg-[#007B9C] text-white px-9 py-3 rounded font-bold italic text-lg hover:bg-[#005F7F] transition duration-300">
                             Log In
                         </a>
                     </div>
@@ -27,8 +27,8 @@ const Layout = () => {
                 </div>
                 <div className="w-full md:w-1/2 md:ml-8">
                     <div className="text-right mb-8">
-                        <h2 className="text-4xl font-bold text-blue-800 mb-6">Bienvenido a ULINK</h2>
-                        <p className="text-xl text-blue-600">Conectamos estudiantes con oportunidades increíbles.</p>
+                        <h2 className="text-4xl font-bold text-[#0092BC] mb-6">Bienvenido a ULINK</h2>
+                        <p className="text-xl text-[#005F7F]">Conectamos estudiantes con oportunidades increíbles.</p>
                     </div>
                     <img
                         src={bodyImage}
@@ -39,7 +39,7 @@ const Layout = () => {
             </main>
 
             {/* Footer */}
-            <footer className="bg-blue-600 text-white text-center p-2">
+            <footer className="bg-[#0092BC] text-white text-center p-2">
                 <p>Desarrollado por estudiantes UTEM</p>
                 <p>tallersistemasdesoftware@utem.cl / Teléfono (---) --- --- ---</p>
                 <p>&copy; 2024 ULINK. Todos los derechos reservados.</p>
