@@ -10,7 +10,8 @@ const Rpractica = () => {
     useEffect(() => {
         const fetchPracticas = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/Rpracticas');
+                const response = await axios.get('http://localhost:8080/Get-practicas');
+                console.log(response.data); // Para ver la estructura de los datos
                 setPracticas(response.data);
                 setLoading(false);
             } catch (err) {
@@ -24,7 +25,7 @@ const Rpractica = () => {
 
     const handleApply = async (practicaId) => {
         try {
-            await axios.post(`http://localhost:8080/Rpracticas/${practicaId}/apply`);
+            await axios.post('http://localhost:8080/Rpracticas/${practicaId}/apply');
             alert('Solicitud enviada con éxito');
             // Aquí podrías actualizar el estado de la práctica si es necesario
         } catch (err) {

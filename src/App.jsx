@@ -16,7 +16,7 @@ import Rpractica from './components_crud/rpractica'; // Componente para que los 
 import Upractica from './components_crud/upractica'; // Componente para actualizar prácticas
 import Dpractica from './components_crud/dpractica'; // Componente para eliminar prácticas
 import Gpracticas from './components_crud/gpracticas'; // Componente para que las empresas lean prácticas
-import SearchComponent from './components_busqueda/search';
+import PracticasList from './components_busqueda/search';
 const App = () => {
   return (
     <Router>
@@ -42,7 +42,7 @@ const App = () => {
         <Route path="/upractica" element={<Layout2><Upractica /></Layout2>} />
         <Route path="/dpractica" element={<Layout2><Dpractica /></Layout2>} />
         <Route path="/gpracticas" element={<Layout2><Gpracticas /></Layout2>} />
-        <Route path="/search" element={<Layout2><SearchComponent /></Layout2>} />
+        <Route path="/search" element={<Layout2><PracticasList /></Layout2>} />
       </Routes>
     </Router>
   );
