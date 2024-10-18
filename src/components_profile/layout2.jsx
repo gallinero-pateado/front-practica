@@ -13,13 +13,13 @@ const Layout2 = ({ children, isLogout }) => {
                             <>
                                 <Link
                                     to="/user-profile"
-                                    className="bg-[#A3D9D3] text-[#0092BC] px-8 py-3 rounded mr-4 font-bold text-lg hover:bg-[#0092BC] transition duration-300"
+                                    className="bg-[#A3D9D3] text-[#0092BC] px-3 py-2 rounded mr-4 font-bold text-lg hover:bg-[#0092BC] transition duration-300"
                                 >
                                     Perfil
                                 </Link>
                                 <Link
                                     to="/logout"
-                                    className="bg-red-600 text-white px-8 py-3 rounded font-bold text-lg hover:bg-red-700 transition duration-300"
+                                    className="bg-red-600 text-white px-3 py-2 rounded font-bold text-lg hover:bg-red-700 transition duration-300"
                                 >
                                     Salir
                                 </Link>

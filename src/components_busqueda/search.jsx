@@ -75,16 +75,18 @@ const PracticasList = () => {
             if (!value) return true; // Skip empty filters
             const practicaValue = practica[key] || practica[key.charAt(0).toUpperCase() + key.slice(1)];
 
+            console.log('Valores de práctica:', practica); // Debugging
+            console.log('Valor del filtro:', value); // Debugging
+
             if (key === 'area_practica' || key === 'ubicacion') {
-                // For area_practica and ubicacion, do a more strict comparison
                 return practicaValue && practicaValue.toLowerCase() === value.toLowerCase();
             } else if (key === 'fecha_publicacion') {
-                // For fecha_publicacion, compare the month
                 const practicaDate = new Date(practicaValue);
                 const filterMonth = parseInt(value, 10);
-                return practicaDate.getMonth() + 1 === filterMonth; // getMonth() returns 0-11, so we add 1
+                return practicaDate.getMonth() + 1 === filterMonth;
+            } else if (key === 'jornada' || key === 'modalidad') {
+                return practicaValue && practicaValue.toLowerCase() === value.toLowerCase(); // Asegurando comparación correcta
             } else {
-                // For other filters, keep the existing behavior
                 return practicaValue && practicaValue.toLowerCase().includes(value.toLowerCase());
             }
         });
@@ -106,37 +108,9 @@ const PracticasList = () => {
         <div className="container mx-auto p-4">
             <h1 className="text-2xl font-bold mb-4">Prácticas Disponibles</h1>
 
-            <div className="flex flex-col md:flex-row-reverse gap-6">
-                {/* Sección de resultados de búsqueda */}
-                <div className="md:w-2/3 space-y-4">
-                    {filteredPracticas.length > 0 ? (
-                        filteredPracticas.map((practica) => (
-                            <div key={practica.ID} className="bg-white shadow-md rounded-lg p-4">
-                                <h2 className="text-xl font-semibold mb-2">{practica.Titulo || 'Título no disponible'}</h2>
-                                <p className="text-gray-600 mb-2">Empresa: {practica.Id_Empresa || 'Empresa no disponible'}</p>
-                                <p className="text-gray-600 mb-4">Descripción: {practica.Descripcion || 'Descripción no disponible'}</p>
-                                <div className="grid grid-cols-2 gap-2 text-sm text-gray-500">
-                                    {practica.Area_practica && <p>Área: {practica.Area_practica}</p>}
-                                    {practica.Ubicacion && <p>Ubicación: {practica.Ubicacion}</p>}
-                                    {practica.Jornada && <p>Jornada: {practica.Jornada}</p>}
-                                    {practica.Modalidad && <p>Modalidad: {practica.Modalidad}</p>}
-                                    {practica.Fecha_publicacion && <p>Publicado: {new Date(practica.Fecha_publicacion).toLocaleDateString()}</p>}
-                                </div>
-                                <button
-                                    onClick={() => handleApply(practica.ID)}
-                                    className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                                >
-                                    Solicitar
-                                </button>
-                            </div>
-                        ))
-                    ) : (
-                        <div className="text-center py-4">No se encontraron prácticas que coincidan con los criterios de búsqueda.</div>
-                    )}
-                </div>
-
-                {/* Sección de búsqueda, filtros e historial */}
-                <div className="md:w-1/3 sticky top-0 self-start">
+            <div className="flex flex-col lg:flex-row">
+                {/* Sección de búsqueda y filtros */}
+                <div className="lg:w-1/3 mb-4 lg:mb-0 mr-4">
                     <div className="bg-white shadow-md rounded-lg p-4">
                         <form onSubmit={handleSearch} className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-2 mb-4 w-full">
                             <input
@@ -148,15 +122,15 @@ const PracticasList = () => {
                             />
                             <div className="flex space-x-2 w-full sm:w-auto">
                                 <button type="submit" className="text-gray-400 p-2 w-full sm:w-auto">
-                                    <Search />
+                                    <Search className="w-6 h-6" />
                                 </button>
                                 <button
                                     type="button"
                                     onClick={() => setShowFilters(!showFilters)}
                                     className="flex items-center bg-[#0092BC] text-white p-2 rounded-lg w-full sm:w-auto"
                                 >
-                                    <Filter className="mr-1" />
-                                    <ChevronDown className="ml-1" />
+                                    <Filter className="w-6 h-6" />
+                                    <ChevronDown className="ml-1 w-6 h-6" />
                                 </button>
                             </div>
                         </form>
@@ -241,7 +215,7 @@ const PracticasList = () => {
                                             <span>{term}</span>
                                             <button
                                                 onClick={() => handleRemoveSearchTerm(term)}
-                                                className="text-red-500 hover:underline"
+                                                className="text-red-500 hover:text-red-700"
                                             >
                                                 <X className="w-5 h-5" />
                                             </button>
@@ -249,10 +223,38 @@ const PracticasList = () => {
                                     ))}
                                 </ul>
                             ) : (
-                                <p>No hay búsquedas previas.</p>
+                                <p>No hay búsquedas recientes.</p>
                             )}
                         </div>
                     </div>
+                </div>
+
+                {/* Sección de resultados de búsqueda */}
+                <div className="lg:w-2/3 space-y-4">
+                    {filteredPracticas.length > 0 ? (
+                        filteredPracticas.map((practica) => (
+                            <div key={practica.ID} className="bg-white shadow-md rounded-lg p-4">
+                                <h2 className="text-xl font-semibold mb-2">{practica.Titulo || 'Título no disponible'}</h2>
+                                <p className="text-gray-600 mb-2">Empresa: {practica.Id_Empresa || 'Empresa no disponible'}</p>
+                                <p className="text-gray-600 mb-4">Descripción: {practica.Descripcion || 'Descripción no disponible'}</p>
+                                <div className="grid grid-cols-2 gap-2 text-sm text-gray-500">
+                                    {practica.Area_practica && <p>Área: {practica.Area_practica}</p>}
+                                    {practica.Ubicacion && <p>Ubicación: {practica.Ubicacion}</p>}
+                                    {practica.Jornada && <p>Jornada: {practica.Jornada}</p>}
+                                    {practica.Modalidad && <p>Modalidad: {practica.Modalidad}</p>}
+                                    {practica.Fecha_publicacion && <p>Publicado: {new Date(practica.Fecha_publicacion).toLocaleDateString()}</p>}
+                                </div>
+                                <button
+                                    onClick={() => handleApply(practica.ID)}
+                                    className="mt-4 bg-[#0092BC] hover:bg-[#A3D9D3] active:bg-[#A3D9D3] text-white font-bold py-2 px-4 rounded"
+                                >
+                                    Solicitar
+                                </button>
+                            </div>
+                        ))
+                    ) : (
+                        <div className="text-center py-4">No se encontraron prácticas que coincidan con los criterios de búsqueda.</div>
+                    )}
                 </div>
             </div>
         </div>

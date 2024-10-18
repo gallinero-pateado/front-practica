@@ -3,10 +3,10 @@
 
 Sprint1 conectado al backend. Login/Register funcional con la opcion de cambiar la contraseña y completar perfil de usuario. 
 
-////por arreglar user-profile, edit-profile, logout////
+////por arreglar user-profile, edit-profile, logout, vistas empresa////
 
 Sprint2 conectado al backend con exito. Busqueda de practicas y filtros funcionando correctamente.
-***arreglar lo que dijo el QA***
+***he arreglado casi todo lo que me pidio el QA, a excepcion de que la pagina se pueda ver bien y sin recorte en los celulares***
 ***PENDIENTE, hacer el front para postular a las practicas***
 para usar el codigo es necesario instalar lo siguiente en el terminal:
 

@@ -39,13 +39,13 @@ const LoginEm = () => {
 
     return (
         <div className="min-h-screen bg-[#DAEDF2] flex flex-col items-center justify-center font-ubuntu">
-            <form onSubmit={handleSubmit} className="bg-white shadow-lg rounded-lg px-16 pt-12 pb-12 mb-8 w-full max-w-md font-inter">
-                <h2 className="text-5xl font-bold mb-12 text-[#0092BC] text-center font-rubik">Iniciar Sesión</h2>
+            <form onSubmit={handleSubmit} className="bg-white shadow-lg rounded-lg px-16 pt-12 pb-12 mb-8 w-full max-w-md">
+                <h2 className="text-4xl font-bold mb-12 text-[#0092BC] text-center">Iniciar Sesión</h2>
 
                 {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
                 <div className="mb-12">
-                    <label className="block text-[#0092BC] text-xl font-bold mb-2 font-rubik" htmlFor="email">
+                    <label className="block text-[#0092BC] text-xl font-bold mb-2" htmlFor="email">
                         Email
                     </label>
                     <input
@@ -61,7 +61,7 @@ const LoginEm = () => {
                 </div>
 
                 <div className="mb-12">
-                    <label className="block text-[#0092BC] text-xl font-bold mb-2 font-rubik" htmlFor="password">
+                    <label className="block text-[#0092BC] text-xl font-bold mb-2" htmlFor="password">
                         Contraseña
                     </label>
                     <input
@@ -81,29 +81,30 @@ const LoginEm = () => {
                 <div className="flex justify-center mb-8">
                     <button
                         type="button"
-                        className="bg-white text-[#0092BC] font-bold hover:underline focus:outline-none font-inter"
+                        className="bg-white text-[#0092BC] font-bold hover:underline focus:outline-none"
                         onClick={handleForgotPasswordClick}
                     >
                         ¿Olvidaste tu contraseña?
                     </button>
                 </div>
+
+                {/* Botones uno encima del otro */}
+                <div className="flex flex-col items-center mb-4">
+                    <button
+                        type="submit"
+                        className="bg-[#0092BC] hover:bg-[#007a9a] text-white font-bold py-4 px-8 rounded-lg focus:outline-none focus:shadow-outline transition duration-300 mb-2"
+                    >
+                        Iniciar Sesión
+                    </button>
+                    <button
+                        type="button"
+                        className="bg-[#A3D9D3] hover:bg-[#8ec3c0] text-white font-bold py-4 px-8 rounded-lg focus:outline-none focus:shadow-outline transition duration-300"
+                        onClick={handleLoginAsStudent}
+                    >
+                        Iniciar como Estudiante
+                    </button>
+                </div>
             </form>
-
-            <div className="w-full max-w-4xl flex flex-col items-center">
-                <button
-                    className="bg-[#0092BC] hover:bg-[#007B9C] text-white font-bold py-4 px-8 rounded-lg focus:outline-none focus:shadow-outline transition duration-300 mb-4 font-ubuntu"
-                    onClick={handleSubmit}
-                >
-                    Iniciar Sesión
-                </button>
-
-                <button
-                    className="bg-[#DAEDF2] hover:bg-[#A3D9D3] text-[#0092BC] font-bold py-4 px-8 rounded-lg focus:outline-none focus:shadow-outline transition duration-300 font-ubuntu"
-                    onClick={handleLoginAsStudent}
-                >
-                    Iniciar como Estudiante
-                </button>
-            </div>
         </div>
     );
 };

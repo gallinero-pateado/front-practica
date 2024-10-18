@@ -48,7 +48,7 @@ const PasswordResetForm = () => {
 
                 <div className="flex items-center justify-center">
                     <button
-                        className="bg-[#0092BC] hover:bg-[#007B9D] text-white font-bold py-3 px-8 rounded focus:outline-none focus:shadow-outline transition duration-300"
+                        className="bg-[#0092BC] hover:bg-[#007A9A] text-white font-bold py-3 px-8 rounded focus:outline-none focus:shadow-outline transition duration-300"
                         type="submit"
                         disabled={isLoading}
                     >

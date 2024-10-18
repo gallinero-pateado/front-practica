@@ -149,14 +149,14 @@ const Register = () => {
 
                     <div className="flex flex-col items-center justify-center mt-3 w-full max-w-md">
                         <button
-                            className="bg-[#A3D9D3] hover:bg-[#0092BC] text-white font-bold py-3 px-8 rounded focus:outline-none focus:shadow-outline transition duration-300 mb-2"
+                            className="bg-[#0092BC] hover:bg-[#007a9a] text-white font-bold py-4 px-8 rounded-lg focus:outline-none focus:shadow-outline transition duration-300 mb-2"
                             type="submit"
                         >
                             Registrarse
                         </button>
 
                         <button
-                            className="bg-[#0092BC] hover:bg-[#A3D9D3] text-white font-bold py-4 px-8 rounded-lg focus:outline-none focus:shadow-outline transition duration-300"
+                            className="bg-[#A3D9D3] hover:bg-[#8ec3c0] text-white font-bold py-4 px-8 rounded-lg focus:outline-none focus:shadow-outline transition duration-300"
                             onClick={handleRegisterAsCompany}
                         >
                             Registrarse como Empresa

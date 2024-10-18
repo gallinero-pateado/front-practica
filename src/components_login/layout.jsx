@@ -9,12 +9,18 @@ const Layout = () => {
             <header className="bg-[#0092BC] text-white p-6">
                 <div className="flex justify-between items-center mx-auto">
                     <h1 className="text-5xl font-bold italic">ULINK</h1>
-                    <div>
-                        <a href="/register" className="bg-[#A3D9D3] text-[#0092BC] px-8 py-3 rounded mr-5 font-bold italic text-lg hover:bg-[#0092BC] transition duration-300">
-                            Sign Up
+                    <div className="flex space-x-4">
+                        <a
+                            href="/register"
+                            className="bg-[#A3D9D3] text-[#0092BC] px-3 py-2 rounded font-bold italic text-lg hover:bg-[#8ec3c0] transition duration-300"
+                        >
+                            Registrarse
                         </a>
-                        <a href="/" className="bg-[#007B9C] text-white px-9 py-3 rounded font-bold italic text-lg hover:bg-[#005F7F] transition duration-300">
-                            Log In
+                        <a
+                            href="/"
+                            className="bg-[#0092BC] text-white px-3 py-2 rounded font-bold italic text-lg hover:bg-[#007a9a] transition duration-300"
+                        >
+                            Iniciar sesión
                         </a>
                     </div>
                 </div>

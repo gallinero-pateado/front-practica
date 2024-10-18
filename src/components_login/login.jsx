@@ -49,7 +49,7 @@ const Login = () => {
         }
     };
 
-    // Botones extra para pedir código por contraseña olvidada y para hacer login como empresa
+    // Botones extra para pedir código por contraseña olvidada
     const handleForgotPasswordClick = () => {
         navigate('/password_recovery');
     };
@@ -61,7 +61,7 @@ const Login = () => {
     return (
         <div className="min-h-screen bg-[#DAEDF2] flex flex-col items-center justify-center font-ubuntu">
             <form onSubmit={handleSubmit} className="bg-white shadow-lg rounded-lg px-16 pt-12 pb-12 mb-8 w-full max-w-md">
-                <h2 className="text-5xl font-bold mb-12 text-[#0092BC] text-center">Iniciar Sesión</h2>
+                <h2 className="text-4xl font-bold mb-8 text-[#0092BC] text-center">Iniciar Sesión</h2>
 
                 {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
@@ -109,24 +109,23 @@ const Login = () => {
                     </button>
                 </div>
 
-                <div className="flex justify-center">
+                {/* Botones uno encima del otro */}
+                <div className="flex flex-col items-center mb-4">
                     <button
                         type="submit"
-                        className="bg-[#0092BC] hover:bg-[#007a9a] text-white font-bold py-4 px-8 rounded-lg focus:outline-none focus:shadow-outline transition duration-300"
+                        className="bg-[#0092BC] hover:bg-[#007a9a] text-white font-bold py-4 px-8 rounded-lg focus:outline-none focus:shadow-outline transition duration-300 mb-2"
                     >
                         Iniciar Sesión
                     </button>
+                    <button
+                        type="button"
+                        className="bg-[#A3D9D3] hover:bg-[#8ec3c0] text-white font-bold py-4 px-8 rounded-lg focus:outline-none focus:shadow-outline transition duration-300"
+                        onClick={handleLoginAsCompany}
+                    >
+                        Iniciar como Empresa
+                    </button>
                 </div>
             </form>
-
-            <div className="w-full max-w-4xl flex flex-col items-center">
-                <button
-                    className="bg-[#A3D9D3] hover:bg-[#8ec3c0] text-white font-bold py-4 px-8 rounded-lg focus:outline-none focus:shadow-outline transition duration-300"
-                    onClick={handleLoginAsCompany}
-                >
-                    Iniciar como Empresa
-                </button>
-            </div>
         </div>
     );
 };
