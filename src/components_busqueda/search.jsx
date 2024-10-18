@@ -9,35 +9,44 @@ const PracticasList = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [showFilters, setShowFilters] = useState(false);
     const [filters, setFilters] = useState({
-        fecha_publicacion: '',
-        area_practica: '',
-        ubicacion: '',
-        jornada: '',
         modalidad: '',
+        area_practica: '',
+        jornada: '',
+        ubicacion: '',
+        fecha_publicacion: '',
     });
     const [searchHistory, setSearchHistory] = useState([]);
-    const [filteredPracticas, setFilteredPracticas] = useState([]);
 
     useEffect(() => {
-        const fetchPracticas = async () => {
-            try {
-                const response = await axios.get('http://localhost:8080/Get-practicas');
-                setPracticas(response.data);
-                setFilteredPracticas(response.data);
-                setLoading(false);
-            } catch (err) {
-                setError('Error al obtener las prácticas');
-                setLoading(false);
-            }
-        };
         fetchPracticas();
     }, []);
 
+    const fetchPracticas = async () => {
+        try {
+            setLoading(true);
+            let url = 'http://localhost:8080/Get-practicas';
+            const queryParams = new URLSearchParams(Object.entries(filters).filter(([_, v]) => v !== '')).toString();
+            if (queryParams) {
+                url += `?${queryParams}`;
+            }
+            console.log('Fetching URL:', url);
+            const response = await axios.get(url);
+            console.log('Practicas cargadas:', response.data);
+            setPracticas(response.data.practicas || response.data);
+            setLoading(false);
+        } catch (err) {
+            console.error('Error al obtener las prácticas:', err);
+            setError('Error al obtener las prácticas');
+            setLoading(false);
+        }
+    };
+
     const handleSearch = (e) => {
         e.preventDefault();
-        setSearchHistory((prevHistory) => [...prevHistory, searchTerm]);
-        filterPracticas();
-        setSearchTerm('');
+        if (searchTerm.trim() !== '') {
+            setSearchHistory((prevHistory) => [...new Set([searchTerm, ...prevHistory])]);
+            fetchPracticas();
+        }
     };
 
     const handleFilterChange = (e) => {
@@ -45,32 +54,45 @@ const PracticasList = () => {
         setFilters(prevFilters => ({ ...prevFilters, [name]: value }));
     };
 
-    const applyFilters = () => {
+    const applyFilters = (e) => {
+        e.preventDefault();
         setShowFilters(false);
-        filterPracticas();
+        fetchPracticas();
     };
 
     const handleRemoveSearchTerm = (termToRemove) => {
         setSearchHistory((prevHistory) => prevHistory.filter(term => term !== termToRemove));
+        setSearchTerm('');
+        fetchPracticas();
     };
 
-    const filterPracticas = () => {
-        const filtered = practicas.filter(practica => {
-            const matchesSearchTerm =
-                practica.Titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                practica.Descripcion.toLowerCase().includes(searchTerm.toLowerCase());
+    const filteredPracticas = practicas.filter(practica => {
+        const matchesSearch =
+            (practica.Titulo && practica.Titulo.toLowerCase().includes(searchTerm.toLowerCase())) ||
+            (practica.Descripcion && practica.Descripcion.toLowerCase().includes(searchTerm.toLowerCase()));
 
-            const matchesFilters =
-                (!filters.area_practica || practica.area_practica.toLowerCase().includes(filters.area_practica.toLowerCase())) &&
-                (!filters.modalidad || practica.modalidad.toLowerCase().includes(filters.modalidad.toLowerCase())) &&
-                (!filters.jornada || practica.jornada.toLowerCase().includes(filters.jornada.toLowerCase())) &&
-                (!filters.ubicacion || practica.ubicacion.toLowerCase().includes(filters.ubicacion.toLowerCase())) &&
-                (!filters.fecha_publicacion || new Date(practica.fecha_publicacion).getMonth() + 1 === parseInt(filters.fecha_publicacion));
+        const matchesFilters = Object.entries(filters).every(([key, value]) => {
+            if (!value) return true; // Skip empty filters
+            const practicaValue = practica[key] || practica[key.charAt(0).toUpperCase() + key.slice(1)];
 
-            return matchesSearchTerm && matchesFilters;
+            if (key === 'area_practica' || key === 'ubicacion') {
+                // For area_practica and ubicacion, do a more strict comparison
+                return practicaValue && practicaValue.toLowerCase() === value.toLowerCase();
+            } else if (key === 'fecha_publicacion') {
+                // For fecha_publicacion, compare the month
+                const practicaDate = new Date(practicaValue);
+                const filterMonth = parseInt(value, 10);
+                return practicaDate.getMonth() + 1 === filterMonth; // getMonth() returns 0-11, so we add 1
+            } else {
+                // For other filters, keep the existing behavior
+                return practicaValue && practicaValue.toLowerCase().includes(value.toLowerCase());
+            }
         });
-        setFilteredPracticas(filtered);
-    };
+
+        return matchesSearch && matchesFilters;
+    });
+
+    console.log('Filtered practicas:', filteredPracticas);
 
     if (loading) {
         return <div className="text-center py-4">Cargando prácticas...</div>;
@@ -81,38 +103,66 @@ const PracticasList = () => {
     }
 
     return (
-        <div className="container mx-auto p-10">
-            <h1 className="text-2xl font-bold mb-4">Búsqueda de Prácticas</h1>
+        <div className="container mx-auto p-4">
+            <h1 className="text-2xl font-bold mb-4">Prácticas Disponibles</h1>
 
-            <div className="flex flex-col md:flex-row gap-20">
-                {/* Sección de búsqueda, filtros e historial a la izquierda */}
-                <div className="md:w-1/3">
-                    <div className="bg-white shadow-md rounded-lg p-4 sticky top-4">
+            <div className="flex flex-col md:flex-row-reverse gap-6">
+                {/* Sección de resultados de búsqueda */}
+                <div className="md:w-2/3 space-y-4">
+                    {filteredPracticas.length > 0 ? (
+                        filteredPracticas.map((practica) => (
+                            <div key={practica.ID} className="bg-white shadow-md rounded-lg p-4">
+                                <h2 className="text-xl font-semibold mb-2">{practica.Titulo || 'Título no disponible'}</h2>
+                                <p className="text-gray-600 mb-2">Empresa: {practica.Id_Empresa || 'Empresa no disponible'}</p>
+                                <p className="text-gray-600 mb-4">Descripción: {practica.Descripcion || 'Descripción no disponible'}</p>
+                                <div className="grid grid-cols-2 gap-2 text-sm text-gray-500">
+                                    {practica.Area_practica && <p>Área: {practica.Area_practica}</p>}
+                                    {practica.Ubicacion && <p>Ubicación: {practica.Ubicacion}</p>}
+                                    {practica.Jornada && <p>Jornada: {practica.Jornada}</p>}
+                                    {practica.Modalidad && <p>Modalidad: {practica.Modalidad}</p>}
+                                    {practica.Fecha_publicacion && <p>Publicado: {new Date(practica.Fecha_publicacion).toLocaleDateString()}</p>}
+                                </div>
+                                <button
+                                    onClick={() => handleApply(practica.ID)}
+                                    className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                                >
+                                    Solicitar
+                                </button>
+                            </div>
+                        ))
+                    ) : (
+                        <div className="text-center py-4">No se encontraron prácticas que coincidan con los criterios de búsqueda.</div>
+                    )}
+                </div>
 
-                        <form onSubmit={handleSearch} className="flex items-center space-x-2 mb-4 flex-wrap">
+                {/* Sección de búsqueda, filtros e historial */}
+                <div className="md:w-1/3 sticky top-0 self-start">
+                    <div className="bg-white shadow-md rounded-lg p-4">
+                        <form onSubmit={handleSearch} className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-2 mb-4 w-full">
                             <input
                                 type="text"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                placeholder="Buscar..."
-                                className="flex-grow p-1 border rounded-lg text-lg font-ubuntu"
-                                style={{ minWidth: '150px' }}
+                                placeholder="Buscar prácticas..."
+                                className="flex-grow w-full p-2 border rounded-lg text-lg font-ubuntu"
                             />
-                            <button type="submit" className="text-gray-400 p-1">
-                                <Search />
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => setShowFilters(!showFilters)}
-                                className="flex items-center bg-[#0092BC] text-white p-1 rounded-lg"
-                            >
-                                <Filter className="mr-1" />
-                                <ChevronDown className="ml-1" />
-                            </button>
+                            <div className="flex space-x-2 w-full sm:w-auto">
+                                <button type="submit" className="text-gray-400 p-2 w-full sm:w-auto">
+                                    <Search />
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setShowFilters(!showFilters)}
+                                    className="flex items-center bg-[#0092BC] text-white p-2 rounded-lg w-full sm:w-auto"
+                                >
+                                    <Filter className="mr-1" />
+                                    <ChevronDown className="ml-1" />
+                                </button>
+                            </div>
                         </form>
 
                         {showFilters && (
-                            <div className="mb-4">
+                            <form onSubmit={applyFilters} className="mb-4">
                                 <h3 className="font-bold mb-2">Filtros</h3>
                                 <div className="space-y-2">
                                     <div>
@@ -123,7 +173,7 @@ const PracticasList = () => {
                                             value={filters.area_practica}
                                             onChange={handleFilterChange}
                                             className="w-full p-2 border rounded"
-                                            placeholder="Ej. Tecnología"
+                                            placeholder="Ej. TI"
                                         />
                                     </div>
                                     <div>
@@ -160,26 +210,26 @@ const PracticasList = () => {
                                         />
                                     </div>
                                     <div>
-                                        <label className="block mb-1">Mes de publicación:</label>
+                                        <label className="block mb-1">Mes de publicación (1-12):</label>
                                         <input
                                             type="number"
                                             name="fecha_publicacion"
                                             value={filters.fecha_publicacion}
                                             onChange={handleFilterChange}
-                                            className="w-full p-2 border rounded"
-                                            placeholder="1 (Enero) a 12 (Diciembre)"
                                             min="1"
                                             max="12"
+                                            className="w-full p-2 border rounded"
+                                            placeholder="Ej. 10 (para octubre)"
                                         />
                                     </div>
                                 </div>
                                 <button
-                                    onClick={applyFilters}
+                                    type="submit"
                                     className="w-full bg-[#0092BC] text-white p-2 rounded-lg mt-4"
                                 >
                                     Aplicar Filtros
                                 </button>
-                            </div>
+                            </form>
                         )}
 
                         <div className="mt-4">
@@ -203,29 +253,6 @@ const PracticasList = () => {
                             )}
                         </div>
                     </div>
-                </div>
-
-                {/* Sección de resultados de búsqueda a la derecha */}
-                <div className="md:w-2/3 space-y-4">
-                    <h2 className="text-2xl font-bold mb-4">Prácticas Disponibles</h2>
-                    {filteredPracticas.length > 0 ? (
-                        filteredPracticas.map((practica) => (
-                            <div key={practica.ID} className="bg-white shadow-md rounded-lg p-4">
-                                <h2 className="text-xl font-semibold mb-2">{practica.Titulo || 'Título no disponible'}</h2>
-                                <p className="text-gray-600 mb-2">Empresa: {practica.Id_empresa || 'Empresa no disponible'}</p>
-                                <p className="text-gray-600 mb-4">Descripción: {practica.Descripcion || 'Descripción no disponible'}</p>
-                                <div className="grid grid-cols-2 gap-2 text-sm text-gray-500">
-                                    {practica.area_practica && <p>Área: {practica.area_practica}</p>}
-                                    {practica.ubicacion && <p>Ubicación: {practica.ubicacion}</p>}
-                                    {practica.jornada && <p>Jornada: {practica.jornada}</p>}
-                                    {practica.modalidad && <p>Modalidad: {practica.modalidad}</p>}
-                                    {practica.fecha_publicacion && <p>Publicado: {new Date(practica.fecha_publicacion).toLocaleDateString()}</p>}
-                                </div>
-                            </div>
-                        ))
-                    ) : (
-                        <div className="text-center py-4">No se encontraron prácticas que coincidan con los criterios de búsqueda.</div>
-                    )}
                 </div>
             </div>
         </div>

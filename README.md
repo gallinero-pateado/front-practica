@@ -1,8 +1,13 @@
 # React + Vite
 
 
-Sprint1 conectado al backend. Login/Register funcional con la opcion de cambiar la contraseña y completar perfil de usuario. por arreglar user-profile, edit-profile
-Sprint2 
+Sprint1 conectado al backend. Login/Register funcional con la opcion de cambiar la contraseña y completar perfil de usuario. 
+
+////por arreglar user-profile, edit-profile, logout////
+
+Sprint2 conectado al backend con exito. Busqueda de practicas y filtros funcionando correctamente.
+***arreglar lo que dijo el QA***
+***PENDIENTE, hacer el front para postular a las practicas***
 para usar el codigo es necesario instalar lo siguiente en el terminal:
 
 ---npm install

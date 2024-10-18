@@ -25,9 +25,8 @@ const Rpractica = () => {
 
     const handleApply = async (practicaId) => {
         try {
-            await axios.post('http://localhost:8080/Rpracticas/${practicaId}/apply');
+            await axios.post(`http://localhost:8080/Rpracticas/${practicaId}/apply`);
             alert('Solicitud enviada con éxito');
-            // Aquí podrías actualizar el estado de la práctica si es necesario
         } catch (err) {
             alert('Error al enviar la solicitud');
         }
@@ -62,8 +61,14 @@ const Rpractica = () => {
                     {filteredPracticas.map((practica) => (
                         <div key={practica.ID} className="bg-white shadow-md rounded-lg p-4">
                             <h2 className="text-xl font-semibold mb-2">{practica.Titulo}</h2>
-                            <p className="text-gray-600 mb-2">Empresa: {practica.Id_empresa}</p>
-                            <p className="text-gray-600 mb-4">Descripción: {practica.Descripcion || 'No disponible'}</p>
+                            <p className="text-gray-600 mb-2">Empresa: {practica.Id_Empresa}</p>
+                            <p className="text-gray-600 mb-2">Ubicación: {practica.Ubicacion || 'No disponible'}</p>
+                            <p className="text-gray-600 mb-2">Fecha de inicio: {practica.Fecha_inicio || 'No disponible'}</p>
+                            <p className="text-gray-600 mb-2">Fecha de fin: {practica.Fecha_fin || 'No disponible'}</p>
+                            <p className="text-gray-600 mb-2">Requisitos: {practica.Requisitos || 'No disponible'}</p>
+                            <p className="text-gray-600 mb-2">Modalidad: {practica.Modalidad || 'No disponible'}</p>
+                            <p className="text-gray-600 mb-2">Área de práctica: {practica.Area_practica || 'No disponible'}</p>
+                            <p className="text-gray-600 mb-2">Jornada: {practica.Jornada || 'No disponible'}</p>
                             <button
                                 onClick={() => handleApply(practica.ID)}
                                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
