@@ -14,6 +14,7 @@ para usar el codigo es necesario instalar lo siguiente en el terminal:
 ---npm install axios
 ---npm create vite@latest
 ---npm install react-router-dom
+---npm install firebase
 
 //PARA TAILWINDCSS//
 ---npm install -D tailwindcss postcss autoprefixer

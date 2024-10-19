@@ -6,20 +6,25 @@ const Logout = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        console.log('Sesión cerrada');
+        console.log('Tokens antes de eliminar:', {
+            authToken: localStorage.getItem('authToken'),
+            uid: localStorage.getItem('uid')
+        });
 
-        // Elimina el token de localStorage
         localStorage.removeItem('authToken');
         localStorage.removeItem('uid');
 
-        // Redirige a la página de inicio de sesión después de 5 segundos
+        console.log('Tokens después de eliminar:', {
+            authToken: localStorage.getItem('authToken'),
+            uid: localStorage.getItem('uid')
+        });
+
         const timer = setTimeout(() => {
-            navigate('/'); // Redirige a la página de inicio de sesión
+            navigate('/');
         }, 5000);
 
-        return () => clearTimeout(timer); // Limpia el timer al desmontar
+        return () => clearTimeout(timer);
     }, [navigate]);
-
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-[#DAEDF2]"> {/* Color de fondo */}
             <img

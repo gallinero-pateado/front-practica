@@ -14,28 +14,35 @@ const UserProfile = () => {
         id_carrera: null,
     });
 
-    const uid = 'user-uid';
+    const uid = localStorage.getItem('uid'); // Obtén el UID correctamente
 
     useEffect(() => {
         const fetchProfileData = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/usuarios/${uid}`);
+                const response = await axios.get(`http://localhost:8080/usuarios/${uid}`); // Asegúrate de que la ruta sea correcta
                 console.log('Profile Response:', response.data);
                 setProfileData({
-                    fotoPerfil: response.data.fotoPerfil || null,
-                    nombres: response.data.nombres || '',
-                    apellidos: response.data.apellidos || '',
-                    email: response.data.email || '',
-                    fecha_nacimiento: response.data.fecha_nacimiento || '',
-                    ano_ingreso: response.data.ano_ingreso || '',
-                    id_carrera: parseInt(response.data.id_carrera) || null,
+                    fotoPerfil: response.data.Foto_Perfil || null,
+                    nombres: response.data.Nombres || '',
+                    apellidos: response.data.Apellidos || '',
+                    email: response.data.Correo || '',
+                    fecha_nacimiento: response.data.Fecha_Nacimiento || '',
+                    ano_ingreso: response.data.Ano_Ingreso || '',
+                    id_carrera: parseInt(response.data.Id_carrera) || null,
                 });
             } catch (error) {
                 console.error('Error al obtener datos del perfil:', error);
+                // Opcional: muestra un mensaje al usuario si hay un error
             }
         };
 
-        fetchProfileData();
+        // Verifica que el UID no sea null o undefined antes de hacer la llamada
+        if (uid) {
+            fetchProfileData();
+        } else {
+            console.error('UID no encontrado');
+            // Opcional: redirigir o mostrar un mensaje al usuario
+        }
     }, [uid]);
 
     return (
