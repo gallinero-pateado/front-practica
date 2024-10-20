@@ -8,15 +8,18 @@ import RegisterEm from './components_login/register_em'; //Register para empresa
 import CompleteProfile from './components_login/complete_profile';
 import PasswordResetForm from './components_login/password_recovery';
 import Layout2 from './components_profile/layout2'; // Layout para el resto de cosas 
+import Layout3 from './components_crud/layout3'; // Nuevo Layout3
 import UserProfile from './components_profile/user-profile';
 import EditProfile from './components_profile/edit-profile';
 import Logout from './components_profile/logout';
 import Cpractica from './components_crud/cpractica'; // Componente para crear prácticas
-import Rpractica from './components_crud/rpractica'; // Componente para que los estudiantes lean prácticas 
-import Upractica from './components_crud/upractica'; // Componente para actualizar prácticas
-import Dpractica from './components_crud/dpractica'; // Componente para eliminar prácticas
+import Rpractica from './components_crud/rpractica'; // Componente para que los estudiantes lean prácticas
+import Dpractica from './components_crud/dpractica'; // Componente para eliminar y editar prácticas
 import Gpracticas from './components_crud/gpracticas'; // Componente para que las empresas lean prácticas
 import PracticasList from './components_busqueda/search';
+import LogoutEm from './components_crud/logout-em';
+
+
 const App = () => {
   return (
     <Router>
@@ -35,14 +38,13 @@ const App = () => {
         <Route path="/user-profile" element={<Layout2><UserProfile /></Layout2>} />
         <Route path="/edit-profile" element={<Layout2><EditProfile /></Layout2>} />
         <Route path="/logout" element={<Layout2><Logout /></Layout2>} />
-
-        {/* Rutas CRUD para las prácticas */}
-        <Route path="/cpractica" element={<Layout2><Cpractica /></Layout2>} />
         <Route path="/rpractica" element={<Layout2><Rpractica /></Layout2>} />
-        <Route path="/upractica" element={<Layout2><Upractica /></Layout2>} />
-        <Route path="/dpractica" element={<Layout2><Dpractica /></Layout2>} />
-        <Route path="/gpracticas" element={<Layout2><Gpracticas /></Layout2>} />
         <Route path="/search" element={<Layout2><PracticasList /></Layout2>} />
+        {/* Rutas CRUD para las prácticas utilizando Layout3 */}
+        <Route path="/cpractica" element={<Layout3><Cpractica /></Layout3>} />
+        <Route path="/upractica" element={<Layout3><Dpractica /></Layout3>} />
+        <Route path="/gpracticas" element={<Layout3><Gpracticas /></Layout3>} />
+        <Route path="/logout-em" element={<Layout3><LogoutEm /></Layout3>} />
       </Routes>
     </Router>
   );

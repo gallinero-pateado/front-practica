@@ -48,7 +48,7 @@ const Login = () => {
             console.log('Estado del perfil:', profileResponse.data);
 
             if (profileResponse.data.PerfilCompletado) {
-                navigate('/user-profile');
+                navigate('/search');
             } else {
                 navigate('/complete_profile');
             }

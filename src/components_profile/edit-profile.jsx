@@ -1,140 +1,147 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const EditProfile = () => {
     const navigate = useNavigate();
     const [profileData, setProfileData] = useState({
-        image: null,
-        firstName: '',
-        lastName: '',
+        fotoPerfil: '',
+        nombres: '',
+        apellidos: '',
         email: '',
-        dateOfBirth: '',
-        yearOfEntry: '',
-        careerName: '',
+        fecha_nacimiento: '',
+        ano_ingreso: '',
+        id_carrera: '',
     });
+
+    const uid = localStorage.getItem('uid'); // Asegúrate de que el UID esté disponible
 
     useEffect(() => {
         const fetchProfileData = async () => {
             try {
-                const registerResponse = await axios.get('http://localhost:8080/register');
-                const profileResponse = await axios.get('http://localhost:8080/complete-profile');
-
+                const response = await axios.get(`http://localhost:8080/usuarios/${uid}`);
                 setProfileData({
-                    ...registerResponse.data,
-                    ...profileResponse.data,
+                    fotoPerfil: response.data.Foto_Perfil || '',
+                    nombres: response.data.Nombres || '',
+                    apellidos: response.data.Apellidos || '',
+                    email: response.data.Correo || '',
+                    fecha_nacimiento: response.data.Fecha_Nacimiento || '',
+                    ano_ingreso: response.data.Ano_Ingreso || '',
+                    id_carrera: response.data.Id_carrera || '',
                 });
             } catch (error) {
                 console.error('Error al obtener datos del perfil:', error);
             }
         };
 
-        fetchProfileData();
-    }, []);
+        if (uid) {
+            fetchProfileData();
+        }
+    }, [uid]);
 
-    const handleInputChange = (field, value) => {
+    const handleChange = (e) => {
+        const { name, value } = e.target;
         setProfileData((prevData) => ({
             ...prevData,
-            [field]: value,
+            [name]: value,
         }));
     };
 
-    const handleImageUpload = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setProfileData((prevData) => ({
-                    ...prevData,
-                    image: reader.result,
-                }));
-            };
-            reader.readAsDataURL(file);
-        }
-    };
-
-    const handleSaveChanges = async () => {
+    const handleSubmit = async (e) => {
+        e.preventDefault();
         try {
-            await axios.put('/api/user/profile', profileData);
-            console.log('Datos del perfil guardados:', profileData);
-            navigate('/user-profile');
+            // Realiza la llamada PUT a tu API
+            await axios.put(`http://localhost:8080/usuarios/${uid}`, profileData);
+            alert('Perfil actualizado exitosamente');
+            navigate('/user-profile'); // Redirigir después de actualizar
         } catch (error) {
-            console.error('Error al guardar los cambios:', error);
+            console.error('Error al actualizar el perfil:', error);
+            alert('No se pudo actualizar el perfil. Verifica los datos e intenta nuevamente.'); // Muestra un mensaje de error
         }
     };
 
     return (
-        <main className="flex-grow bg-[#DAEDF2]"> {/* Color de fondo */}
+        <main className="flex-grow">
             <div className="max-w-3xl mx-auto p-4">
-                <div className="bg-white shadow-md rounded-lg p-6">
-                    <div className="flex items-center mb-6">
-                        <label className="cursor-pointer">
-                            <div className="w-32 h-32 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center overflow-hidden bg-gray-100">
-                                {profileData.image ? (
-                                    <img src={profileData.image} alt="avatar" className="w-full h-full object-cover" />
-                                ) : (
-                                    <span className="text-gray-400 text-4xl">📷</span>
-                                )}
-                            </div>
-                            <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} />
-                        </label>
-                    </div>
-
+                <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-6">
+                    <h2 className="text-lg font-semibold mb-4">Editar Perfil</h2>
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <h3 className="text-lg font-semibold mb-2" style={{ fontFamily: 'Rubik' }}>Información Personal</h3>
-                            {['firstName', 'lastName', 'email', 'dateOfBirth'].map((field) => (
-                                <div key={field} className="mb-4">
-                                    <label className="block text-sm font-medium text-gray-700" style={{ fontFamily: 'Ubuntu' }}>
-                                        {field === 'firstName' ? 'Nombre' :
-                                            field === 'lastName' ? 'Apellido' :
-                                                field === 'email' ? 'Correo electrónico' :
-                                                    'Fecha de Nacimiento'}
-                                    </label>
-                                    <input
-                                        type={field === 'dateOfBirth' ? 'date' : 'text'}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-                                        value={profileData[field]}
-                                        onChange={(e) => handleInputChange(field, e.target.value)}
-                                        style={{ fontFamily: 'Inter' }}
-                                    />
-                                </div>
-                            ))}
+                            <label className="block mb-1">Nombres:</label>
+                            <input
+                                type="text"
+                                name="nombres"
+                                value={profileData.nombres}
+                                onChange={handleChange}
+                                className="border rounded w-full p-2"
+                                required
+                            />
                         </div>
                         <div>
-                            <h3 className="text-lg font-semibold mb-2" style={{ fontFamily: 'Rubik' }}>Información Académica</h3>
-                            <div className="mb-4">
-                                <label className="block text-sm font-medium text-gray-700" style={{ fontFamily: 'Ubuntu' }}>Año de Ingreso</label>
-                                <input
-                                    type="text"
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-                                    value={profileData.yearOfEntry}
-                                    onChange={(e) => handleInputChange('yearOfEntry', e.target.value)}
-                                    style={{ fontFamily: 'Inter' }}
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <label className="block text-sm font-medium text-gray-700" style={{ fontFamily: 'Ubuntu' }}>Carrera</label>
-                                <input
-                                    type="text"
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-                                    value={profileData.careerName}
-                                    onChange={(e) => handleInputChange('careerName', e.target.value)}
-                                    style={{ fontFamily: 'Inter' }}
-                                />
-                            </div>
+                            <label className="block mb-1">Apellidos:</label>
+                            <input
+                                type="text"
+                                name="apellidos"
+                                value={profileData.apellidos}
+                                onChange={handleChange}
+                                className="border rounded w-full p-2"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label className="block mb-1">Correo electrónico:</label>
+                            <input
+                                type="email"
+                                name="email"
+                                value={profileData.email}
+                                onChange={handleChange}
+                                className="border rounded w-full p-2"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label className="block mb-1">Fecha de Nacimiento:</label>
+                            <input
+                                type="date"
+                                name="fecha_nacimiento"
+                                value={profileData.fecha_nacimiento}
+                                onChange={handleChange}
+                                className="border rounded w-full p-2"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label className="block mb-1">Año de Ingreso:</label>
+                            <input
+                                type="text"
+                                name="ano_ingreso"
+                                value={profileData.ano_ingreso}
+                                onChange={handleChange}
+                                className="border rounded w-full p-2"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label className="block mb-1">ID de Carrera:</label>
+                            <input
+                                type="text"
+                                name="id_carrera"
+                                value={profileData.id_carrera}
+                                onChange={handleChange}
+                                className="border rounded w-full p-2"
+                                required
+                            />
                         </div>
                     </div>
-
                     <div className="mt-6 flex justify-end">
                         <button
-                            onClick={handleSaveChanges}
-                            className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#0092BC] hover:bg-[#A3D9D3] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                            type="submit"
+                            className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#0092BC] hover:bg-[#A3D9D3] transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                         >
                             Guardar Cambios
                         </button>
                     </div>
-                </div>
+                </form>
             </div>
         </main>
     );

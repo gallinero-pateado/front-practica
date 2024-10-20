@@ -42,18 +42,60 @@ const Cpractica = () => {
         e.preventDefault();
         if (validate()) {
             try {
-                const response = await axios.post('http://localhost:8080/Cpractica', formData);
+                // Obtener el token desde localStorage
+                const token = localStorage.getItem('authToken');
+                if (!token) {
+                    setSubmitMessage({ type: 'error', text: 'No se encontró el token de autenticación.' });
+                    return;
+                }
+
+                // Formatear fechas
+                const formattedData = {
+                    ...formData,
+                    Id_Empresa: parseInt(formData.Id_Empresa, 10),
+                    Fecha_inicio: new Date(formData.Fecha_inicio).toISOString(),
+                    Fecha_fin: new Date(formData.Fecha_fin).toISOString(),
+                    Fecha_expiracion: new Date(formData.Fecha_expiracion).toISOString(),
+                };
+
+                // Realizar la solicitud POST con el token en el encabezado
+                const response = await axios.post(
+                    'http://localhost:8080/Create-practicas',
+                    formattedData,
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${token}` // Aquí se incluye el token
+                        }
+                    }
+                );
+
                 setSubmitMessage({ type: 'success', text: `Práctica creada exitosamente con ID: ${response.data.id_practica}` });
+
+                // Limpiar formulario
+                setFormData({
+                    Titulo: '',
+                    Descripcion: '',
+                    Id_Empresa: '',
+                    Ubicacion: '',
+                    Fecha_inicio: '',
+                    Fecha_fin: '',
+                    Requisitos: '',
+                    Fecha_expiracion: '',
+                    Modalidad: '',
+                    Area_practica: '',
+                    Jornada: ''
+                });
             } catch (error) {
-                setSubmitMessage({ type: 'error', text: 'Error al crear la práctica: ' + (error.response?.data?.message || error.message) });
+                setSubmitMessage({ type: 'error', text: 'Error al crear la práctica: ' + (error.response?.data?.error || error.message) });
             }
         }
     };
 
     return (
-        <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-xl">
+        <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-xl font-ubuntu">
             <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Crear Nueva Práctica</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Campos del formulario */}
                 <div>
                     <label htmlFor="Titulo" className="block text-sm font-medium text-gray-700">Título:</label>
                     <input
@@ -158,22 +200,18 @@ const Cpractica = () => {
 
                 <div>
                     <label htmlFor="Modalidad" className="block text-sm font-medium text-gray-700">Modalidad:</label>
-                    <select
+                    <input
+                        type="text"
                         id="Modalidad"
                         name="Modalidad"
                         value={formData.Modalidad}
                         onChange={handleChange}
                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                    >
-                        <option value="">Seleccionar modalidad</option>
-                        <option value="remoto">Remoto</option>
-                        <option value="presencial">Presencial</option>
-                        <option value="hibrido">Híbrido</option>
-                    </select>
+                    />
                 </div>
 
                 <div>
-                    <label htmlFor="Area_practica" className="block text-sm font-medium text-gray-700">Área de Práctica:</label>
+                    <label htmlFor="Area_practica" className="block text-sm font-medium text-gray-700">Área de práctica:</label>
                     <input
                         type="text"
                         id="Area_practica"
@@ -187,31 +225,31 @@ const Cpractica = () => {
 
                 <div>
                     <label htmlFor="Jornada" className="block text-sm font-medium text-gray-700">Jornada:</label>
-                    <select
+                    <input
+                        type="text"
                         id="Jornada"
                         name="Jornada"
                         value={formData.Jornada}
                         onChange={handleChange}
                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                    >
-                        <option value="">Seleccionar jornada</option>
-                        <option value="completa">Jornada Completa</option>
-                        <option value="parcial">Media Jornada</option>
-                    </select>
+                    />
                 </div>
-
-                {submitMessage && (
-                    <div className={`p-4 rounded-md ${submitMessage.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                        {submitMessage.text}
-                    </div>
-                )}
 
                 <button
                     type="submit"
-                    className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    className="w-full py-2 rounded-md font-semibold text-white transition-colors duration-300"
+                    style={{ backgroundColor: '#0092BC', borderColor: '#0092BC' }}
+                    onMouseEnter={e => e.target.style.backgroundColor = '#A3D9D3'}
+                    onMouseLeave={e => e.target.style.backgroundColor = '#0092BC'}
                 >
                     Crear Práctica
                 </button>
+
+                {submitMessage && (
+                    <div className={`mt-4 text-center ${submitMessage.type === 'success' ? 'text-green-600' : 'text-red-600'}`}>
+                        {submitMessage.text}
+                    </div>
+                )}
             </form>
         </div>
     );

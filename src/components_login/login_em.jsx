@@ -14,15 +14,16 @@ const LoginEm = () => {
 
         try {
             const response = await axios.post('http://localhost:8080/login', { email, password });
-            const { token } = response.data.Data;
+            const { token, uid } = response.data;
 
             localStorage.setItem('authToken', token);
+            localStorage.setItem('uid', uid);
 
             // Redirige al perfil de usuario
-            navigate('/user-profile');
+            navigate('/gpracticas');
         } catch (error) {
             if (error.response) {
-                setError(error.response.data.Message || 'Error al iniciar sesión');
+                setError(error.response.data.error || 'Error al iniciar sesión');
             } else {
                 setError('Error de conexión');
             }
@@ -88,7 +89,6 @@ const LoginEm = () => {
                     </button>
                 </div>
 
-                {/* Botones uno encima del otro */}
                 <div className="flex flex-col items-center mb-4">
                     <button
                         type="submit"
