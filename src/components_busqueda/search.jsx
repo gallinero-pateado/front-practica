@@ -77,7 +77,6 @@ const PracticasList = () => {
     const handlePostulacionExitosa = () => {
         setShowPostulacion(false);
         fetchPracticas();
-
     };
 
     const filteredPracticas = practicas.filter(practica => {

@@ -9,10 +9,11 @@ Sprint3 en fase inicial el postularse a las practicas :c .
 
 
 ***he arreglado casi todo lo que me pidio el QA, a excepcion de que la pagina se pueda ver bien y sin recorte en los celulares***
-***por arreglar  edit-profile***
+***por arreglar  edit-profile y postulaciones***
 
 
 ***SE DEBE VERIFICAR EL CORREO SI O SI, LUEGO DE REGISTRARSE EN LA WEB***
+***SI HAY ERRORES EN EL CODIGO, PARAR EL CODIGO DEL BACK Y EJECUTARLO NUEVAMENTE***
 
 
 
