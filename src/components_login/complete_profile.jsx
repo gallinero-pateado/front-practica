@@ -26,7 +26,7 @@ const CompleteProfile = () => {
 
                 // Redirige si el perfil ya está completo
                 if (response.data.perfil_completado) {
-                    navigate('/user-profile');
+                    navigate('/search');
                 }
             } catch (error) {
                 console.error('Error al verificar la completación del perfil:', error);
@@ -81,7 +81,7 @@ const CompleteProfile = () => {
             });
 
             if (response.data.message === "Perfil actualizado correctamente") {
-                navigate('/user-profile'); // Redirigir a perfil de usuario
+                navigate('/search'); // Redirigir a perfil de usuario
             } else {
                 setError('Error al completar el perfil: ' + response.data.message);
             }

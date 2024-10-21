@@ -138,7 +138,9 @@ const Dpractica = () => {
                         <tr className="bg-[#0092BC]">
                             <th className="border p-2 border-gray text-white">ID</th>
                             <th className="border p-2 border-gray text-white">Título</th>
-                            <th className="border p-2 border-gray text-white">Empresa</th>
+                            <th className="border p-2 border-gray text-white">Descripcion</th>
+
+
                             <th className="border p-2 border-gray text-white">Acciones</th>
                         </tr>
                     </thead>
@@ -147,7 +149,9 @@ const Dpractica = () => {
                             <tr key={practica.Id} className="hover:bg-gray-100">
                                 <td className="border p-2 border-gray">{practica.Id}</td>
                                 <td className="border p-2 border-gray">{practica.Titulo}</td>
-                                <td className="border p-2 border-gray">{practica.Id_empresa}</td>
+                                <td className="border p-2 border-gray">{practica.Descripcion}</td>
+
+
                                 <td className="border p-2 border-gray">
                                     <button
                                         onClick={() => handleEdit(practica)}

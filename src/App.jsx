@@ -7,17 +7,22 @@ import LoginEm from './components_login/login_em'; //Login para empresa
 import RegisterEm from './components_login/register_em'; //Register para empresa
 import CompleteProfile from './components_login/complete_profile';
 import PasswordResetForm from './components_login/password_recovery';
-import Layout2 from './components_profile/layout2'; // Layout para el resto de cosas 
-import Layout3 from './components_crud/layout3'; // Nuevo Layout3
+
 import UserProfile from './components_profile/user-profile';
 import EditProfile from './components_profile/edit-profile';
 import Logout from './components_profile/logout';
+import Layout2 from './components_profile/layout2'; // Layout para el resto de cosas 
+
+import LogoutEm from './components_crud/logout-em';
+import Layout3 from './components_crud/layout3'; // Nuevo Layout3
 import Cpractica from './components_crud/cpractica'; // Componente para crear prácticas
 import Rpractica from './components_crud/rpractica'; // Componente para que los estudiantes lean prácticas
 import Dpractica from './components_crud/dpractica'; // Componente para eliminar y editar prácticas
 import Gpracticas from './components_crud/gpracticas'; // Componente para que las empresas lean prácticas
+
 import PracticasList from './components_busqueda/search';
-import LogoutEm from './components_crud/logout-em';
+import PostulacionPractica from './components_postulacion/postulacion_practica';
+
 
 
 const App = () => {
@@ -40,6 +45,9 @@ const App = () => {
         <Route path="/logout" element={<Layout2><Logout /></Layout2>} />
         <Route path="/rpractica" element={<Layout2><Rpractica /></Layout2>} />
         <Route path="/search" element={<Layout2><PracticasList /></Layout2>} />
+        <Route path="/postulacion_practica" element={<Layout2><PostulacionPractica /></Layout2>} />
+
+
         {/* Rutas CRUD para las prácticas utilizando Layout3 */}
         <Route path="/cpractica" element={<Layout3><Cpractica /></Layout3>} />
         <Route path="/upractica" element={<Layout3><Dpractica /></Layout3>} />

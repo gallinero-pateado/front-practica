@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Search, Filter, ChevronDown, X } from 'lucide-react';
+import PostulacionPractica from '../components_postulacion/postulacion_practica';
 
 const PracticasList = () => {
     const [practicas, setPracticas] = useState([]);
@@ -16,6 +17,8 @@ const PracticasList = () => {
         fecha_publicacion: '',
     });
     const [searchHistory, setSearchHistory] = useState([]);
+    const [selectedPracticaId, setSelectedPracticaId] = useState();
+    const [showPostulacion, setShowPostulacion] = useState(false);
 
     useEffect(() => {
         fetchPracticas();
@@ -64,6 +67,17 @@ const PracticasList = () => {
         setSearchHistory((prevHistory) => prevHistory.filter(term => term !== termToRemove));
         setSearchTerm('');
         fetchPracticas();
+    };
+
+    const handleApply = (practicaId) => {
+        setSelectedPracticaId(practicaId);
+        setShowPostulacion(true);
+    };
+
+    const handlePostulacionExitosa = () => {
+        setShowPostulacion(false);
+        fetchPracticas();
+
     };
 
     const filteredPracticas = practicas.filter(practica => {
@@ -257,6 +271,24 @@ const PracticasList = () => {
                     )}
                 </div>
             </div>
+
+            {/* Modal de Postulación */}
+            {showPostulacion && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                    <div className="bg-white p-4 rounded-lg max-w-md w-full">
+                        <PostulacionPractica
+                            practicaId={selectedPracticaId}
+                            onPostulacionExitosa={handlePostulacionExitosa}
+                        />
+                        <button
+                            onClick={() => setShowPostulacion(false)}
+                            className="mt-4 bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded w-full"
+                        >
+                            Cerrar
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
