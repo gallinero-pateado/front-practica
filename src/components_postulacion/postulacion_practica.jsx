@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { Send, AlertCircle, CheckCircle } from 'lucide-react';
 
-
 const PostulacionPractica = ({ practicaId, onPostulacionExitosa }) => {
     const [mensaje, setMensaje] = useState('');
     const [error, setError] = useState('');
@@ -21,7 +20,7 @@ const PostulacionPractica = ({ practicaId, onPostulacionExitosa }) => {
             }, {
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`
                 }
             });
 
@@ -65,6 +64,7 @@ const PostulacionPractica = ({ practicaId, onPostulacionExitosa }) => {
                     onChange={(e) => setMensaje(e.target.value)}
                     placeholder="Escribe tu mensaje de postulación aquí"
                     required
+                    maxLength={200} // Límite de caracteres
                     className="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none focus:border-blue-500"
                     rows="4"
                 />
@@ -83,7 +83,7 @@ const PostulacionPractica = ({ practicaId, onPostulacionExitosa }) => {
                 <button
                     type="submit"
                     disabled={loading}
-                    className={`mt-4 w-full flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    className={`mt-4 w-full flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-[#0092BC] hover:bg-[#A3D9D3] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0092BC] ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                     {loading ? (
                         'Enviando...'

@@ -123,7 +123,7 @@ const PracticasList = () => {
 
             <div className="flex flex-col lg:flex-row">
                 {/* Sección de búsqueda y filtros */}
-                <div className="lg:w-1/3 mb-4 lg:mb-0 mr-4">
+                <div className="lg:w-1/3 mb-4 lg:mb-0 mr-4 w-full">
                     <div className="bg-white shadow-md rounded-lg p-4">
                         <form onSubmit={handleSearch} className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-2 mb-4 w-full">
                             <input
@@ -132,6 +132,7 @@ const PracticasList = () => {
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 placeholder="Buscar prácticas..."
                                 className="flex-grow w-full p-2 border rounded-lg text-lg font-ubuntu"
+                                maxLength={50}
                             />
                             <div className="flex space-x-2 w-full sm:w-auto">
                                 <button type="submit" className="text-gray-400 p-2 w-full sm:w-auto">
@@ -172,6 +173,8 @@ const PracticasList = () => {
                                             onChange={handleFilterChange}
                                             className="w-full p-2 border rounded"
                                             placeholder="Ej. Santiago"
+                                            maxLength={30}
+
                                         />
                                     </div>
                                     <div>
@@ -243,10 +246,10 @@ const PracticasList = () => {
                 </div>
 
                 {/* Sección de resultados de búsqueda */}
-                <div className="lg:w-2/3 space-y-4">
+                <div className="lg:w-2/3 space-y-4 w-full">
                     {filteredPracticas.length > 0 ? (
                         filteredPracticas.map((practica) => (
-                            <div key={practica.ID} className="bg-white shadow-md rounded-lg p-4">
+                            <div key={practica.Id} className="bg-white shadow-md rounded-lg p-4">
                                 <h2 className="text-xl font-semibold mb-2">{practica.Titulo || 'Título no disponible'}</h2>
                                 <p className="text-gray-600 mb-2">Empresa: {practica.Id_Empresa || 'Empresa no disponible'}</p>
                                 <p className="text-gray-600 mb-4">Descripción: {practica.Descripcion || 'Descripción no disponible'}</p>
@@ -258,7 +261,7 @@ const PracticasList = () => {
                                     {practica.Fecha_publicacion && <p>Publicado: {new Date(practica.Fecha_publicacion).toLocaleDateString()}</p>}
                                 </div>
                                 <button
-                                    onClick={() => handleApply(practica.ID)}
+                                    onClick={() => handleApply(practica.Id)}
                                     className="mt-4 bg-[#0092BC] hover:bg-[#A3D9D3] active:bg-[#A3D9D3] text-white font-bold py-2 px-4 rounded"
                                 >
                                     Solicitar
