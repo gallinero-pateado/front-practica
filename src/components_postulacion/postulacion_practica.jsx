@@ -64,7 +64,7 @@ const PostulacionPractica = ({ practicaId, onPostulacionExitosa }) => {
                     onChange={(e) => setMensaje(e.target.value)}
                     placeholder="Escribe tu mensaje de postulación aquí"
                     required
-                    maxLength={200} // Límite de caracteres
+                    maxLength={150} // Límite de caracteres
                     className="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none focus:border-blue-500"
                     rows="4"
                 />

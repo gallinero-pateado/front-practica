@@ -19,6 +19,7 @@ const PracticasList = () => {
     const [searchHistory, setSearchHistory] = useState([]);
     const [selectedPracticaId, setSelectedPracticaId] = useState();
     const [showPostulacion, setShowPostulacion] = useState(false);
+    const [expandedPracticas, setExpandedPracticas] = useState({});
 
     useEffect(() => {
         fetchPracticas();
@@ -32,13 +33,10 @@ const PracticasList = () => {
             if (queryParams) {
                 url += `?${queryParams}`;
             }
-            console.log('Fetching URL:', url);
             const response = await axios.get(url);
-            console.log('Practicas cargadas:', response.data);
             setPracticas(response.data.practicas || response.data);
             setLoading(false);
         } catch (err) {
-            console.error('Error al obtener las prácticas:', err);
             setError('Error al obtener las prácticas');
             setLoading(false);
         }
@@ -79,18 +77,21 @@ const PracticasList = () => {
         fetchPracticas();
     };
 
+    const toggleDescription = (id) => {
+        setExpandedPracticas((prevState) => ({
+            ...prevState,
+            [id]: !prevState[id],
+        }));
+    };
+
     const filteredPracticas = practicas.filter(practica => {
         const matchesSearch =
             (practica.Titulo && practica.Titulo.toLowerCase().includes(searchTerm.toLowerCase())) ||
             (practica.Descripcion && practica.Descripcion.toLowerCase().includes(searchTerm.toLowerCase()));
 
         const matchesFilters = Object.entries(filters).every(([key, value]) => {
-            if (!value) return true; // Skip empty filters
+            if (!value) return true;
             const practicaValue = practica[key] || practica[key.charAt(0).toUpperCase() + key.slice(1)];
-
-            console.log('Valores de práctica:', practica); // Debugging
-            console.log('Valor del filtro:', value); // Debugging
-
             if (key === 'area_practica' || key === 'ubicacion') {
                 return practicaValue && practicaValue.toLowerCase() === value.toLowerCase();
             } else if (key === 'fecha_publicacion') {
@@ -98,7 +99,7 @@ const PracticasList = () => {
                 const filterMonth = parseInt(value, 10);
                 return practicaDate.getMonth() + 1 === filterMonth;
             } else if (key === 'jornada' || key === 'modalidad') {
-                return practicaValue && practicaValue.toLowerCase() === value.toLowerCase(); // Asegurando comparación correcta
+                return practicaValue && practicaValue.toLowerCase() === value.toLowerCase();
             } else {
                 return practicaValue && practicaValue.toLowerCase().includes(value.toLowerCase());
             }
@@ -106,8 +107,6 @@ const PracticasList = () => {
 
         return matchesSearch && matchesFilters;
     });
-
-    console.log('Filtered practicas:', filteredPracticas);
 
     if (loading) {
         return <div className="text-center py-4">Cargando prácticas...</div>;
@@ -132,7 +131,7 @@ const PracticasList = () => {
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 placeholder="Buscar prácticas..."
                                 className="flex-grow w-full p-2 border rounded-lg text-lg font-ubuntu"
-                                maxLength={50}
+                                maxLength={30}
                             />
                             <div className="flex space-x-2 w-full sm:w-auto">
                                 <button type="submit" className="text-gray-400 p-2 w-full sm:w-auto">
@@ -248,33 +247,56 @@ const PracticasList = () => {
                 {/* Sección de resultados de búsqueda */}
                 <div className="lg:w-2/3 space-y-4 w-full">
                     {filteredPracticas.length > 0 ? (
-                        filteredPracticas.map((practica) => (
-                            <div key={practica.Id} className="bg-white shadow-md rounded-lg p-4">
-                                <h2 className="text-xl font-semibold mb-2">{practica.Titulo || 'Título no disponible'}</h2>
-                                <p className="text-gray-600 mb-2">Empresa: {practica.Id_Empresa || 'Empresa no disponible'}</p>
-                                <p className="text-gray-600 mb-4">Descripción: {practica.Descripcion || 'Descripción no disponible'}</p>
-                                <div className="grid grid-cols-2 gap-2 text-sm text-gray-500">
-                                    {practica.Area_practica && <p>Área: {practica.Area_practica}</p>}
-                                    {practica.Ubicacion && <p>Ubicación: {practica.Ubicacion}</p>}
-                                    {practica.Jornada && <p>Jornada: {practica.Jornada}</p>}
-                                    {practica.Modalidad && <p>Modalidad: {practica.Modalidad}</p>}
-                                    {practica.Fecha_publicacion && <p>Publicado: {new Date(practica.Fecha_publicacion).toLocaleDateString()}</p>}
+                        filteredPracticas.map((practica) => {
+                            const showFullDescription = expandedPracticas[practica.Id] || false;
+                            const MAX_DESCRIPTION_LENGTH = 300;
+
+                            return (
+                                <div key={practica.Id} className="bg-white shadow-md rounded-lg p-4">
+                                    <h2 className="text-xl font-semibold mb-2">{practica.Titulo || 'Título no disponible'}</h2>
+                                    <p className="text-gray-600 mb-2">Empresa: {practica.Id_Empresa || 'Empresa no disponible'}</p>
+
+                                    <p className="text-gray-600 mb-4">
+                                        {showFullDescription || (practica.Descripcion || '').length <= MAX_DESCRIPTION_LENGTH
+                                            ? practica.Descripcion
+                                            : `${practica.Descripcion.slice(0, MAX_DESCRIPTION_LENGTH)}...`}
+                                        {(practica.Descripcion || '').length > MAX_DESCRIPTION_LENGTH && (
+                                            <button
+                                                onClick={() => toggleDescription(practica.Id)}
+                                                className="text-[#0092BC] hover:underline cursor-pointer p-0 bg-transparent border-none outline-none"
+                                            >
+                                                {showFullDescription ? 'Ver menos' : 'Ver más'}
+                                            </button>
+                                        )}
+                                    </p>
+
+                                    <div className="grid grid-cols-2 gap-2 text-sm text-gray-500">
+                                        {practica.Area_practica && <p>Área: {practica.Area_practica}</p>}
+                                        {practica.Ubicacion && <p>Ubicación: {practica.Ubicacion}</p>}
+                                        {practica.Jornada && <p>Jornada: {practica.Jornada}</p>}
+                                        {practica.Modalidad && <p>Modalidad: {practica.Modalidad}</p>}
+                                        {practica.Fecha_publicacion && <p>Publicado: {new Date(practica.Fecha_publicacion).toLocaleDateString()}</p>}
+                                    </div>
+
+                                    <div className="mt-4 flex space-x-2">
+                                        <button
+                                            onClick={() => handleApply(practica.Id)}
+                                            className="mt-4 bg-[#0092BC] hover:bg-[#A3D9D3] active:bg-[#A3D9D3] text-white font-bold py-2 px-4 rounded"
+                                        >
+                                            Solicitar
+                                        </button>
+                                    </div>
                                 </div>
-                                <button
-                                    onClick={() => handleApply(practica.Id)}
-                                    className="mt-4 bg-[#0092BC] hover:bg-[#A3D9D3] active:bg-[#A3D9D3] text-white font-bold py-2 px-4 rounded"
-                                >
-                                    Solicitar
-                                </button>
-                            </div>
-                        ))
+                            );
+                        })
                     ) : (
-                        <div className="text-center py-4">No se encontraron prácticas que coincidan con los criterios de búsqueda.</div>
+                        <p className="text-center">No se encontraron prácticas que coincidan con los filtros.</p>
                     )}
                 </div>
+
             </div>
 
-            {/* Modal de Postulación */}
+            {/* Modal de postulación */}
             {showPostulacion && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
                     <div className="bg-white p-4 rounded-lg max-w-md w-full">
