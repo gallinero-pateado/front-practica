@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { BellIcon } from '@heroicons/react/24/outline'; 
+import { BellIcon } from '@heroicons/react/24/outline';
 
 const NotificationBell = () => {
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [hasNewNotifications, setHasNewNotifications] = useState(true);
-  const [notificationToDelete, setNotificationToDelete] = useState(null);
 
   useEffect(() => {
     const mockData = [
@@ -28,7 +27,6 @@ const NotificationBell = () => {
 
   const handleDeleteNotification = (id) => {
     setNotifications(notifications.filter(notification => notification.id !== id));
-    setNotificationToDelete(null);
   };
 
   return (
@@ -51,31 +49,14 @@ const NotificationBell = () => {
               <li key={notification.id} className="p-2 border-b border-gray-200 text-black flex justify-between items-center">
                 <span>{notification.nom_estado_postulacion}</span>
                 <button 
-                  onClick={() => setNotificationToDelete(notification.id)}
-                  className="text-gray-500 hover:text-gray-700"
+                  onClick={() => handleDeleteNotification(notification.id)}
+                  className="text-red-500 hover:text-red-700 font-bold"
                 >
-                  &#x22EE; 
+                  &times;
                 </button>
               </li>
             ))}
           </ul>
-        </div>
-      )}
-      {notificationToDelete !== null && (
-        <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-lg p-4">
-          <p className="text-black mb-4">Eliminar notificación</p>
-          <button 
-            onClick={() => handleDeleteNotification(notificationToDelete)}
-            className="bg-red-600 text-white px-3 py-2 rounded font-bold text-lg hover:bg-red-700 transition duration-300"
-          >
-            Confirmar
-          </button>
-          <button 
-            onClick={() => setNotificationToDelete(null)}
-            className="ml-2 bg-gray-300 text-black px-3 py-2 rounded font-bold text-lg hover:bg-gray-400 transition duration-300"
-          >
-            Cancelar
-          </button>
         </div>
       )}
     </div>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X, ChevronRight } from 'lucide-react';
+import NotificationBell from '../components_notifications/NotificationBell'; // Componente de campana para notificaciones
 
 const Layout2 = ({ children }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -15,12 +16,17 @@ const Layout2 = ({ children }) => {
             <header className="bg-[#0092BC] text-white p-6 relative z-20">
                 <div className="flex justify-between items-center mx-auto">
                     <Link to="/search" className="text-5xl font-bold italic">ULINK</Link>
-                    <button
-                        onClick={toggleMenu}
-                        className="p-2 bg-[#DAEDF2] rounded-full"
-                    >
-                        {isMenuOpen ? <X color="#0092BC" size={32} /> : <Menu color="#0092BC" size={32} />}
-                    </button>
+                    
+                    {/* Notificación y botón de menú */}
+                    <div className="flex items-center space-x-4">
+                        <NotificationBell /> {/* Ícono de campana para notificaciones */}
+                        <button
+                            onClick={toggleMenu}
+                            className="p-2 bg-[#DAEDF2] rounded-full"
+                        >
+                            {isMenuOpen ? <X color="#0092BC" size={32} /> : <Menu color="#0092BC" size={32} />}
+                        </button>
+                    </div>
                 </div>
             </header>
 
@@ -31,6 +37,7 @@ const Layout2 = ({ children }) => {
                     <Link to="/search" className="block py-4 px-2 hover:bg-[#DAEDF2] hover:text-[#0092BC] rounded-md">Buscar</Link>
                     <Link to="/logout" className="block py-4 px-2 hover:bg-[#DAEDF2] hover:text-[#0092BC] rounded-md">Salir</Link>
                     <Link to="/foro" className="block py-4 px-2 hover:bg-[#DAEDF2] hover:text-[#0092BC] rounded-md">Foro</Link>
+                    
                     {/* Icono de Cierre */}
                     <button onClick={toggleMenu} className="mt-auto self-end hover:text-[#DAEDF2] transition duration-300">
                         <ChevronRight size={24} />
@@ -54,4 +61,5 @@ const Layout2 = ({ children }) => {
 };
 
 export default Layout2;
+
 
