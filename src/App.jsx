@@ -25,6 +25,7 @@ import PostulacionPractica from './components_postulacion/postulacion_practica';
 
 
 
+
 const App = () => {
   return (
     <Router>

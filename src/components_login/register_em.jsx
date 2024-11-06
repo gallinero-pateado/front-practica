@@ -6,7 +6,8 @@ const RegisterEm = () => {
     const [formData, setFormData] = useState({
         Nombre_empresa: '',
         Email_empresa: '',
-        Password: ''
+        Password: '',
+        ConfirmPasword: ''
     });
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
@@ -21,6 +22,13 @@ const RegisterEm = () => {
         e.preventDefault();
         setError('');
         setSuccess('');
+
+        // Verificar que las contraseñas coincidan
+        if (formData.Password !== formData.ConfirmPassword) {
+            setError('Las contraseñas no coinciden');
+            return;
+        }
+
 
         try {
             const response = await axios.post('http://localhost:8080/register_empresa', {
@@ -97,6 +105,23 @@ const RegisterEm = () => {
                             type="password"
                             placeholder="******************"
                             value={formData.Password}
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
+
+                    {/* Confirmar Contraseña */}
+                    <div className="mb-6">
+                        <label className="block text-[#0092BC] text-sm font-bold mb-2" htmlFor="ConfirmPassword">
+                            Confirmar Contraseña
+                        </label>
+                        <input
+                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-[#0092BC]"
+                            id="ConfirmPassword"
+                            name="ConfirmPassword"
+                            type="password"
+                            placeholder="******************"
+                            value={formData.ConfirmPassword}
                             onChange={handleChange}
                             required
                         />

@@ -178,7 +178,17 @@ const Dpractica = () => {
                             <label htmlFor={key} className="block text-sm font-medium text-gray-700">
                                 {key.charAt(0).toUpperCase() + key.slice(1)}
                             </label>
-                            {key.includes('Fecha') ? (
+                            {key === 'Ubicacion' ? ( // Verifica si es el campo de Ubicación
+                                <input
+                                    type="text"
+                                    id={key}
+                                    name={key}
+                                    value={formData[key]}
+                                    onChange={handleChange}
+                                    maxLength={30} // Límite de 30 caracteres
+                                    className="mt-1 p-2 border rounded w-full"
+                                />
+                            ) : key.includes('Fecha') ? (
                                 <input
                                     type="date"
                                     id={key}

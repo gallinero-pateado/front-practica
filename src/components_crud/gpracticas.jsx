@@ -16,23 +16,23 @@ const Gpracticas = () => {
     };
 
     return (
-        <div className="container mx-auto p-4 bg-[#DAEDF2] font-ubuntu">
-            <h1 className="text-3xl font-bold mb-4">Gestión de Prácticas</h1>
-            <div className="mb-4">
+        <div className="container mx-auto p-4 bg-[#DAEDF2] font-ubuntu max-w-lg md:max-w-2xl lg:max-w-3xl">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-6 text-center">Gestión de Prácticas</h1>
+            <div className="mb-4 flex flex-col md:flex-row justify-center">
                 <button
                     onClick={() => setActiveComponent('lista')}
-                    className="mr-2 px-4 py-2 bg-[#0092BC] text-white rounded transition-colors duration-300 hover:bg-[#A3D9D3]"
+                    className="mr-0 md:mr-2 mb-2 md:mb-0 px-4 py-2 bg-[#0092BC] text-white rounded transition-colors duration-300 hover:bg-[#A3D9D3] focus:outline-none focus:ring-2 focus:ring-[#005F7F]"
                 >
                     Ver Prácticas
                 </button>
                 <button
                     onClick={() => setActiveComponent('crear')}
-                    className="px-4 py-2 bg-[#A3D9D3] text-white rounded transition-colors duration-300 hover:bg-[#0092BC]"
+                    className="px-4 py-2 bg-[#A3D9D3] text-white rounded transition-colors duration-300 hover:bg-[#0092BC] focus:outline-none focus:ring-2 focus:ring-[#005F7F]"
                 >
                     Crear Práctica
                 </button>
             </div>
-            {renderComponent()}
+            <div className="w-full">{renderComponent()}</div>
         </div>
     );
 };

@@ -3,6 +3,45 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 
 const CompleteProfile = () => {
+
+    ///LISTADO CON CARRERAS DE LA UTEM///
+
+    const carrerasList = [
+        { id: 1, nombre: "Ingeniería en Informatica" },
+        { id: 2, nombre: "Ingeniería Civil Biomedica" },
+        { id: 3, nombre: "Bachillerato en Ciencias de la Ingenieria" },
+        { id: 4, nombre: "Ingenieria Civil en Computacion, mencion Informatica" },
+        { id: 5, nombre: "Ingenieria Civil Industrial" },
+        { id: 6, nombre: "Ingenieria Civil en Ciencias de Datos" },
+        { id: 7, nombre: "Ingenieria Civil en Electronica" },
+        { id: 8, nombre: "Ingenieria Civil en Mecanica" },
+        { id: 9, nombre: "Ingenieria en Geomensura" },
+        { id: 10, nombre: "Ingenieria Industrial" },
+        { id: 11, nombre: "Dibujante Proyectista" },
+        { id: 12, nombre: "Diseño en Comunicacion Visual" },
+        { id: 13, nombre: "Diseño Industrial" },
+        { id: 14, nombre: "Trabajo Social" },
+        { id: 15, nombre: "Ingenieria Civil Quimica" },
+        { id: 16, nombre: "Ingeniería Civil Matematica" },
+        { id: 17, nombre: "Quimica y Farmacia" },
+        { id: 18, nombre: "Ingenieria en Biotecnologia" },
+        { id: 19, nombre: "Ingenieria en Alimentos" },
+        { id: 20, nombre: "Quimica Industrial" },
+        { id: 21, nombre: "Arquitectura" },
+        { id: 22, nombre: "Ingenieria Civil en Obras Civiles" },
+        { id: 23, nombre: "Ingenieria en Construccion" },
+        { id: 24, nombre: "Ingenieria Civil en Prevencion de Riesgos y Medioambiente" },
+        { id: 25, nombre: "Administracion Publica" },
+        { id: 26, nombre: "Bibliotecologia y Documentacion" },
+        { id: 27, nombre: "Contador Publico y Auditor" },
+        { id: 28, nombre: "Ingenieria Comercial" },
+        { id: 29, nombre: "Ingenieria en Comercio Internacional" },
+        { id: 30, nombre: "Ingenieria en Gestion Turistica" },
+        { id: 31, nombre: "Derecho" },
+        { id: 32, nombre: "Psicologia" }
+    ];
+
+
     const [formData, setFormData] = useState({
         fecha_nacimiento: '',
         ano_ingreso: '',
@@ -24,7 +63,6 @@ const CompleteProfile = () => {
                     }
                 });
 
-                // Redirige si el perfil ya está completo
                 if (response.data.perfil_completado) {
                     navigate('/search');
                 }
@@ -51,7 +89,6 @@ const CompleteProfile = () => {
         try {
             let fotoPerfilUrl = '';
 
-            // Si hay foto de perfil, se sube primero
             if (formData.fotoPerfil) {
                 const imageFormData = new FormData();
                 imageFormData.append('file', formData.fotoPerfil);
@@ -63,7 +100,7 @@ const CompleteProfile = () => {
                     }
                 });
 
-                fotoPerfilUrl = uploadResponse.data.url; // Obtiene la URL de la imagen subida
+                fotoPerfilUrl = uploadResponse.data.url;
             }
 
             const profileFormData = {
@@ -81,7 +118,7 @@ const CompleteProfile = () => {
             });
 
             if (response.data.message === "Perfil actualizado correctamente") {
-                navigate('/search'); // Redirigir a perfil de usuario
+                navigate('/search');
             } else {
                 setError('Error al completar el perfil: ' + response.data.message);
             }
@@ -109,7 +146,7 @@ const CompleteProfile = () => {
                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
                         id="fecha_nacimiento"
                         name="fecha_nacimiento"
-                        type="text"
+                        type="date"
                         value={formData.fecha_nacimiento}
                         onChange={handleChange}
                         required
@@ -124,7 +161,9 @@ const CompleteProfile = () => {
                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
                         id="ano_ingreso"
                         name="ano_ingreso"
-                        type="text"
+                        type="number"
+                        min="1900"
+                        max={new Date().getFullYear()}
                         value={formData.ano_ingreso}
                         onChange={handleChange}
                         required
@@ -133,18 +172,23 @@ const CompleteProfile = () => {
 
                 <div className="mb-6">
                     <label className="block text-[#0092BC] text-sm font-bold mb-2" htmlFor="id_carrera">
-                        ID de Carrera
+                        Carrera
                     </label>
-                    <input
+                    <select
                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
                         id="id_carrera"
                         name="id_carrera"
-                        type="number"
-                        placeholder="Ingrese el ID de su carrera"
                         value={formData.id_carrera}
                         onChange={handleChange}
                         required
-                    />
+                    >
+                        <option value="">Seleccione una carrera</option>
+                        {carrerasList.map((carrera) => (
+                            <option key={carrera.id} value={carrera.id}>
+                                {carrera.nombre}
+                            </option>
+                        ))}
+                    </select>
                 </div>
 
                 <div className="mb-6">

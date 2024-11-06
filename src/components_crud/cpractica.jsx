@@ -25,19 +25,33 @@ const Cpractica = () => {
 
     const validate = () => {
         let tempErrors = {};
+        const { Fecha_inicio, Fecha_fin, Fecha_expiracion } = formData;
+
         if (!formData.Titulo) tempErrors.Titulo = "El título es requerido";
         if (!formData.Descripcion) tempErrors.Descripcion = "La descripción es requerida";
         if (!formData.Id_Empresa) tempErrors.Id_Empresa = "El ID de la empresa es requerido";
         if (!formData.Ubicacion) tempErrors.Ubicacion = "La ubicación es requerida";
-        if (!formData.Fecha_inicio) tempErrors.Fecha_inicio = "La fecha de inicio es requerida";
-        if (!formData.Fecha_fin) tempErrors.Fecha_fin = "La fecha de fin es requerida";
+        if (!Fecha_inicio) tempErrors.Fecha_inicio = "La fecha de inicio es requerida";
+        if (!Fecha_fin) tempErrors.Fecha_fin = "La fecha de fin es requerida";
         if (!formData.Requisitos) tempErrors.Requisitos = "Los requisitos son requeridos";
-        if (!formData.Fecha_expiracion) tempErrors.Fecha_expiracion = "La fecha de expiración es requerida";
+        if (!Fecha_expiracion) tempErrors.Fecha_expiracion = "La fecha de expiración es requerida";
         if (!formData.Area_practica) tempErrors.Area_practica = "El área de práctica es requerida";
+
+        // Validar que las fechas sean válidas
+        const today = new Date();
+        if (Fecha_inicio && new Date(Fecha_inicio) < today) {
+            tempErrors.Fecha_inicio = "La fecha de inicio no puede ser anterior a hoy.";
+        }
+        if (Fecha_fin && new Date(Fecha_fin) < new Date(Fecha_inicio)) {
+            tempErrors.Fecha_fin = "La fecha de fin no puede ser anterior a la fecha de inicio.";
+        }
+        if (Fecha_expiracion && new Date(Fecha_expiracion) < new Date(Fecha_fin)) {
+            tempErrors.Fecha_expiracion = "La fecha de expiración no puede ser anterior a la fecha de fin.";
+        }
+
         setErrors(tempErrors);
         return Object.keys(tempErrors).length === 0;
     };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (validate()) {
@@ -143,6 +157,7 @@ const Cpractica = () => {
                         value={formData.Ubicacion}
                         onChange={handleChange}
                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                        maxLength={30}
                     />
                     {errors.Ubicacion && <span className="text-red-500 text-xs">{errors.Ubicacion}</span>}
                 </div>
