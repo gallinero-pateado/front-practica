@@ -26,6 +26,8 @@ import PostulacionPractica from './components_postulacion/postulacion_practica';
 
 import TemasList from './components_foro/leerforo';
 import CrearTemaForm from './components_foro/creartema';
+import CommentEdit from './components_foro/actualizarcomentario';
+import CrearComentario from './components_foro/crearcomentario';
 
 
 const App = () => {
@@ -51,6 +53,8 @@ const App = () => {
         <Route path="/postulacion_practica" element={<Layout2><PostulacionPractica /></Layout2>} />
         <Route path="/leerforo" element={<Layout2><TemasList /></Layout2>} />
         <Route path="/creartema" element={<Layout2><CrearTemaForm /></Layout2>} />
+        <Route path="/actualizarcomentarios" element={<Layout2><CommentEdit /></Layout2>} />
+        <Route path="/crearcomentario" element={<Layout2><CrearComentario /></Layout2>} />
 
 
 

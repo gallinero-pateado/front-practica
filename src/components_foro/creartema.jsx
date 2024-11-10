@@ -8,12 +8,14 @@ const CrearTemaForm = ({ onClose, onTemaCreado }) => {
     });
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(true); // Cambié la inicialización a true
 
     useEffect(() => {
         // Verificar si existe el token al montar el componente
         const token = localStorage.getItem('authToken');
-        setIsAuthenticated(!!token);
+        if (!token) {
+            setIsAuthenticated(false);
+        }
     }, []);
 
     const handleChange = (e) => {
@@ -82,9 +84,10 @@ const CrearTemaForm = ({ onClose, onTemaCreado }) => {
         return (
             <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
                 <div className="text-center">
-                    <p className="text-red-500 mb-4">Debes iniciar sesión para crear un tema</p>
+                    <p className="text-red-500 mb-4">Tu sesión ha expirado. Por favor, inicia sesión nuevamente.</p>
+                    {/* Puedes mantener un enlace a la página de login si deseas */}
                     <a
-                        href="/login" // Ajusta esta ruta según tu configuración
+                        href="/" // Ajusta esta ruta según tu configuración
                         className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
                     >
                         Iniciar Sesión
