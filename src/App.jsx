@@ -21,9 +21,11 @@ import Dpractica from './components_crud/dpractica'; // Componente para eliminar
 import Gpracticas from './components_crud/gpracticas'; // Componente para que las empresas lean prácticas
 
 import PracticasList from './components_busqueda/search';
+
 import PostulacionPractica from './components_postulacion/postulacion_practica';
 
-
+import TemasList from './components_foro/leerforo';
+import CrearTemaForm from './components_foro/creartema';
 
 
 const App = () => {
@@ -47,6 +49,9 @@ const App = () => {
         <Route path="/rpractica" element={<Layout2><Rpractica /></Layout2>} />
         <Route path="/search" element={<Layout2><PracticasList /></Layout2>} />
         <Route path="/postulacion_practica" element={<Layout2><PostulacionPractica /></Layout2>} />
+        <Route path="/leerforo" element={<Layout2><TemasList /></Layout2>} />
+        <Route path="/creartema" element={<Layout2><CrearTemaForm /></Layout2>} />
+
 
 
         {/* Rutas CRUD para las prácticas utilizando Layout3 */}

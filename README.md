@@ -7,7 +7,7 @@ Sprint2 conectado al backend con exito. Busqueda de practicas y filtros funciona
 
 Sprint3 conectado al backend sin problema. Postulacion a practica funciona correctamente, el usuario no puede postular 2 veces a la misma practica.
 
-Sprint4 aun no disponible uwu.
+Sprint4 se agrego la funcionalidad de leer comentarios y leer temas, se esta modificando y probando como esta crear tema. Falta por terminar la conexion de crea/editar/eliminar comentarios
 
 
 **ARREGLE 6/11 LO QUE ME PIDIO EL QA, 3 DE LAS QUE ME FALTAN TIENEN QUE VER CON LAS PALETAS DE COLORES E ICONOGRAFIA, MODIFICARLO CUANDO SE AGRANDE LA PALETA Y SE DEFINA BIEN LOS ICONOS, FALTA CORREGIR 2, QUE ES EL RESTO**

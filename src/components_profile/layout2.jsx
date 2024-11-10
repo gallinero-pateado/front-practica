@@ -1,13 +1,20 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Menu, X, ChevronRight } from 'lucide-react';
 
 const Layout2 = ({ children }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const navigate = useNavigate();
+    const location = useLocation();
 
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);
     };
+
+    // Cierra el menú desplegable al cambiar de ruta
+    useEffect(() => {
+        setIsMenuOpen(false);
+    }, [location.pathname]);
 
     return (
         <div className="flex flex-col min-h-screen bg-[#DAEDF2] font-ubuntu">
@@ -29,12 +36,16 @@ const Layout2 = ({ children }) => {
                 <div className="fixed top-0 right-0 h-full w-64 bg-[#0092BC] text-white shadow-lg z-30 flex flex-col p-6 transition-transform duration-300">
                     <Link to="/user-profile" className="block py-4 px-2 hover:bg-[#DAEDF2] hover:text-[#0092BC] rounded-md">Perfil</Link>
                     <Link to="/search" className="block py-4 px-2 hover:bg-[#DAEDF2] hover:text-[#0092BC] rounded-md">Buscar</Link>
+                    <Link to="/leerforo" className="block py-4 px-2 hover:bg-[#DAEDF2] hover:text-[#0092BC] rounded-md">Foro</Link>
                     <Link to="/logout" className="block py-4 px-2 hover:bg-[#DAEDF2] hover:text-[#0092BC] rounded-md">Salir</Link>
-                    <Link to="/foro" className="block py-4 px-2 hover:bg-[#DAEDF2] hover:text-[#0092BC] rounded-md">Foro</Link>
+
                     {/* Icono de Cierre */}
-                    <button onClick={toggleMenu} className="mt-auto self-end hover:text-[#DAEDF2] transition duration-300">
-                        <ChevronRight size={24} />
-                    </button>
+                    <ChevronRight
+                        onClick={toggleMenu}
+                        className="mt-auto self-end cursor-pointer hover:text-[#DAEDF2] transition duration-300"
+                        size={24}
+                        color="white"
+                    />
                 </div>
             )}
 
