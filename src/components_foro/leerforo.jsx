@@ -3,6 +3,21 @@ import { MessageSquare, Trash2, Edit, Reply, ChevronDown, ChevronUp } from 'luci
 import CrearTemaForm from './creartema';
 import CommentEdit from './actualizarcomentario';
 import CrearComentario from './crearcomentario';
+import ReplyComment from './respondercomentario';
+
+// Función de utilidad para formatear fechas de forma segura
+const formatDate = (dateString) => {
+    try {
+        const date = new Date(dateString);
+        // Verificar si la fecha es válida
+        if (isNaN(date.getTime())) {
+            return 'Fecha no disponible';
+        }
+        return date.toLocaleString();
+    } catch (error) {
+        return 'Fecha no disponible';
+    }
+};
 
 const Comentario = ({
     comentario,
@@ -20,91 +35,97 @@ const Comentario = ({
         setMostrarFormRespuesta(!mostrarFormRespuesta);
     };
 
-    // Ordenar las respuestas por fecha de creación (más antiguas primero)
-    const respuestasOrdenadas = comentario.respuestas?.sort(
-        (a, b) => new Date(a.fechaCreacion) - new Date(b.fechaCreacion)
-    );
-
     return (
-        <div className={`rounded-lg ${nivel > 0 ? 'ml-6 mt-2' : ''}`}>
-            <div className={`bg-gray-50 p-3 rounded-lg ${nivel > 0 ? 'border-l-2 border-blue-200' : ''}`}>
-                <div className="mb-2">
-                    <p className="text-sm text-gray-600">
-                        Por: {comentario.autor}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                        {new Date(comentario.fechaCreacion).toLocaleString()}
-                    </p>
-                </div>
+        <div className="w-full">
+            <div className={`
+                rounded-lg 
+                ${nivel > 0 ? 'ml-8 mt-2' : 'mt-2'}
+                ${nivel > 0 ? 'border-l-2 border-[#A3D9D3]' : ''}
+            `}>
+                <div className="bg-white p-3 rounded-lg hover:bg-[#DAEDF2]/10 transition-colors">
+                    <div className="mb-2">
+                        <p className="text-sm text-[#1D4157] font-medium">
+                            Por: {comentario.autor}
+                        </p>
+                        <p className="text-xs text-[#1D4157]/70">
+                            {formatDate(comentario.fechaCreacion)}
+                        </p>
+                    </div>
 
-                <CommentEdit
-                    commentId={comentario.id}
-                    initialContent={comentario.contenido}
-                    onUpdateSuccess={onUpdateSuccess}
-                />
-
-                <div className="flex gap-2 justify-end mt-2">
-                    <button
-                        onClick={handleResponderClick}
-                        className="p-1 text-blue-600 hover:text-blue-800 rounded-full hover:bg-blue-50"
-                        title="Responder"
-                    >
-                        <Reply className="w-4 h-4" />
-                    </button>
-                    <button
-                        onClick={(e) => onEliminar(e, comentario.id)}
-                        className="p-1 text-red-600 hover:text-red-800 rounded-full hover:bg-red-50"
-                        title="Eliminar"
-                    >
-                        <Trash2 className="w-4 h-4" />
-                    </button>
-                    {respuestasOrdenadas?.length > 0 && (
-                        <button
-                            onClick={() => setMostrarRespuestas(!mostrarRespuestas)}
-                            className="p-1 text-gray-600 hover:text-gray-800 rounded-full hover:bg-gray-50"
-                            title={mostrarRespuestas ? "Ocultar respuestas" : "Mostrar respuestas"}
-                        >
-                            {mostrarRespuestas ? (
-                                <ChevronUp className="w-4 h-4" />
-                            ) : (
-                                <ChevronDown className="w-4 h-4" />
-                            )}
-                        </button>
-                    )}
-                </div>
-            </div>
-
-            {mostrarFormRespuesta && (
-                <div className="ml-6 mt-2">
-                    <CrearComentario
-                        temaId={temaId}
-                        parentId={comentario.id}
-                        onComentarioCreado={(nuevoComentario) => {
-                            onResponder(temaId, nuevoComentario, comentario.id);
-                            setMostrarFormRespuesta(false);
-                        }}
-                    />
-                </div>
-            )}
-
-            {mostrarRespuestas && respuestasOrdenadas?.length > 0 && (
-                <div className="space-y-2">
-                    {respuestasOrdenadas.map(respuesta => (
-                        <Comentario
-                            key={respuesta.id}
-                            comentario={respuesta}
-                            onEliminar={onEliminar}
-                            onResponder={onResponder}
+                    <div className="mt-2 text-[#1D4157]">
+                        <CommentEdit
+                            commentId={comentario.id}
+                            initialContent={comentario.contenido}
                             onUpdateSuccess={onUpdateSuccess}
-                            nivel={nivel + 1}
-                            temaId={temaId}
                         />
-                    ))}
+                    </div>
+
+                    <div className="flex gap-2 justify-end mt-2 items-center">
+                        <button
+                            onClick={handleResponderClick}
+                            className="p-1 text-[#6B46C1] hover:text-[#6B46C1]/80 rounded-full hover:bg-[#6B46C1]/10 transition-colors"
+                            title="Responder"
+                        >
+                            <Reply className="w-4 h-4" />
+                        </button>
+                        <button
+                            onClick={(e) => onEliminar(e, comentario.id)}
+                            className="p-1 text-[#FFD166] hover:text-[#FFD166]/80 rounded-full hover:bg-[#FFD166]/10 transition-colors"
+                            title="Eliminar"
+                        >
+                            <Trash2 className="w-4 h-4" />
+                        </button>
+                        {comentario.respuestas?.length > 0 && (
+                            <button
+                                onClick={() => setMostrarRespuestas(!mostrarRespuestas)}
+                                className="p-1 text-[#0092BC] hover:text-[#0092BC]/80 rounded-full hover:bg-[#0092BC]/10 transition-colors"
+                                title={mostrarRespuestas ? "Ocultar respuestas" : "Mostrar respuestas"}
+                            >
+                                {mostrarRespuestas ? (
+                                    <ChevronUp className="w-4 h-4" />
+                                ) : (
+                                    <ChevronDown className="w-4 h-4" />
+                                )}
+                            </button>
+                        )}
+                    </div>
                 </div>
-            )}
+
+                {mostrarFormRespuesta && (
+                    <div className="ml-8 mt-2">
+                        <div className="bg-white p-3 rounded-lg shadow-sm">
+                            <ReplyComment
+                                temaId={temaId}
+                                comentarioPadreId={comentario.id}
+                                onComentarioCreado={(nuevoComentario) => {
+                                    onResponder(temaId, nuevoComentario, comentario.id);
+                                    setMostrarFormRespuesta(false);
+                                }}
+                            />
+                        </div>
+                    </div>
+                )}
+
+                {mostrarRespuestas && comentario.respuestas && comentario.respuestas.length > 0 && (
+                    <div className="w-full">
+                        {comentario.respuestas.map(respuesta => (
+                            <Comentario
+                                key={respuesta.id}
+                                comentario={respuesta}
+                                onEliminar={onEliminar}
+                                onResponder={onResponder}
+                                onUpdateSuccess={onUpdateSuccess}
+                                nivel={nivel + 1}
+                                temaId={temaId}
+                            />
+                        ))}
+                    </div>
+                )}
+            </div>
         </div>
     );
 };
+
 
 const TemasList = () => {
     const [temas, setTemas] = useState([]);
@@ -114,41 +135,51 @@ const TemasList = () => {
     const [loading, setLoading] = useState(true);
 
     const organizarComentarios = (comentarios) => {
-        // Primero ordenamos todos los comentarios por fecha (más antiguos primero)
-        const comentariosOrdenados = [...comentarios].sort(
-            (a, b) => new Date(a.fechaCreacion) - new Date(b.fechaCreacion)
-        );
+        // Crear un mapa de todos los comentarios
+        const comentariosPorId = new Map();
 
-        // Crear un mapa de todos los comentarios por ID
-        const comentariosPorId = {};
-        comentariosOrdenados.forEach(comentario => {
-            comentariosPorId[comentario.id] = {
+        // Inicializar cada comentario con un array vacío de respuestas
+        comentarios.forEach(comentario => {
+            comentariosPorId.set(comentario.id, {
                 ...comentario,
                 respuestas: []
-            };
+            });
         });
 
-        // Organizar los comentarios en su estructura jerárquica
+        // Comentarios raíz (sin padre)
         const comentariosRaiz = [];
-        comentariosOrdenados.forEach(comentario => {
+
+        // Organizar la estructura jerárquica
+        comentarios.forEach(comentario => {
+            const comentarioActual = comentariosPorId.get(comentario.id);
+
             if (comentario.parentId) {
-                const padre = comentariosPorId[comentario.parentId];
+                // Si tiene padre, agregar como respuesta al padre
+                const padre = comentariosPorId.get(comentario.parentId);
                 if (padre) {
-                    // Mantener el orden cronológico en las respuestas
-                    padre.respuestas.push(comentariosPorId[comentario.id]);
-                    padre.respuestas.sort((a, b) =>
-                        new Date(a.fechaCreacion) - new Date(b.fechaCreacion)
-                    );
+                    padre.respuestas.push(comentarioActual);
                 }
             } else {
-                comentariosRaiz.push(comentariosPorId[comentario.id]);
+                // Si no tiene padre, es un comentario raíz
+                comentariosRaiz.push(comentarioActual);
             }
         });
 
-        // Ordenar los comentarios raíz por fecha (más antiguos primero)
+        // Función recursiva para ordenar las respuestas por fecha
+        const ordenarRespuestasPorFecha = (comentario) => {
+            if (comentario.respuestas && comentario.respuestas.length > 0) {
+                comentario.respuestas.sort((a, b) =>
+                    new Date(a.fechaCreacion) - new Date(b.fechaCreacion)
+                );
+                comentario.respuestas.forEach(ordenarRespuestasPorFecha);
+            }
+        };
+
+        // Ordenar comentarios raíz y sus respuestas
         comentariosRaiz.sort((a, b) =>
             new Date(a.fechaCreacion) - new Date(b.fechaCreacion)
         );
+        comentariosRaiz.forEach(ordenarRespuestasPorFecha);
 
         return comentariosRaiz;
     };
@@ -160,7 +191,6 @@ const TemasList = () => {
                 throw new Error('Error al cargar los temas');
             }
             let data = await response.json();
-            // Ordenar temas por fecha de creación (más recientes primero)
             data.sort((a, b) => new Date(b.fechaCreacion) - new Date(a.fechaCreacion));
             setTemas(data);
         } catch (err) {
@@ -228,9 +258,11 @@ const TemasList = () => {
                 throw new Error(errorData.error || 'Error al eliminar el comentario');
             }
 
-            // Recargar los comentarios del tema actual para mantener la sincronización
-            Object.keys(comentariosPorTema).forEach(temaId => {
-                cargarComentarios(temaId);
+            // Recargar los comentarios de todos los temas expandidos
+            Object.keys(temasExpandidos).forEach(temaId => {
+                if (temasExpandidos[temaId]) {
+                    cargarComentarios(temaId);
+                }
             });
 
             alert('Comentario eliminado exitosamente');
@@ -240,90 +272,81 @@ const TemasList = () => {
         }
     };
 
-    const handleResponder = (temaId, nuevoComentario, parentId) => {
-        cargarComentarios(temaId);
+    const handleResponder = async (temaId) => {
+        await cargarComentarios(temaId);
     };
 
-    const handleComentarioActualizado = (temaId, comentarioActualizado) => {
-        cargarComentarios(temaId);
+    const handleComentarioActualizado = async (temaId) => {
+        await cargarComentarios(temaId);
     };
 
     const handleTemaCreado = (nuevoTema) => {
         setTemas(prev => [nuevoTema, ...prev]);
     };
 
-    const handleComentarioCreado = (temaId, nuevoComentario) => {
-        cargarComentarios(temaId);
+    const handleComentarioCreado = async (temaId) => {
+        await cargarComentarios(temaId);
     };
-
-    if (loading) return <div className="flex justify-center items-center min-h-screen"><p className="text-lg">Cargando temas...</p></div>;
-    if (error) return <div className="flex justify-center items-center min-h-screen"><p className="text-red-500">Error: {error}</p></div>;
+    if (loading) return <div className="flex justify-center items-center min-h-screen bg-[#DAEDF2]"><p className="text-[#1D4157] text-lg">Cargando temas...</p></div>;
+    if (error) return <div className="flex justify-center items-center min-h-screen bg-[#DAEDF2]"><p className="text-red-500">Error: {error}</p></div>;
 
     return (
-        <div className="max-w-4xl mx-auto p-6">
-            <h1 className="text-3xl font-bold mb-6">Foro de Discusión</h1>
-
-            <CrearTemaForm
-                onClose={() => { }}
-                onTemaCreado={handleTemaCreado}
-            />
-
-            <div className="space-y-4 mt-6">
-                {temas.map(tema => (
-                    <div
-                        key={tema.id}
-                        className="border rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow bg-white"
-                    >
-                        <div className="flex items-center justify-between">
-                            <div className="flex-grow">
-                                <h2 className="text-xl font-semibold">{tema.titulo}</h2>
-                                <p className="text-gray-600 mt-1">{tema.descripcion}</p>
-                                <p className="text-xs text-gray-500 mt-1">
-                                    Creado el: {new Date(tema.fechaCreacion).toLocaleString()}
-                                </p>
-                            </div>
-                            <button
-                                onClick={(e) => toggleComentarios(e, tema.id)}
-                                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                                title="Ver comentarios"
-                            >
-                                <MessageSquare className="w-5 h-5 text-gray-500" />
-                            </button>
-                        </div>
-
-                        {temasExpandidos[tema.id] && (
-                            <div className="mt-4 space-y-3">
-                                <CrearComentario
-                                    temaId={tema.id}
-                                    onComentarioCreado={(nuevoComentario) =>
-                                        handleComentarioCreado(tema.id, nuevoComentario)
-                                    }
-                                />
-
-                                {comentariosPorTema[tema.id]?.length > 0 ? (
-                                    <div className="space-y-4">
-                                        {comentariosPorTema[tema.id].map(comentario => (
-                                            <Comentario
-                                                key={comentario.id}
-                                                comentario={comentario}
-                                                onEliminar={handleEliminar}
-                                                onResponder={handleResponder}
-                                                onUpdateSuccess={(comentarioActualizado) =>
-                                                    handleComentarioActualizado(tema.id, comentarioActualizado)
-                                                }
-                                                temaId={tema.id}
-                                            />
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <p className="text-gray-500 text-center py-4">
-                                        No hay comentarios en este tema.
+        <div className="bg-[#DAEDF2] min-h-screen">
+            <div className="max-w-4xl mx-auto p-6">
+                <h1 className="text-3xl font-bold mb-6 text-[#1D4157]">Foro de Discusión</h1>
+                <CrearTemaForm onClose={() => { }} onTemaCreado={handleTemaCreado} />
+                <div className="space-y-4 mt-6">
+                    {temas.map(tema => (
+                        <div key={tema.id} className="border rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow bg-white">
+                            <div className="flex items-center justify-between">
+                                <div className="flex-grow">
+                                    <h2 className="text-xl font-semibold text-[#1D4157]">{tema.titulo}</h2>
+                                    <p className="text-[#1D4157]/80 mt-1">{tema.descripcion}</p>
+                                    <p className="text-xs text-[#1D4157]/60 mt-1">
+                                        Creado el: {formatDate(tema.fechaCreacion)}
                                     </p>
-                                )}
+                                </div>
+                                <button
+                                    onClick={(e) => toggleComentarios(e, tema.id)}
+                                    className="p-2 text-[#0092BC] hover:bg-[#0092BC]/10 rounded-full transition-colors"
+                                    title="Ver comentarios"
+                                >
+                                    <MessageSquare className="w-5 h-5" />
+                                </button>
                             </div>
-                        )}
-                    </div>
-                ))}
+
+                            {temasExpandidos[tema.id] && (
+                                <div className="mt-4 space-y-3">
+                                    <CrearComentario
+                                        temaId={tema.id}
+                                        onComentarioCreado={(nuevoComentario) =>
+                                            handleComentarioCreado(tema.id, nuevoComentario)
+                                        }
+                                    />
+
+                                    {comentariosPorTema[tema.id]?.length > 0 ? (
+                                        <div className="space-y-4">
+                                            {comentariosPorTema[tema.id].map(comentario => (
+                                                <Comentario
+                                                    key={comentario.id}
+                                                    comentario={comentario}
+                                                    onEliminar={handleEliminar}
+                                                    onResponder={handleResponder}
+                                                    onUpdateSuccess={() => handleComentarioActualizado(tema.id)}
+                                                    temaId={tema.id}
+                                                />
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <p className="text-[#1D4157]/60 text-center py-4">
+                                            No hay comentarios en este tema.
+                                        </p>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     );

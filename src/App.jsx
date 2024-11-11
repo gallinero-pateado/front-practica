@@ -28,7 +28,7 @@ import TemasList from './components_foro/leerforo';
 import CrearTemaForm from './components_foro/creartema';
 import CommentEdit from './components_foro/actualizarcomentario';
 import CrearComentario from './components_foro/crearcomentario';
-
+import ReplyComment from './components_foro/respondercomentario';
 
 const App = () => {
   return (
@@ -55,6 +55,7 @@ const App = () => {
         <Route path="/creartema" element={<Layout2><CrearTemaForm /></Layout2>} />
         <Route path="/actualizarcomentarios" element={<Layout2><CommentEdit /></Layout2>} />
         <Route path="/crearcomentario" element={<Layout2><CrearComentario /></Layout2>} />
+        <Route path="/respondercomentario" element={<Layout2><ReplyComment /></Layout2>} />
 
 
 

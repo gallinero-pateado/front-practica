@@ -73,15 +73,11 @@ const CrearComentario = ({ temaId, onComentarioCreado }) => {
                 <div className="flex justify-end">
                     <button
                         type="submit"
-                        disabled={isSubmitting || !contenido.trim()}
-                        className={`
-              flex items-center gap-2 px-4 py-2 rounded-lg
-              ${isSubmitting || !contenido.trim()
-                                ? 'bg-gray-300 cursor-not-allowed'
-                                : 'bg-blue-600 hover:bg-blue-700 text-white'
-                            }
-              transition-colors
-            `}
+                        disabled={isSubmitting}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg 
+                            ${isSubmitting ? 'bg-gray-300 cursor-not-allowed' : 'bg-[#7B4B94] hover:bg-[#6d4386] text-white'}
+                            transition-colors
+                        `}
                     >
                         <Send className="w-4 h-4" />
                         {isSubmitting ? 'Enviando...' : 'Enviar comentario'}

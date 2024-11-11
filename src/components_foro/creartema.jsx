@@ -8,10 +8,9 @@ const CrearTemaForm = ({ onClose, onTemaCreado }) => {
     });
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [isAuthenticated, setIsAuthenticated] = useState(true); // Cambié la inicialización a true
+    const [isAuthenticated, setIsAuthenticated] = useState(true);
 
     useEffect(() => {
-        // Verificar si existe el token al montar el componente
         const token = localStorage.getItem('authToken');
         if (!token) {
             setIsAuthenticated(false);
@@ -52,10 +51,9 @@ const CrearTemaForm = ({ onClose, onTemaCreado }) => {
             const data = await response.json();
 
             if (!response.ok) {
-                // Manejar diferentes tipos de errores
                 if (response.status === 401) {
                     setError('Sesión expirada. Por favor, vuelve a iniciar sesión.');
-                    localStorage.removeItem('authToken'); // Limpiar el token inválido
+                    localStorage.removeItem('authToken');
                     setIsAuthenticated(false);
                 } else {
                     throw new Error(data.error || 'Error al crear el tema');
@@ -68,7 +66,6 @@ const CrearTemaForm = ({ onClose, onTemaCreado }) => {
             }
             onClose();
 
-            // Limpiar el formulario después de crear el tema
             setTema({
                 titulo: '',
                 descripcion: ''
@@ -82,13 +79,12 @@ const CrearTemaForm = ({ onClose, onTemaCreado }) => {
 
     if (!isAuthenticated) {
         return (
-            <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
+            <div className="bg-white rounded-lg shadow-sm border border-[#A3D9D3] p-6 mb-6">
                 <div className="text-center">
                     <p className="text-red-500 mb-4">Tu sesión ha expirado. Por favor, inicia sesión nuevamente.</p>
-                    {/* Puedes mantener un enlace a la página de login si deseas */}
                     <a
-                        href="/" // Ajusta esta ruta según tu configuración
-                        className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                        href="/"
+                        className="inline-flex items-center px-4 py-2 bg-[#7B4B94] text-white rounded-md hover:opacity-90 transition-opacity"
                     >
                         Iniciar Sesión
                     </a>
@@ -98,14 +94,14 @@ const CrearTemaForm = ({ onClose, onTemaCreado }) => {
     }
 
     return (
-        <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
+        <div className="bg-white rounded-lg shadow-sm border border-[#A3D9D3] p-6 mb-6">
             <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold">Crear Nuevo Tema</h2>
+                <h2 className="text-xl font-semibold text-[#1D4157]">Crear Nuevo Tema</h2>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                    <label htmlFor="titulo" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor="titulo" className="block text-sm font-medium text-[#1D4157] mb-1">
                         Título
                     </label>
                     <input
@@ -115,13 +111,13 @@ const CrearTemaForm = ({ onClose, onTemaCreado }) => {
                         value={tema.titulo}
                         onChange={handleChange}
                         required
-                        className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-[#A3D9D3] rounded-md text-[#1D4157] focus:outline-none focus:ring-2 focus:ring-[#0092BC]"
                         placeholder="Escribe el título del tema"
                     />
                 </div>
 
                 <div>
-                    <label htmlFor="descripcion" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor="descripcion" className="block text-sm font-medium text-[#1D4157] mb-1">
                         Descripción
                     </label>
                     <textarea
@@ -131,7 +127,7 @@ const CrearTemaForm = ({ onClose, onTemaCreado }) => {
                         onChange={handleChange}
                         required
                         rows="4"
-                        className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-[#A3D9D3] rounded-md text-[#1D4157] focus:outline-none focus:ring-2 focus:ring-[#0092BC]"
                         placeholder="Describe el tema"
                     />
                 </div>
@@ -146,7 +142,7 @@ const CrearTemaForm = ({ onClose, onTemaCreado }) => {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:bg-blue-400"
+                        className="flex items-center gap-2 px-4 py-2 bg-[#7B4B94] text-white rounded-md hover:opacity-90 transition-opacity disabled:opacity-50"
                     >
                         <PlusCircle className="w-4 h-4" />
                         {loading ? 'Creando...' : 'Crear Tema'}

@@ -1,4 +1,3 @@
-// CommentEdit.jsx
 import React, { useState } from 'react';
 import { Pencil, Save, X, AlertCircle } from 'lucide-react';
 
@@ -74,7 +73,7 @@ const CommentEdit = ({ commentId, initialContent, onUpdateSuccess }) => {
                         <button
                             onClick={handleEdit}
                             disabled={isLoading}
-                            className="flex items-center gap-1 px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:opacity-50"
+                            className="flex items-center gap-1 px-3 py-1 bg-[#7B4B94] text-white rounded-md hover:bg-[#6d4386] disabled:opacity-50"
                         >
                             <Save size={16} />
                             <span>Guardar</span>
@@ -83,7 +82,7 @@ const CommentEdit = ({ commentId, initialContent, onUpdateSuccess }) => {
                         <button
                             onClick={handleCancel}
                             disabled={isLoading}
-                            className="flex items-center gap-1 px-3 py-1 bg-gray-500 text-white rounded-md hover:bg-gray-600 disabled:opacity-50"
+                            className="flex items-center gap-1 px-3 py-1 bg-[#A3D9D3] text-black rounded-md hover:bg-[#93c7bd] disabled:opacity-50"
                         >
                             <X size={16} />
                             <span>Cancelar</span>
