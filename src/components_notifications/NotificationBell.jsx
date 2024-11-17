@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { BellIcon } from '@heroicons/react/24/outline';
 
 const NotificationBell = () => {
@@ -6,41 +6,58 @@ const NotificationBell = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [hasNewNotifications, setHasNewNotifications] = useState(false);
 
-  // Obtener el uid del localStorage
   const uid = localStorage.getItem('uid');
+  const ws = useRef(null);
+  const retryInterval = useRef(null);
 
-  useEffect(() => {
-    // Validar que el uid exista antes de proceder
+  // Función para manejar WebSocket y reconexión
+  const handleWebSocket = () => {
     if (!uid) {
       console.error("No UID found in localStorage");
       return;
     }
 
-    // Establece la URL del WebSocket con el UID y verifica su valor
     const wsUrl = `ws://localhost:8080/ws/${uid}`;
-    console.log("Connecting to WebSocket at:", wsUrl); // Verifica la URL en consola
-    const ws = new WebSocket(wsUrl);
+    console.log("Attempting WebSocket connection to:", wsUrl);
+    ws.current = new WebSocket(wsUrl);
 
-    // Manejar mensajes recibidos
-    ws.onmessage = (event) => {
-      const newNotification = JSON.parse(event.data);
-      setNotifications((prevNotifications) => [...prevNotifications, newNotification]);
-      setHasNewNotifications(true);
+    ws.current.onopen = () => {
+      console.log("WebSocket connection established");
     };
 
-    // Manejo de errores en la conexión WebSocket
-    ws.onerror = (error) => {
+    ws.current.onmessage = (event) => {
+      try {
+        const newNotification = JSON.parse(event.data);
+        setNotifications((prevNotifications) => [...prevNotifications, newNotification]);
+        setHasNewNotifications(true);
+      } catch (error) {
+        console.error("Error parsing WebSocket message:", error);
+      }
+    };
+
+    ws.current.onerror = (error) => {
       console.error("WebSocket Error:", error);
     };
 
-    // Manejo de cierre de la conexión WebSocket
-    ws.onclose = (event) => {
-      console.log("WebSocket Closed:", event);
+    ws.current.onclose = (event) => {
+      if (event.code !== 1000) { // Código 1000 es cierre limpio
+        console.warn("WebSocket closed unexpectedly, reconnecting...");
+        retryInterval.current = setTimeout(handleWebSocket, 3000);
+      } else {
+        console.log("WebSocket closed cleanly");
+      }
     };
+  };
 
-    // Limpiar al desmontar el componente
+  useEffect(() => {
+    handleWebSocket();
+
+    // Limpiar intervalos de reconexión y cerrar WebSocket al desmontar el componente
     return () => {
-      ws.close();
+      clearTimeout(retryInterval.current);
+      if (ws.current) {
+        ws.current.close();
+      }
     };
   }, [uid]);
 
@@ -52,7 +69,7 @@ const NotificationBell = () => {
   };
 
   const handleDeleteNotification = (id) => {
-    setNotifications(notifications.filter(notification => notification.ID_remitente !== id));
+    setNotifications((prevNotifications) => prevNotifications.filter(notification => notification.ID_remitente !== id));
   };
 
   return (
@@ -92,4 +109,6 @@ const NotificationBell = () => {
 };
 
 export default NotificationBell;
+
+
 
