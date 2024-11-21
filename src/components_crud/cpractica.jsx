@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 const Cpractica = () => {
+    const [theme, setTheme] = useState('light');
     const [formData, setFormData] = useState({
         Titulo: '',
         Descripcion: '',
@@ -17,6 +19,44 @@ const Cpractica = () => {
     });
     const [errors, setErrors] = useState({});
     const [submitMessage, setSubmitMessage] = useState(null);
+
+    useEffect(() => {
+        const savedTheme = Cookies.get('theme') || 'light';
+        setTheme(savedTheme);
+    }, []);
+
+    useEffect(() => {
+        const handleThemeChange = () => {
+            const savedTheme = Cookies.get('theme') || 'light';
+            setTheme(savedTheme);
+        };
+
+        const interval = setInterval(handleThemeChange, 1000);
+        return () => clearInterval(interval);
+    }, []);
+
+    const themeColors = {
+        light: {
+            background: 'bg-white',
+            text: 'text-gray-800',
+            label: 'text-gray-700',
+            input: 'bg-white border-gray-300',
+            inputFocus: 'focus:border-[#0092BC] focus:ring-[#0092BC]',
+            button: 'bg-[#0092BC] hover:bg-[#A3D9D3]',
+            error: 'text-red-500'
+        },
+        dark: {
+            background: 'bg-gray-800',
+            text: 'text-gray-100',
+            label: 'text-gray-200',
+            input: 'bg-gray-700 border-gray-600 text-white',
+            inputFocus: 'focus:border-[#0092BC] focus:ring-[#0092BC]',
+            button: 'bg-[#0092BC] hover:bg-[#A3D9D3]',
+            error: 'text-red-400'
+        }
+    };
+
+    const currentTheme = themeColors[theme];
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -106,162 +146,158 @@ const Cpractica = () => {
     };
 
     return (
-        <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-xl font-ubuntu">
-            <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Crear Nueva Práctica</h2>
+        <div className={`max-w-md mx-auto mt-10 p-6 ${currentTheme.background} rounded-lg shadow-xl font-ubuntu transition-colors duration-300`}>
+            <h2 className={`text-2xl font-bold mb-6 text-center ${currentTheme.text}`}>Crear Nueva Práctica</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
-                {/* Campos del formulario */}
                 <div>
-                    <label htmlFor="Titulo" className="block text-sm font-medium text-gray-700">Título:</label>
+                    <label htmlFor="Titulo" className={`block text-sm font-medium ${currentTheme.label}`}>Título:</label>
                     <input
                         type="text"
                         id="Titulo"
                         name="Titulo"
                         value={formData.Titulo}
                         onChange={handleChange}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                        className={`mt-1 block w-full rounded-md shadow-sm ${currentTheme.input} ${currentTheme.inputFocus} focus:ring-2 focus:ring-opacity-50 transition-colors duration-300`}
                     />
-                    {errors.Titulo && <span className="text-red-500 text-xs">{errors.Titulo}</span>}
+                    {errors.Titulo && <span className={`text-xs ${currentTheme.error}`}>{errors.Titulo}</span>}
                 </div>
 
                 <div>
-                    <label htmlFor="Descripcion" className="block text-sm font-medium text-gray-700">Descripción:</label>
+                    <label htmlFor="Descripcion" className={`block text-sm font-medium ${currentTheme.label}`}>Descripción:</label>
                     <textarea
                         id="Descripcion"
                         name="Descripcion"
                         value={formData.Descripcion}
                         onChange={handleChange}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                        className={`mt-1 block w-full rounded-md shadow-sm ${currentTheme.input} ${currentTheme.inputFocus} focus:ring-2 focus:ring-opacity-50 transition-colors duration-300`}
                     />
-                    {errors.Descripcion && <span className="text-red-500 text-xs">{errors.Descripcion}</span>}
+                    {errors.Descripcion && <span className={`text-xs ${currentTheme.error}`}>{errors.Descripcion}</span>}
                 </div>
 
                 <div>
-                    <label htmlFor="Id_Empresa" className="block text-sm font-medium text-gray-700">ID de la Empresa:</label>
+                    <label htmlFor="Id_Empresa" className={`block text-sm font-medium ${currentTheme.label}`}>ID de la Empresa:</label>
                     <input
                         type="number"
                         id="Id_Empresa"
                         name="Id_Empresa"
                         value={formData.Id_Empresa}
                         onChange={handleChange}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                        className={`mt-1 block w-full rounded-md shadow-sm ${currentTheme.input} ${currentTheme.inputFocus} focus:ring-2 focus:ring-opacity-50 transition-colors duration-300`}
                     />
-                    {errors.Id_Empresa && <span className="text-red-500 text-xs">{errors.Id_Empresa}</span>}
+                    {errors.Id_Empresa && <span className={`text-xs ${currentTheme.error}`}>{errors.Id_Empresa}</span>}
                 </div>
 
                 <div>
-                    <label htmlFor="Ubicacion" className="block text-sm font-medium text-gray-700">Ubicación:</label>
+                    <label htmlFor="Ubicacion" className={`block text-sm font-medium ${currentTheme.label}`}>Ubicación:</label>
                     <input
                         type="text"
                         id="Ubicacion"
                         name="Ubicacion"
                         value={formData.Ubicacion}
                         onChange={handleChange}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                        className={`mt-1 block w-full rounded-md shadow-sm ${currentTheme.input} ${currentTheme.inputFocus} focus:ring-2 focus:ring-opacity-50 transition-colors duration-300`}
                         maxLength={30}
                     />
-                    {errors.Ubicacion && <span className="text-red-500 text-xs">{errors.Ubicacion}</span>}
+                    {errors.Ubicacion && <span className={`text-xs ${currentTheme.error}`}>{errors.Ubicacion}</span>}
                 </div>
 
                 <div>
-                    <label htmlFor="Fecha_inicio" className="block text-sm font-medium text-gray-700">Fecha de inicio:</label>
+                    <label htmlFor="Fecha_inicio" className={`block text-sm font-medium ${currentTheme.label}`}>Fecha de inicio:</label>
                     <input
                         type="date"
                         id="Fecha_inicio"
                         name="Fecha_inicio"
                         value={formData.Fecha_inicio}
                         onChange={handleChange}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                        className={`mt-1 block w-full rounded-md shadow-sm ${currentTheme.input} ${currentTheme.inputFocus} focus:ring-2 focus:ring-opacity-50 transition-colors duration-300`}
                     />
-                    {errors.Fecha_inicio && <span className="text-red-500 text-xs">{errors.Fecha_inicio}</span>}
+                    {errors.Fecha_inicio && <span className={`text-xs ${currentTheme.error}`}>{errors.Fecha_inicio}</span>}
                 </div>
 
                 <div>
-                    <label htmlFor="Fecha_fin" className="block text-sm font-medium text-gray-700">Fecha de fin:</label>
+                    <label htmlFor="Fecha_fin" className={`block text-sm font-medium ${currentTheme.label}`}>Fecha de fin:</label>
                     <input
                         type="date"
                         id="Fecha_fin"
                         name="Fecha_fin"
                         value={formData.Fecha_fin}
                         onChange={handleChange}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                        className={`mt-1 block w-full rounded-md shadow-sm ${currentTheme.input} ${currentTheme.inputFocus} focus:ring-2 focus:ring-opacity-50 transition-colors duration-300`}
                     />
-                    {errors.Fecha_fin && <span className="text-red-500 text-xs">{errors.Fecha_fin}</span>}
+                    {errors.Fecha_fin && <span className={`text-xs ${currentTheme.error}`}>{errors.Fecha_fin}</span>}
                 </div>
 
                 <div>
-                    <label htmlFor="Requisitos" className="block text-sm font-medium text-gray-700">Requisitos:</label>
+                    <label htmlFor="Requisitos" className={`block text-sm font-medium ${currentTheme.label}`}>Requisitos:</label>
                     <textarea
                         id="Requisitos"
                         name="Requisitos"
                         value={formData.Requisitos}
                         onChange={handleChange}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                        className={`mt-1 block w-full rounded-md shadow-sm ${currentTheme.input} ${currentTheme.inputFocus} focus:ring-2 focus:ring-opacity-50 transition-colors duration-300`}
                     />
-                    {errors.Requisitos && <span className="text-red-500 text-xs">{errors.Requisitos}</span>}
+                    {errors.Requisitos && <span className={`text-xs ${currentTheme.error}`}>{errors.Requisitos}</span>}
                 </div>
 
                 <div>
-                    <label htmlFor="Fecha_expiracion" className="block text-sm font-medium text-gray-700">Fecha de expiración:</label>
+                    <label htmlFor="Fecha_expiracion" className={`block text-sm font-medium ${currentTheme.label}`}>Fecha de expiración:</label>
                     <input
                         type="date"
                         id="Fecha_expiracion"
                         name="Fecha_expiracion"
                         value={formData.Fecha_expiracion}
                         onChange={handleChange}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                        className={`mt-1 block w-full rounded-md shadow-sm ${currentTheme.input} ${currentTheme.inputFocus} focus:ring-2 focus:ring-opacity-50 transition-colors duration-300`}
                     />
-                    {errors.Fecha_expiracion && <span className="text-red-500 text-xs">{errors.Fecha_expiracion}</span>}
+                    {errors.Fecha_expiracion && <span className={`text-xs ${currentTheme.error}`}>{errors.Fecha_expiracion}</span>}
                 </div>
 
                 <div>
-                    <label htmlFor="Modalidad" className="block text-sm font-medium text-gray-700">Modalidad:</label>
+                    <label htmlFor="Modalidad" className={`block text-sm font-medium ${currentTheme.label}`}>Modalidad:</label>
                     <input
                         type="text"
                         id="Modalidad"
                         name="Modalidad"
                         value={formData.Modalidad}
                         onChange={handleChange}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                        className={`mt-1 block w-full rounded-md shadow-sm ${currentTheme.input} ${currentTheme.inputFocus} focus:ring-2 focus:ring-opacity-50 transition-colors duration-300`}
                     />
                 </div>
 
                 <div>
-                    <label htmlFor="Area_practica" className="block text-sm font-medium text-gray-700">Área de práctica:</label>
+                    <label htmlFor="Area_practica" className={`block text-sm font-medium ${currentTheme.label}`}>Área de práctica:</label>
                     <input
                         type="text"
                         id="Area_practica"
                         name="Area_practica"
                         value={formData.Area_practica}
                         onChange={handleChange}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                        className={`mt-1 block w-full rounded-md shadow-sm ${currentTheme.input} ${currentTheme.inputFocus} focus:ring-2 focus:ring-opacity-50 transition-colors duration-300`}
                     />
-                    {errors.Area_practica && <span className="text-red-500 text-xs">{errors.Area_practica}</span>}
+                    {errors.Area_practica && <span className={`text-xs ${currentTheme.error}`}>{errors.Area_practica}</span>}
                 </div>
 
                 <div>
-                    <label htmlFor="Jornada" className="block text-sm font-medium text-gray-700">Jornada:</label>
+                    <label htmlFor="Jornada" className={`block text-sm font-medium ${currentTheme.label}`}>Jornada:</label>
                     <input
                         type="text"
                         id="Jornada"
                         name="Jornada"
                         value={formData.Jornada}
                         onChange={handleChange}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                        className={`mt-1 block w-full rounded-md shadow-sm ${currentTheme.input} ${currentTheme.inputFocus} focus:ring-2 focus:ring-opacity-50 transition-colors duration-300`}
                     />
                 </div>
 
                 <button
                     type="submit"
-                    className="w-full py-2 rounded-md font-semibold text-white transition-colors duration-300"
-                    style={{ backgroundColor: '#0092BC', borderColor: '#0092BC' }}
-                    onMouseEnter={e => e.target.style.backgroundColor = '#A3D9D3'}
-                    onMouseLeave={e => e.target.style.backgroundColor = '#0092BC'}
+                    className={`w-full py-2 rounded-md font-semibold text-white transition-colors duration-300 ${currentTheme.button}`}
                 >
                     Crear Práctica
                 </button>
 
                 {submitMessage && (
-                    <div className={`mt-4 text-center ${submitMessage.type === 'success' ? 'text-green-600' : 'text-red-600'}`}>
+                    <div className={`mt-4 text-center ${submitMessage.type === 'success' ? 'text-green-500' : currentTheme.error}`}>
                         {submitMessage.text}
                     </div>
                 )}

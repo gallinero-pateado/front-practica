@@ -1,12 +1,58 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Send, AlertCircle, CheckCircle } from 'lucide-react';
+import Cookies from 'js-cookie';
 
 const PostulacionPractica = ({ practicaId, onPostulacionExitosa }) => {
     const [mensaje, setMensaje] = useState('');
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [loading, setLoading] = useState(false);
+    const [theme, setTheme] = useState('light');
+
+    useEffect(() => {
+        const savedTheme = Cookies.get('theme') || 'light';
+        setTheme(savedTheme);
+    }, []);
+
+    // Observar cambios en el atributo data-theme del documento
+    useEffect(() => {
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.attributeName === 'data-theme') {
+                    setTheme(document.documentElement.getAttribute('data-theme') || 'light');
+                }
+            });
+        });
+
+        observer.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ['data-theme']
+        });
+
+        return () => observer.disconnect();
+    }, []);
+
+    const themeColors = {
+        light: {
+            background: 'bg-white',
+            headerBg: 'bg-gray-50',
+            text: 'text-gray-800',
+            inputBg: 'bg-white',
+            inputText: 'text-gray-700',
+            inputBorder: 'border-[#0092BC]',
+        },
+        dark: {
+            background: 'bg-gray-800',
+            headerBg: 'bg-gray-900',
+            text: 'text-white',
+            inputBg: 'bg-gray-700',
+            inputText: 'text-white',
+            inputBorder: 'border-blue-400',
+        }
+    };
+
+    const currentTheme = themeColors[theme];
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -15,12 +61,17 @@ const PostulacionPractica = ({ practicaId, onPostulacionExitosa }) => {
         setSuccess('');
 
         try {
+            const authToken = Cookies.get('authToken');
+            if (!authToken) {
+                throw new Error('No se encontró el token de autenticación');
+            }
+
             const response = await axios.post(`http://localhost:8080/postulacion-practicas/${practicaId}`, {
                 mensaje
             }, {
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                    'Authorization': `Bearer ${authToken}`
                 }
             });
 
@@ -29,13 +80,16 @@ const PostulacionPractica = ({ practicaId, onPostulacionExitosa }) => {
                 setMensaje('');
                 setTimeout(() => {
                     onPostulacionExitosa();
-                }, 2000); // Espera 2 segundos antes de cerrar
+                }, 2000);
             }
         } catch (error) {
             if (error.response) {
                 switch (error.response.status) {
                     case 401:
                         setError('No estás autorizado. Por favor, inicia sesión nuevamente.');
+                        // Limpiar cookies en caso de error de autenticación
+                        Cookies.remove('authToken', { path: '/' });
+                        Cookies.remove('uid', { path: '/' });
                         break;
                     case 409:
                         setError('Ya has postulado a esta práctica anteriormente.');
@@ -54,9 +108,9 @@ const PostulacionPractica = ({ practicaId, onPostulacionExitosa }) => {
     };
 
     return (
-        <div className="bg-white rounded-lg overflow-hidden">
-            <div className="px-4 py-2 bg-gray-50">
-                <h2 className="text-xl font-semibold text-gray-800">Postular a Práctica</h2>
+        <div className={`${currentTheme.background} rounded-lg overflow-hidden transition-colors duration-300`}>
+            <div className={`px-4 py-2 ${currentTheme.headerBg}`}>
+                <h2 className={`text-xl font-semibold ${currentTheme.text}`}>Postular a Práctica</h2>
             </div>
             <form onSubmit={handleSubmit} className="p-4">
                 <textarea
@@ -64,8 +118,8 @@ const PostulacionPractica = ({ practicaId, onPostulacionExitosa }) => {
                     onChange={(e) => setMensaje(e.target.value)}
                     placeholder="Escribe tu mensaje de postulación aquí"
                     required
-                    maxLength={150} // Límite de caracteres
-                    className="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none focus:border-blue-500"
+                    maxLength={150}
+                    className={`w-full px-3 py-2 ${currentTheme.inputText} ${currentTheme.inputBg} border-2 ${currentTheme.inputBorder} rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A3D9D3] transition-all duration-300`}
                     rows="4"
                 />
                 {error && (
@@ -83,7 +137,7 @@ const PostulacionPractica = ({ practicaId, onPostulacionExitosa }) => {
                 <button
                     type="submit"
                     disabled={loading}
-                    className={`mt-4 w-full flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-[#0092BC] hover:bg-[#A3D9D3] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0092BC] ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    className={`mt-4 w-full flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white ${theme === 'dark' ? 'bg-[#0092BC] hover:bg-[#A3D9D3]' : 'bg-[#0092BC] hover:bg-[#A3D9D3]'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0092BC] ${loading ? 'opacity-50 cursor-not-allowed' : ''} transition-colors duration-300`}
                 >
                     {loading ? (
                         'Enviando...'

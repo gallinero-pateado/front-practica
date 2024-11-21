@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Edit, Trash } from 'lucide-react'; // Iconos de editar y eliminar
+import { Edit, Trash } from 'lucide-react';
+import Cookies from 'js-cookie';
 
 const Dpractica = () => {
     const [practicas, setPracticas] = useState([]);
@@ -8,6 +9,7 @@ const Dpractica = () => {
     const [successMessage, setSuccessMessage] = useState(null);
     const [isEditMode, setIsEditMode] = useState(false);
     const [selectedPractica, setSelectedPractica] = useState(null);
+    const [theme, setTheme] = useState('light');
     const [formData, setFormData] = useState({
         Titulo: '',
         Descripcion: '',
@@ -23,7 +25,53 @@ const Dpractica = () => {
 
     useEffect(() => {
         fetchPracticas();
+        const savedTheme = Cookies.get('theme') || 'light';
+        setTheme(savedTheme);
+
+        const handleThemeChange = () => {
+            const savedTheme = Cookies.get('theme') || 'light';
+            setTheme(savedTheme);
+        };
+
+        const interval = setInterval(handleThemeChange, 1000);
+        return () => clearInterval(interval);
     }, []);
+
+    const themeColors = {
+        light: {
+            background: 'bg-[#DAEDF2]',
+            text: 'text-black',
+            tableHeader: 'bg-[#0092BC] text-white',
+            tableRow: 'hover:bg-gray-100',
+            tableBorder: 'border-gray',
+            formBackground: 'bg-white',
+            inputBorder: 'border-gray-300',
+            primaryButton: 'bg-[#0092BC] hover:bg-[#A3D9D3]',
+            secondaryButton: 'bg-[#A3D9D3] hover:bg-[#0092BC]',
+            successAlert: 'bg-green-100 border-green-400 text-green-700',
+            errorAlert: 'bg-red-100 border-red-400 text-red-700'
+        },
+        dark: {
+            background: 'bg-gray-900',
+            text: 'text-white',
+            tableHeader: 'bg-gray-800 text-white',
+            tableRow: 'hover:bg-gray-700',
+            tableBorder: 'border-gray-600',
+            formBackground: 'bg-gray-800',
+            inputBorder: 'border-gray-600',
+            primaryButton: 'bg-blue-600 hover:bg-blue-700',
+            secondaryButton: 'bg-gray-600 hover:bg-gray-700',
+            successAlert: 'bg-green-900 border-green-600 text-green-200',
+            errorAlert: 'bg-red-900 border-red-600 text-red-200'
+        }
+    };
+
+    const actionButtons = {
+        edit: 'bg-[#7b4b94] hover:bg-[#9b6ab4]', // Color púrpura con hover más claro
+        delete: 'bg-[#ffd166] hover:bg-[#ffdc85]' // Color amarillo con hover más claro
+    };
+
+    const currentTheme = themeColors[theme];
 
     // Obtener las prácticas de la empresa
     const fetchPracticas = async () => {
@@ -120,50 +168,46 @@ const Dpractica = () => {
     };
 
     return (
-        <div className="container mx-auto p-4 bg-[#DAEDF2] font-ubuntu">
+        <div className={`container mx-auto p-4 ${currentTheme.background} ${currentTheme.text} font-ubuntu`}>
             <h1 className="text-2xl font-bold mb-4">Lista de Prácticas</h1>
             {error && (
-                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" role="alert">
+                <div className={`border px-4 py-3 rounded mb-4 ${currentTheme.errorAlert}`} role="alert">
                     {error}
                 </div>
             )}
             {successMessage && (
-                <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4" role="alert">
+                <div className={`border px-4 py-3 rounded mb-4 ${currentTheme.successAlert}`} role="alert">
                     {successMessage}
                 </div>
             )}
             {!isEditMode ? (
-                <table className="w-full border-collapse bg-white">
+                <table className={`w-full border-collapse ${currentTheme.formBackground}`}>
                     <thead>
-                        <tr className="bg-[#0092BC]">
-                            <th className="border p-2 border-gray text-white">ID</th>
-                            <th className="border p-2 border-gray text-white">Título</th>
-                            <th className="border p-2 border-gray text-white">Descripcion</th>
-
-
-                            <th className="border p-2 border-gray text-white">Acciones</th>
+                        <tr className={currentTheme.tableHeader}>
+                            <th className={`border p-2 ${currentTheme.tableBorder}`}>ID</th>
+                            <th className={`border p-2 ${currentTheme.tableBorder}`}>Título</th>
+                            <th className={`border p-2 ${currentTheme.tableBorder}`}>Descripcion</th>
+                            <th className={`border p-2 ${currentTheme.tableBorder}`}>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         {practicas.map((practica) => (
-                            <tr key={practica.Id} className="hover:bg-gray-100">
-                                <td className="border p-2 border-gray">{practica.Id}</td>
-                                <td className="border p-2 border-gray">{practica.Titulo}</td>
-                                <td className="border p-2 border-gray">{practica.Descripcion}</td>
-
-
-                                <td className="border p-2 border-gray">
+                            <tr key={practica.Id} className={currentTheme.tableRow}>
+                                <td className={`border p-2 ${currentTheme.tableBorder}`}>{practica.Id}</td>
+                                <td className={`border p-2 ${currentTheme.tableBorder}`}>{practica.Titulo}</td>
+                                <td className={`border p-2 ${currentTheme.tableBorder}`}>{practica.Descripcion}</td>
+                                <td className={`border p-2 ${currentTheme.tableBorder}`}>
                                     <button
                                         onClick={() => handleEdit(practica)}
-                                        className="bg-blue-300 text-white font-bold py-1 px-2 rounded mr-2 transition-colors duration-300"
+                                        className={`${actionButtons.edit} text-white font-bold py-1 px-2 rounded mr-2 transition-colors duration-300`}
                                     >
-                                        <Edit size={20} /> {/* Icono de editar */}
+                                        <Edit size={20} />
                                     </button>
                                     <button
                                         onClick={() => handleDelete(practica.Id)}
-                                        className="bg-red-300 text-white font-bold py-1 px-2 rounded transition-colors duration-300"
+                                        className={`${actionButtons.delete} text-white font-bold py-1 px-2 rounded transition-colors duration-300`}
                                     >
-                                        <Trash size={20} /> {/* Icono de eliminar */}
+                                        <Trash size={20} />
                                     </button>
                                 </td>
                             </tr>
@@ -171,54 +215,34 @@ const Dpractica = () => {
                     </tbody>
                 </table>
             ) : (
-                <form onSubmit={handleUpdate} className="bg-white p-6 rounded shadow-md">
+                <form onSubmit={handleUpdate} className={`${currentTheme.formBackground} p-6 rounded shadow-md`}>
                     <h2 className="text-xl font-bold mb-4">Actualizar Práctica</h2>
                     {Object.keys(formData).map((key) => (
                         <div key={key} className="mb-4">
-                            <label htmlFor={key} className="block text-sm font-medium text-gray-700">
+                            <label htmlFor={key} className="block text-sm font-medium">
                                 {key.charAt(0).toUpperCase() + key.slice(1)}
                             </label>
-                            {key === 'Ubicacion' ? ( // Verifica si es el campo de Ubicación
-                                <input
-                                    type="text"
-                                    id={key}
-                                    name={key}
-                                    value={formData[key]}
-                                    onChange={handleChange}
-                                    maxLength={30} // Límite de 30 caracteres
-                                    className="mt-1 p-2 border rounded w-full"
-                                />
-                            ) : key.includes('Fecha') ? (
-                                <input
-                                    type="date"
-                                    id={key}
-                                    name={key}
-                                    value={formData[key]}
-                                    onChange={handleChange}
-                                    className="mt-1 p-2 border rounded w-full"
-                                />
-                            ) : (
-                                <input
-                                    type="text"
-                                    id={key}
-                                    name={key}
-                                    value={formData[key]}
-                                    onChange={handleChange}
-                                    className="mt-1 p-2 border rounded w-full"
-                                />
-                            )}
+                            <input
+                                type={key.includes('Fecha') ? "date" : "text"}
+                                id={key}
+                                name={key}
+                                value={formData[key]}
+                                onChange={handleChange}
+                                maxLength={key === 'Ubicacion' ? 30 : undefined}
+                                className={`mt-1 p-2 border rounded w-full ${currentTheme.formBackground} ${currentTheme.text} ${currentTheme.inputBorder}`}
+                            />
                         </div>
                     ))}
                     <button
                         type="submit"
-                        className="bg-[#0092BC] hover:bg-[#A3D9D3] text-white font-bold py-2 px-4 rounded transition-colors duration-300"
+                        className={`${currentTheme.primaryButton} text-white font-bold py-2 px-4 rounded transition-colors duration-300`}
                     >
                         Actualizar
                     </button>
                     <button
                         type="button"
                         onClick={() => setIsEditMode(false)}
-                        className="ml-4 bg-[#A3D9D3] hover:bg-[#0092BC] text-white font-bold py-2 px-4 rounded transition-colors duration-300"
+                        className={`ml-4 ${currentTheme.secondaryButton} text-white font-bold py-2 px-4 rounded transition-colors duration-300`}
                     >
                         Cancelar
                     </button>

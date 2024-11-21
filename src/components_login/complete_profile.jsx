@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import Cookies from 'js-cookie';
 import axios from 'axios';
 
 const CompleteProfile = () => {
@@ -41,7 +42,6 @@ const CompleteProfile = () => {
         { id: 32, nombre: "Psicologia" }
     ];
 
-
     const [formData, setFormData] = useState({
         fecha_nacimiento: '',
         ano_ingreso: '',
@@ -49,30 +49,96 @@ const CompleteProfile = () => {
         fotoPerfil: null
     });
     const [error, setError] = useState('');
+    const [theme, setTheme] = useState('light');
     const navigate = useNavigate();
     const location = useLocation();
-    const email = location.state?.email;
 
-    // Verificar si el perfil está completo al cargar el componente
+    const COOKIE_CONFIG = {
+        expires: 7, // Token expires in 7 days
+        secure: process.env.NODE_ENV === 'production', // Only use HTTPS in production
+        sameSite: 'strict',
+    };
+
+    const getAuthToken = () => {
+        return Cookies.get('authToken');
+    };
+
+
+    const setAuthToken = (token) => {
+        Cookies.set('authToken', token, COOKIE_CONFIG);
+    };
+
+
+    const removeAuthToken = () => {
+        Cookies.remove('authToken');
+    };
+
+
     useEffect(() => {
-        const checkProfileCompletion = async () => {
-            try {
-                const response = await axios.get('http://localhost:8080/profile-status', {
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-                    }
-                });
-
-                if (response.data.perfil_completado) {
-                    navigate('/search');
+        axios.interceptors.request.use(
+            (config) => {
+                const token = getAuthToken();
+                if (token) {
+                    config.headers.Authorization = `Bearer ${token}`;
                 }
-            } catch (error) {
-                console.error('Error al verificar la completación del perfil:', error);
+                return config;
+            },
+            (error) => {
+                return Promise.reject(error);
             }
+        );
+    }, []);
+
+    useEffect(() => {
+        const savedTheme = Cookies.get('theme') || 'light';
+        setTheme(savedTheme);
+
+        const handleThemeChange = () => {
+            const newTheme = Cookies.get('theme') || 'light';
+            setTheme(newTheme);
         };
 
-        checkProfileCompletion();
-    }, [navigate]);
+        // Observar cambios en el atributo data-theme del documento
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.attributeName === 'data-theme') {
+                    handleThemeChange();
+                }
+            });
+        });
+
+        observer.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ['data-theme']
+        });
+
+        return () => observer.disconnect();
+    }, []);
+
+    const themeColors = {
+        light: {
+            background: 'bg-white',
+            text: 'text-black',
+            accent: 'text-[#0092BC]',
+            inputBg: 'bg-white',
+            inputText: 'text-black',
+            inputBorder: 'border-gray-300',
+            card: 'bg-white'
+        },
+        dark: {
+            background: 'bg-gray-800',
+            text: 'text-white',
+            accent: 'text-[#A3D9D3]',
+            inputBg: 'bg-gray-700',
+            inputText: 'text-white',
+            inputBorder: 'border-gray-600',
+            card: 'bg-gray-800',
+            formWrapper: 'bg-gray-900'
+        }
+    };
+
+    const currentTheme = themeColors[theme];
+
 
     const handleChange = (e) => {
         if (e.target.name === 'fotoPerfil') {
@@ -81,6 +147,7 @@ const CompleteProfile = () => {
             setFormData({ ...formData, [e.target.name]: e.target.value });
         }
     };
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -95,8 +162,7 @@ const CompleteProfile = () => {
 
                 const uploadResponse = await axios.post('http://localhost:8080/upload-image', imageFormData, {
                     headers: {
-                        'Content-Type': 'multipart/form-data',
-                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                        'Content-Type': 'multipart/form-data'
                     }
                 });
 
@@ -112,12 +178,15 @@ const CompleteProfile = () => {
 
             const response = await axios.post('http://localhost:8080/complete-profile', profileFormData, {
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                    'Content-Type': 'application/json'
                 }
             });
 
             if (response.data.message === "Perfil actualizado correctamente") {
+                // Update token if a new one is returned
+                if (response.data.token) {
+                    setAuthToken(response.data.token);
+                }
                 navigate('/search');
             } else {
                 setError('Error al completar el perfil: ' + response.data.message);
@@ -132,18 +201,23 @@ const CompleteProfile = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#DAEDF2] flex items-center justify-center font-Ubuntu">
-            <form onSubmit={handleSubmit} className="bg-white shadow-lg rounded-lg px-16 pt-12 pb-12 mb-8 w-full max-w-md">
-                <h2 className="text-4xl font-Rubik font-bold mb-8 text-[#0092BC] text-center">Completar Perfil</h2>
+        <div className={`min-h-screen flex items-center justify-center font-Ubuntu ${theme === 'dark' ? 'bg-gray-900' : 'bg-[#DAEDF2]'} transition-colors duration-300`}>
+            <form
+                onSubmit={handleSubmit}
+                className={`${currentTheme.background} shadow-lg rounded-lg px-16 pt-12 pb-12 mb-8 w-full max-w-md transition-colors duration-300`}
+            >
+                <h2 className={`text-4xl font-Rubik font-bold mb-8 ${theme === 'dark' ? 'text-[#A3D9D3]' : 'text-[#0092BC]'} text-center`}>
+                    Completar Perfil
+                </h2>
 
                 {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
                 <div className="mb-6">
-                    <label className="block text-[#0092BC] text-sm font-bold mb-2" htmlFor="fecha_nacimiento">
+                    <label className={`block ${theme === 'dark' ? 'text-[#A3D9D3]' : 'text-[#0092BC]'} text-sm font-bold mb-2`}>
                         Fecha de Nacimiento
                     </label>
                     <input
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
+                        className={`shadow appearance-none border ${currentTheme.inputBorder} rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500 ${currentTheme.inputBg} ${currentTheme.inputText}`}
                         id="fecha_nacimiento"
                         name="fecha_nacimiento"
                         type="date"
@@ -154,11 +228,11 @@ const CompleteProfile = () => {
                 </div>
 
                 <div className="mb-6">
-                    <label className="block text-[#0092BC] text-sm font-bold mb-2" htmlFor="ano_ingreso">
+                    <label className={`block ${theme === 'dark' ? 'text-[#A3D9D3]' : 'text-[#0092BC]'} text-sm font-bold mb-2`}>
                         Año de Ingreso Universitario
                     </label>
                     <input
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
+                        className={`shadow appearance-none border ${currentTheme.inputBorder} rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500 ${currentTheme.inputBg} ${currentTheme.inputText}`}
                         id="ano_ingreso"
                         name="ano_ingreso"
                         type="number"
@@ -171,11 +245,11 @@ const CompleteProfile = () => {
                 </div>
 
                 <div className="mb-6">
-                    <label className="block text-[#0092BC] text-sm font-bold mb-2" htmlFor="id_carrera">
+                    <label className={`block ${theme === 'dark' ? 'text-[#A3D9D3]' : 'text-[#0092BC]'} text-sm font-bold mb-2`}>
                         Carrera
                     </label>
                     <select
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
+                        className={`shadow appearance-none border ${currentTheme.inputBorder} rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500 ${currentTheme.inputBg} ${currentTheme.inputText}`}
                         id="id_carrera"
                         name="id_carrera"
                         value={formData.id_carrera}
@@ -184,7 +258,7 @@ const CompleteProfile = () => {
                     >
                         <option value="">Seleccione una carrera</option>
                         {carrerasList.map((carrera) => (
-                            <option key={carrera.id} value={carrera.id}>
+                            <option key={carrera.id} value={carrera.id} className={currentTheme.inputText}>
                                 {carrera.nombre}
                             </option>
                         ))}
@@ -192,11 +266,11 @@ const CompleteProfile = () => {
                 </div>
 
                 <div className="mb-6">
-                    <label className="block text-[#0092BC] text-sm font-bold mb-2" htmlFor="fotoPerfil">
+                    <label className={`block ${theme === 'dark' ? 'text-[#A3D9D3]' : 'text-[#0092BC]'} text-sm font-bold mb-2`}>
                         Foto de Perfil
                     </label>
                     <input
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
+                        className={`shadow appearance-none border ${currentTheme.inputBorder} rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500 ${currentTheme.inputBg} ${currentTheme.inputText} file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 ${theme === 'dark' ? 'file:bg-gray-600 file:text-white' : 'file:bg-[#0092BC] file:text-white'}`}
                         id="fotoPerfil"
                         name="fotoPerfil"
                         type="file"
@@ -207,7 +281,7 @@ const CompleteProfile = () => {
 
                 <div className="flex items-center justify-center">
                     <button
-                        className="bg-[#0092BC] hover:bg-[#007a9a] text-white font-bold py-3 px-8 rounded focus:outline-none focus:shadow-outline transition duration-300"
+                        className={`${theme === 'dark' ? 'bg-[#A3D9D3] hover:bg-[#8ec3c0] text-gray-800' : 'bg-[#0092BC] hover:bg-[#007a9a] text-white'} font-bold py-3 px-8 rounded focus:outline-none focus:shadow-outline transition duration-300`}
                         type="submit"
                     >
                         Terminar

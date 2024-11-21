@@ -30,6 +30,7 @@ import CommentEdit from './components_foro/actualizarcomentario';
 import CrearComentario from './components_foro/crearcomentario';
 import ReplyComment from './components_foro/respondercomentario';
 
+
 const App = () => {
   return (
     <Router>
@@ -42,6 +43,8 @@ const App = () => {
           <Route path="register_em" element={<RegisterEm />} />
           <Route path="complete_profile" element={<CompleteProfile />} />
           <Route path="password_recovery" element={<PasswordResetForm />} />
+
+
         </Route>
 
         {/* Rutas con el segundo Layout (Layout2) */}
@@ -59,11 +62,13 @@ const App = () => {
 
 
 
+
         {/* Rutas CRUD para las prácticas utilizando Layout3 */}
         <Route path="/cpractica" element={<Layout3><Cpractica /></Layout3>} />
         <Route path="/upractica" element={<Layout3><Dpractica /></Layout3>} />
         <Route path="/gpracticas" element={<Layout3><Gpracticas /></Layout3>} />
         <Route path="/logout-em" element={<Layout3><LogoutEm /></Layout3>} />
+
       </Routes>
     </Router>
   );
