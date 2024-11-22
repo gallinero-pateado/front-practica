@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 const Rpractica = () => {
     const [practicas, setPracticas] = useState([]);
@@ -7,15 +8,39 @@ const Rpractica = () => {
     const [error, setError] = useState(null);
     const [filter, setFilter] = useState('');
 
+    // Configurar axios para usar el token de las cookies
+    useEffect(() => {
+        const token = Cookies.get('authToken');
+        if (token) {
+            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        }
+    }, []);
+
     useEffect(() => {
         const fetchPracticas = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/Get-practicas');
-                console.log(response.data); // Para ver la estructura de los datos
+                // Obtener el token de las cookies
+                const token = Cookies.get('authToken');
+
+                // Configurar los headers con el token
+                const config = {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                };
+
+                const response = await axios.get('http://localhost:8080/Get-practicas', config);
+                console.log(response.data);
                 setPracticas(response.data);
                 setLoading(false);
             } catch (err) {
-                setError('Error al obtener las prácticas');
+                console.error('Error:', err);
+                if (err.response?.status === 401) {
+                    setError('Sesión expirada. Por favor, vuelve a iniciar sesión.');
+                } else {
+                    setError('Error al obtener las prácticas');
+                }
                 setLoading(false);
             }
         };
@@ -25,10 +50,23 @@ const Rpractica = () => {
 
     const handleApply = async (practicaId) => {
         try {
-            await axios.post(`http://localhost:8080/Rpracticas/${practicaId}/apply`);
+            const token = Cookies.get('authToken');
+            const config = {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            };
+
+            await axios.post(`http://localhost:8080/Rpracticas/${practicaId}/apply`, {}, config);
             alert('Solicitud enviada con éxito');
         } catch (err) {
-            alert('Error al enviar la solicitud');
+            console.error('Error:', err);
+            if (err.response?.status === 401) {
+                alert('Sesión expirada. Por favor, vuelve a iniciar sesión.');
+            } else {
+                alert('Error al enviar la solicitud');
+            }
         }
     };
 

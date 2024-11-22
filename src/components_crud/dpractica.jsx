@@ -23,6 +23,49 @@ const Dpractica = () => {
         Jornada: ''
     });
 
+    const cookieOptions = {
+        expires: 7,
+        secure: true,
+        sameSite: 'strict',
+        path: '/'
+    };
+
+    // Token management functions
+    const getAuthToken = () => {
+        return Cookies.get('authToken');
+    };
+
+    const removeAuthToken = () => {
+        Cookies.remove('authToken', { path: '/' });
+    };
+
+    // Create axios instance with default configuration
+    const axiosInstance = axios.create({
+        baseURL: 'http://localhost:8080',
+        withCredentials: true
+    });
+
+    // Add request interceptor to include token
+    axiosInstance.interceptors.request.use((config) => {
+        const token = getAuthToken();
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    });
+
+    // Add response interceptor to handle token expiration
+    axiosInstance.interceptors.response.use(
+        response => response,
+        error => {
+            if (error.response?.status === 401) {
+                removeAuthToken();
+                setError('Sesión expirada. Por favor, inicie sesión nuevamente.');
+            }
+            return Promise.reject(error);
+        }
+    );
+
     useEffect(() => {
         fetchPracticas();
         const savedTheme = Cookies.get('theme') || 'light';
@@ -76,57 +119,42 @@ const Dpractica = () => {
     // Obtener las prácticas de la empresa
     const fetchPracticas = async () => {
         try {
-            const token = localStorage.getItem('authToken');
-            if (token) {
-                const response = await axios.get('http://localhost:8080/Get-practicas-empresa', {
-                    headers: { 'Authorization': `Bearer ${token}` },
-                });
-                setPracticas(response.data);
-            } else {
-                setError('No se encontró el token de autenticación');
-            }
+            const response = await axiosInstance.get('/Get-practicas-empresa');
+            setPracticas(response.data);
         } catch (err) {
-            setError('Error al cargar las prácticas');
-            console.error(err);
+            setError('Error al cargar las prácticas: ' + (err.response?.data?.error || err.message));
         }
     };
 
-    // Eliminar una práctica
+    // Updated delete function using axiosInstance
     const handleDelete = async (id) => {
         try {
-            const token = localStorage.getItem('authToken');
-            if (token) {
-                await axios.delete(`http://localhost:8080/Delete-practica/${id}`, {
-                    headers: { 'Authorization': `Bearer ${token}` },
-                });
-                setSuccessMessage('La práctica fue eliminada exitosamente');
-                fetchPracticas(); // Recargar la lista después de eliminar
-            } else {
-                setError('No se encontró el token de autenticación');
-            }
+            await axiosInstance.delete(`/Delete-practica/${id}`);
+            setSuccessMessage('La práctica fue eliminada exitosamente');
+            fetchPracticas();
         } catch (err) {
-            setError('Error al eliminar la práctica');
-            console.error(err);
+            setError('Error al eliminar la práctica: ' + (err.response?.data?.error || err.message));
         }
     };
 
-    // Manejar la edición de la práctica
+    // Handle edit remains the same
     const handleEdit = (practica) => {
         setSelectedPractica(practica);
         setFormData({
             Titulo: practica.Titulo,
             Descripcion: practica.Descripcion,
             Ubicacion: practica.Ubicacion,
-            Fecha_inicio: practica.Fecha_inicio.split('T')[0], // Formato de fecha correcto
-            Fecha_fin: practica.Fecha_fin.split('T')[0], // Formato de fecha correcto
+            Fecha_inicio: practica.Fecha_inicio.split('T')[0],
+            Fecha_fin: practica.Fecha_fin.split('T')[0],
             Requisitos: practica.Requisitos,
-            Fecha_expiracion: practica.Fecha_expiracion.split('T')[0], // Formato de fecha correcto
+            Fecha_expiracion: practica.Fecha_expiracion.split('T')[0],
             Modalidad: practica.Modalidad,
             Area_practica: practica.Area_practica,
             Jornada: practica.Jornada
         });
         setIsEditMode(true);
     };
+
 
     // Manejar el cambio en los campos del formulario
     const handleChange = (e) => {
@@ -140,30 +168,20 @@ const Dpractica = () => {
     // Manejar la actualización de la práctica
     const handleUpdate = async (e) => {
         e.preventDefault();
-
         try {
-            const token = localStorage.getItem('authToken');
-            if (token) {
-                // Aseguramos que las fechas estén en el formato correcto
-                const updatedFormData = {
-                    ...formData,
-                    Fecha_inicio: new Date(formData.Fecha_inicio).toISOString(),
-                    Fecha_fin: new Date(formData.Fecha_fin).toISOString(),
-                    Fecha_expiracion: new Date(formData.Fecha_expiracion).toISOString(),
-                };
+            const updatedFormData = {
+                ...formData,
+                Fecha_inicio: new Date(formData.Fecha_inicio).toISOString(),
+                Fecha_fin: new Date(formData.Fecha_fin).toISOString(),
+                Fecha_expiracion: new Date(formData.Fecha_expiracion).toISOString(),
+            };
 
-                await axios.put(`http://localhost:8080/Update-practicas/${selectedPractica.Id}`, updatedFormData, {
-                    headers: { 'Authorization': `Bearer ${token}` },
-                });
-                setSuccessMessage('La práctica fue actualizada exitosamente');
-                setIsEditMode(false);
-                fetchPracticas(); // Recargar la lista después de actualizar
-            } else {
-                setError('No se encontró el token de autenticación');
-            }
+            await axiosInstance.put(`/Update-practicas/${selectedPractica.Id}`, updatedFormData);
+            setSuccessMessage('La práctica fue actualizada exitosamente');
+            setIsEditMode(false);
+            fetchPracticas();
         } catch (err) {
-            setError('Error al actualizar la práctica');
-            console.error(err);
+            setError('Error al actualizar la práctica: ' + (err.response?.data?.error || err.message));
         }
     };
 

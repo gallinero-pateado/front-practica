@@ -20,10 +20,33 @@ const Cpractica = () => {
     const [errors, setErrors] = useState({});
     const [submitMessage, setSubmitMessage] = useState(null);
 
+    const cookieOptions = {
+        expires: 7, // Cookie expires in 7 days
+        secure: true, // Only transmitted over HTTPS
+        sameSite: 'strict', // Protect against CSRF
+        path: '/' // Available across the entire site
+    };
+
+    // Function to set authentication token in cookies
+    const setAuthToken = (token) => {
+        Cookies.set('authToken', token, cookieOptions);
+    };
+
+    // Function to get authentication token from cookies
+    const getAuthToken = () => {
+        return Cookies.get('authToken');
+    };
+
+    // Function to remove authentication token from cookies
+    const removeAuthToken = () => {
+        Cookies.remove('authToken', { path: '/' });
+    };
+
     useEffect(() => {
         const savedTheme = Cookies.get('theme') || 'light';
         setTheme(savedTheme);
     }, []);
+
 
     useEffect(() => {
         const handleThemeChange = () => {
@@ -77,7 +100,6 @@ const Cpractica = () => {
         if (!Fecha_expiracion) tempErrors.Fecha_expiracion = "La fecha de expiración es requerida";
         if (!formData.Area_practica) tempErrors.Area_practica = "El área de práctica es requerida";
 
-        // Validar que las fechas sean válidas
         const today = new Date();
         if (Fecha_inicio && new Date(Fecha_inicio) < today) {
             tempErrors.Fecha_inicio = "La fecha de inicio no puede ser anterior a hoy.";
@@ -92,18 +114,18 @@ const Cpractica = () => {
         setErrors(tempErrors);
         return Object.keys(tempErrors).length === 0;
     };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (validate()) {
             try {
-                // Obtener el token desde localStorage
-                const token = localStorage.getItem('authToken');
+                // Get token from cookies instead of localStorage
+                const token = getAuthToken();
                 if (!token) {
                     setSubmitMessage({ type: 'error', text: 'No se encontró el token de autenticación.' });
                     return;
                 }
 
-                // Formatear fechas
                 const formattedData = {
                     ...formData,
                     Id_Empresa: parseInt(formData.Id_Empresa, 10),
@@ -112,20 +134,20 @@ const Cpractica = () => {
                     Fecha_expiracion: new Date(formData.Fecha_expiracion).toISOString(),
                 };
 
-                // Realizar la solicitud POST con el token en el encabezado
-                const response = await axios.post(
-                    'http://localhost:8080/Create-practicas',
-                    formattedData,
-                    {
-                        headers: {
-                            'Authorization': `Bearer ${token}` // Aquí se incluye el token
-                        }
-                    }
-                );
+                // Create axios instance with default headers
+                const axiosInstance = axios.create({
+                    baseURL: 'http://localhost:8080',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    withCredentials: true // Important for sending cookies with cross-origin requests
+                });
+
+                const response = await axiosInstance.post('/Create-practicas', formattedData);
 
                 setSubmitMessage({ type: 'success', text: `Práctica creada exitosamente con ID: ${response.data.id_practica}` });
 
-                // Limpiar formulario
                 setFormData({
                     Titulo: '',
                     Descripcion: '',
@@ -140,10 +162,17 @@ const Cpractica = () => {
                     Jornada: ''
                 });
             } catch (error) {
-                setSubmitMessage({ type: 'error', text: 'Error al crear la práctica: ' + (error.response?.data?.error || error.message) });
+                // Handle token expiration
+                if (error.response?.status === 401) {
+                    removeAuthToken();
+                    setSubmitMessage({ type: 'error', text: 'Sesión expirada. Por favor, inicie sesión nuevamente.' });
+                } else {
+                    setSubmitMessage({ type: 'error', text: 'Error al crear la práctica: ' + (error.response?.data?.error || error.message) });
+                }
             }
         }
     };
+
 
     return (
         <div className={`max-w-md mx-auto mt-10 p-6 ${currentTheme.background} rounded-lg shadow-xl font-ubuntu transition-colors duration-300`}>

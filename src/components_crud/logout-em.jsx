@@ -59,16 +59,24 @@ const Logout = () => {
 
     useEffect(() => {
         console.log('Tokens antes de eliminar:', {
-            authToken: localStorage.getItem('authToken'),
-            uid: localStorage.getItem('uid')
+            authToken: Cookies.get('authToken'),
+            uid: Cookies.get('uid')
         });
 
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('uid');
+        // Configuración de seguridad para las cookies
+        const cookieOptions = {
+            secure: true,      // Solo HTTPS
+            sameSite: 'strict', // Protección contra CSRF
+            expires: 7         // Expira en 7 días
+        };
+
+        // Eliminar las cookies de autenticación
+        Cookies.remove('authToken', cookieOptions);
+        Cookies.remove('uid', cookieOptions);
 
         console.log('Tokens después de eliminar:', {
-            authToken: localStorage.getItem('authToken'),
-            uid: localStorage.getItem('uid')
+            authToken: Cookies.get('authToken'),
+            uid: Cookies.get('uid')
         });
 
         const timer = setTimeout(() => {
