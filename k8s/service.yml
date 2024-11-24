@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: front-practica-svc
+  labels:
+    app: front-practica
+spec:
+  type: ClusterIP
+  selector:
+    app: front-practica
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
