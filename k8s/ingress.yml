@@ -10,7 +10,7 @@ spec:
   tls:
   - hosts: 
     - practicas.tssw.info
-    secretName: cert-ulink
+    secretName: cert-front-practicas
   rules:
     - host: practicas.tssw.info
       http:
