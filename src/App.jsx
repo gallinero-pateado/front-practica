@@ -7,6 +7,7 @@ import LoginEm from './components_login/login_em'; //Login para empresa
 import RegisterEm from './components_login/register_em'; //Register para empresa
 import CompleteProfile from './components_login/complete_profile';
 import PasswordResetForm from './components_login/password_recovery';
+import CompleteProfileEmpresa from './components_login/complete_profile_em';
 
 import UserProfile from './components_profile/user-profile';
 import EditProfile from './components_profile/edit-profile';
@@ -43,6 +44,7 @@ const App = () => {
           <Route path="register_em" element={<RegisterEm />} />
           <Route path="complete_profile" element={<CompleteProfile />} />
           <Route path="password_recovery" element={<PasswordResetForm />} />
+          <Route path="complete_profile_em" element={<CompleteProfileEmpresa />} />
 
 
         </Route>
@@ -63,7 +65,7 @@ const App = () => {
 
 
 
-        {/* Rutas CRUD para las prácticas utilizando Layout3 */}
+        {/* Rutas con el Layout3 */}
         <Route path="/cpractica" element={<Layout3><Cpractica /></Layout3>} />
         <Route path="/upractica" element={<Layout3><Dpractica /></Layout3>} />
         <Route path="/gpracticas" element={<Layout3><Gpracticas /></Layout3>} />

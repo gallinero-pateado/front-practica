@@ -180,13 +180,17 @@ const UserProfile = () => {
     // Formatear fecha para mostrarla de manera más amigable
     const formatearFecha = (fecha) => {
         if (!fecha) return 'No especificada';
-        const fechaObj = new Date(fecha);
-        const dia = String(fechaObj.getDate()).padStart(2, '0');
-        const mes = String(fechaObj.getMonth() + 1).padStart(2, '0');
-        const año = fechaObj.getFullYear();
+
+        // Crear una nueva fecha y ajustar la zona horaria
+        const fechaOriginal = new Date(fecha);
+        // Obtener los componentes de la fecha en UTC
+        const año = fechaOriginal.getUTCFullYear();
+        const mes = String(fechaOriginal.getUTCMonth() + 1).padStart(2, '0');
+        const dia = String(fechaOriginal.getUTCDate()).padStart(2, '0');
+
+        // Retornar la fecha formateada
         return `${dia}/${mes}/${año}`;
     };
-
 
     return (
         <main className="flex-grow">

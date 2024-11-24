@@ -7,22 +7,17 @@ const EditProfile = () => {
     const navigate = useNavigate();
     const [theme, setTheme] = useState('light');
     const [profileData, setProfileData] = useState({
-        fotoPerfil: '',
-        nombres: '',
-        apellidos: '',
-        email: '',
         fecha_nacimiento: '',
         ano_ingreso: '',
         id_carrera: '',
     });
 
     const cookieOptions = {
-        expires: 7, // Cookie expires in 7 days
-        secure: window.location.protocol === 'https:', // Only send cookie over HTTPS
-        sameSite: 'Lax', // Provides some CSRF protection while allowing normal navigation
-        path: '/' // Cookie available across the entire site
+        expires: 7,
+        secure: window.location.protocol === 'https:',
+        sameSite: 'Lax',
+        path: '/'
     };
-
 
     useEffect(() => {
         const savedTheme = Cookies.get('theme') || 'light';
@@ -33,7 +28,6 @@ const EditProfile = () => {
             setTheme(newTheme);
         };
 
-        // Observar cambios en el atributo data-theme del documento
         const observer = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
                 if (mutation.attributeName === 'data-theme') {
@@ -65,7 +59,6 @@ const EditProfile = () => {
             response => response,
             error => {
                 if (error.response && error.response.status === 401) {
-                    // Si el token ha expirado o es inválido, limpiar cookies y redirigir al login
                     Cookies.remove('authToken', { path: '/' });
                     Cookies.remove('uid', { path: '/' });
                     navigate('/login');
@@ -111,10 +104,6 @@ const EditProfile = () => {
             try {
                 const response = await axios.get(`http://localhost:8080/usuarios/${uid}`);
                 setProfileData({
-                    fotoPerfil: response.data.Foto_Perfil || '',
-                    nombres: response.data.Nombres || '',
-                    apellidos: response.data.Apellidos || '',
-                    email: response.data.Correo || '',
                     fecha_nacimiento: response.data.Fecha_Nacimiento || '',
                     ano_ingreso: response.data.Ano_Ingreso || '',
                     id_carrera: response.data.Id_carrera || '',
@@ -134,23 +123,40 @@ const EditProfile = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setProfileData((prevData) => ({
-            ...prevData,
-            [name]: value,
-        }));
+        if (name === 'fecha_nacimiento') {
+            // Ajustar la fecha para manejar el timezone
+            const date = new Date(value);
+            // Ajustar a la zona horaria local
+            date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
+            const formattedDate = date.toISOString().split('T')[0];
+            setProfileData(prevData => ({
+                ...prevData,
+                [name]: formattedDate,
+            }));
+        } else {
+            setProfileData(prevData => ({
+                ...prevData,
+                [name]: value,
+            }));
+        }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const uid = Cookies.get('uid');
-        if (!uid) {
-            console.error('UID no encontrado');
-            navigate('/login');
-            return;
+
+        // Prepare the data according to the backend's expected format
+        const updatedData = {};
+        if (profileData.fecha_nacimiento) {
+            // Asegurarse de que la fecha se envíe en el formato correcto
+            const date = new Date(profileData.fecha_nacimiento);
+            date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
+            updatedData.fecha_nacimiento = date.toISOString().split('T')[0];
         }
+        if (profileData.ano_ingreso) updatedData.ano_ingreso = profileData.ano_ingreso;
+        if (profileData.id_carrera) updatedData.id_carrera = parseInt(profileData.id_carrera);
 
         try {
-            await axios.put(`http://localhost:8080/usuarios/${uid}`, profileData);
+            await axios.patch('http://localhost:8080/edit-profile', updatedData);
             alert('Perfil actualizado exitosamente');
             navigate('/user-profile');
         } catch (error) {
@@ -172,14 +178,11 @@ const EditProfile = () => {
                     <h2 className={`text-lg font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-[#1D4157]'}`}>
                         Editar Perfil
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 gap-4">
                         {[
-                            { label: 'Nombres:', name: 'nombres', type: 'text' },
-                            { label: 'Apellidos:', name: 'apellidos', type: 'text' },
-                            { label: 'Correo electrónico:', name: 'email', type: 'email' },
                             { label: 'Fecha de Nacimiento:', name: 'fecha_nacimiento', type: 'date' },
                             { label: 'Año de Ingreso:', name: 'ano_ingreso', type: 'text' },
-                            { label: 'ID de Carrera:', name: 'id_carrera', type: 'text' },
+                            { label: 'ID de Carrera:', name: 'id_carrera', type: 'number' },
                         ].map((field) => (
                             <div key={field.name}>
                                 <label className={`block mb-1 ${theme === 'dark' ? 'text-gray-200' : 'text-[#1D4157]'}`}>
@@ -194,7 +197,6 @@ const EditProfile = () => {
                                         ? 'bg-gray-700 text-white border-gray-600 focus:border-blue-500'
                                         : 'bg-white text-[#1D4157] border-gray-300 focus:border-blue-500'
                                         }`}
-                                    required
                                 />
                             </div>
                         ))}
@@ -202,9 +204,9 @@ const EditProfile = () => {
                     <div className="mt-6 flex justify-end">
                         <button
                             type="submit"
-                            className={`px-4 py-2 rounded-md shadow-sm text-sm font-medium text-white 
-        bg-[#0092BC] hover:bg-[#A3D9D3] 
-        transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500`}
+                            className="px-4 py-2 rounded-md shadow-sm text-sm font-medium text-white 
+                                     bg-[#0092BC] hover:bg-[#A3D9D3] 
+                                     transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                         >
                             Guardar Cambios
                         </button>

@@ -89,20 +89,24 @@ const LoginEm = () => {
 
             console.log('Respuesta del inicio de sesión:', response.data);
 
-            const { token, uid } = response.data;
+            const { token, uid, isProfileComplete } = response.data;
 
             if (!token || !uid) {
                 throw new Error('No se recibieron las credenciales necesarias');
             }
 
-            // Guardar credenciales en cookies en lugar de localStorage
+            // Guardar credenciales en cookies
             Cookies.set('authToken', token, cookieOptions);
             Cookies.set('uid', uid, cookieOptions);
 
             console.log('Token and UID stored in cookies');
 
-            // Redirige al perfil de usuario
-            navigate('/gpracticas');
+            // Redirige según si el perfil está completo o no
+            if (!isProfileComplete) {
+                navigate('/complete_profile_em');
+            } else {
+                navigate('/gpracticas');
+            }
         } catch (error) {
             console.error('Error al iniciar sesión:', error);
             if (error.response) {
