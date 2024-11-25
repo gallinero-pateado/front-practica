@@ -4,6 +4,7 @@ import { Search, Filter, ChevronDown, X } from 'lucide-react';
 import PostulacionPractica from '../components_postulacion/postulacion_practica';
 import Cookies from 'js-cookie';
 
+const API_URL = import.meta.env.VITE_API_URL;
 
 const PracticasList = () => {
     const [practicas, setPracticas] = useState([]);
@@ -50,7 +51,7 @@ const PracticasList = () => {
     const fetchPracticas = async () => {
         try {
             setLoading(true);
-            let url = 'http://localhost:8080/Get-practicas';
+            let url = `${API_URL}/Get-practicas`;
             const queryParams = new URLSearchParams(Object.entries(filters).filter(([_, v]) => v !== '')).toString();
             if (queryParams) {
                 url += `?${queryParams}`;

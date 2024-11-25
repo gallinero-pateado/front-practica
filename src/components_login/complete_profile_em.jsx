@@ -103,9 +103,10 @@ const CompleteProfileEmpresa = () => {
                 Telefono_contacto: telefono,
                 Estado_verificacion: 1
             };
+            const API_URL = import.meta.env.VITE_API_URL;
 
             const response = await axios.post(
-                'http://localhost:8080/complete-profile/empresa',
+                `${API_URL}/complete-profile/empresa`,
                 profileFormData,
                 {
                     headers: {

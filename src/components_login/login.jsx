@@ -80,7 +80,9 @@ const Login = () => {
 
         try {
             // 1. Login Request - matches backend LoginHandler endpoint
-            const loginResponse = await axios.post('http://localhost:8080/login', {
+            const API_URL = import.meta.env.VITE_API_URL;
+
+            const loginResponse = await axios.post(`${API_URL}/login`, {
                 email: email.trim().toLowerCase(), // Match backend email normalization
                 password
             }, {
@@ -107,7 +109,7 @@ const Login = () => {
             } else {
                 try {
                     // 2. Profile Status Check - matches GetProfileStatusHandler endpoint
-                    const profileResponse = await axios.get('http://localhost:8080/profile-status', {
+                    const profileResponse = await axios.get(`${API_URL}/profile-status`, {
                         headers: {
                             'Authorization': `Bearer ${token}`
                         }

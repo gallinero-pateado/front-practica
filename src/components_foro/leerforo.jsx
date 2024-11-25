@@ -280,7 +280,9 @@ const TemasList = () => {
 
     const fetchTemas = async () => {
         try {
-            const response = await fetch('http://localhost:8080/temas');
+            const API_URL = import.meta.env.VITE_API_URL;
+
+            const response = await fetch(`${API_URL}/temas`); 
             if (!response.ok) {
                 throw new Error('Error al cargar los temas');
             }
@@ -296,7 +298,9 @@ const TemasList = () => {
 
     const cargarComentarios = async (temaId) => {
         try {
-            const response = await fetch(`http://localhost:8080/temas/${temaId}/comentarios`);
+            const API_URL = import.meta.env.VITE_API_URL;
+
+            const response = await fetch(`${API_URL}/temas/${temaId}/comentarios`);
             if (!response.ok) {
                 throw new Error('Error al cargar los comentarios');
             }
@@ -350,7 +354,9 @@ const TemasList = () => {
             }
 
             // Realizar la petición DELETE
-            const response = await fetch(`http://localhost:8080/comentarios/${comentarioId}`, {
+            const API_URL = import.meta.env.VITE_API_URL;
+
+            const response = await fetch(`${API_URL}/comentarios/${comentarioId}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`,

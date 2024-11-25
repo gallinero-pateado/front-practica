@@ -120,7 +120,7 @@ const Cpractica = () => {
                 };
 
                 const axiosInstance = axios.create({
-                    baseURL: 'http://localhost:8080',
+                    baseURL: import.meta.env.VITE_API_URL,
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'

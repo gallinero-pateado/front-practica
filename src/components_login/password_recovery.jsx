@@ -38,7 +38,9 @@ const PasswordResetForm = () => {
         setError('');
 
         try {
-            const response = await axios.post('http://localhost:8080/password-reset', { email });
+            const API_URL = import.meta.env.VITE_API_URL;
+
+            const response = await axios.post(`${API_URL}/password-reset`, { email });
             setMessage(response.data.message);
         } catch (err) {
             setError(err.response?.data?.error || 'Error al procesar la solicitud');

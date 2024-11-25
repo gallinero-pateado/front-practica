@@ -159,8 +159,10 @@ const CompleteProfile = () => {
             if (formData.fotoPerfil) {
                 const imageFormData = new FormData();
                 imageFormData.append('file', formData.fotoPerfil);
+                
+                const API_URL = import.meta.env.VITE_API_URL;
 
-                const uploadResponse = await axios.post('http://localhost:8080/upload-image', imageFormData, {
+                const uploadResponse = await axios.post(`${API_URL}/upload-image`, imageFormData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     }
@@ -176,7 +178,7 @@ const CompleteProfile = () => {
                 foto_perfil: fotoPerfilUrl || ''
             };
 
-            const response = await axios.post('http://localhost:8080/complete-profile', profileFormData, {
+            const response = await axios.post(`${API_URL}/complete-profile`, profileFormData, {
                 headers: {
                     'Content-Type': 'application/json'
                 }

@@ -42,7 +42,9 @@ const LoginEm = () => {
     const checkProfileStatus = async (token, uid) => {
         try {
             console.log('Checking profile status with token:', token);
-            const response = await axios.get('http://localhost:8080/profile-status/empresa', {
+            const API_URL = import.meta.env.VITE_API_URL;
+
+            const response = await axios.get(`${API_URL}/profile-status/empresa`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -67,7 +69,8 @@ const LoginEm = () => {
         });
 
         try {
-            const loginResponse = await axios.post('http://localhost:8080/login', {
+            const API_URL = import.meta.env.VITE_API_URL;
+            const loginResponse = await axios.post(`${API_URL}/login`, {
                 email: email.trim().toLowerCase(),
                 password
             }, {
