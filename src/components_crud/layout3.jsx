@@ -58,7 +58,7 @@ const Layout3 = ({ children, isLogout }) => {
                         {!isLogout && (
                             <Link
                                 to="/logout-em"
-                                className="bg-red-600 text-white px-3 py-2 rounded font-bold text-lg hover:bg-red-700 transition duration-300"
+                                className="bg-[#7b4b94] text-white px-3 py-2 rounded font-bold text-lg hover:bg-[#9b6ab4] transition duration-300"
                             >
                                 Salir
                             </Link>

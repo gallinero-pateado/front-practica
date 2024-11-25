@@ -24,6 +24,7 @@ import Gpracticas from './components_crud/gpracticas'; // Componente para que la
 import PracticasList from './components_busqueda/search';
 
 import PostulacionPractica from './components_postulacion/postulacion_practica';
+import PostulantesList from './components_postulacion/postulantesapracticas';
 
 import TemasList from './components_foro/leerforo';
 import CrearTemaForm from './components_foro/creartema';
@@ -69,6 +70,7 @@ const App = () => {
         <Route path="/cpractica" element={<Layout3><Cpractica /></Layout3>} />
         <Route path="/upractica" element={<Layout3><Dpractica /></Layout3>} />
         <Route path="/gpracticas" element={<Layout3><Gpracticas /></Layout3>} />
+        <Route path="/postulantesapracticas" element={<Layout3><PostulantesList /></Layout3>} />
         <Route path="/logout-em" element={<Layout3><LogoutEm /></Layout3>} />
 
       </Routes>

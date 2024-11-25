@@ -1,27 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import Cpractica from './cpractica';
 import Dpractica from './dpractica';
+import PostulantesList from '../components_postulacion/postulantesapracticas';
 import Cookies from 'js-cookie';
 
 const Gpracticas = () => {
     const [activeComponent, setActiveComponent] = useState('lista');
     const [theme, setTheme] = useState('light');
+    const [selectedPracticaId, setSelectedPracticaId] = useState(null);
 
     useEffect(() => {
         const savedTheme = Cookies.get('theme') || 'light';
         setTheme(savedTheme);
     }, []);
 
-    // Listen for theme changes
     useEffect(() => {
         const handleThemeChange = () => {
             const savedTheme = Cookies.get('theme') || 'light';
             setTheme(savedTheme);
         };
 
-        // Check for theme changes every second
         const interval = setInterval(handleThemeChange, 1000);
-
         return () => clearInterval(interval);
     }, []);
 
@@ -48,13 +47,20 @@ const Gpracticas = () => {
 
     const currentTheme = themeColors[theme];
 
+    const handleViewPostulantes = (practicaId) => {
+        setSelectedPracticaId(practicaId);
+        setActiveComponent('postulantes');
+    };
+
     const renderComponent = () => {
         switch (activeComponent) {
             case 'crear':
                 return <Cpractica />;
+            case 'postulantes':
+                return <PostulantesList practicaId={selectedPracticaId} theme={theme} />;
             case 'lista':
             default:
-                return <Dpractica />;
+                return <Dpractica onViewPostulantes={handleViewPostulantes} />;
         }
     };
 
@@ -63,10 +69,10 @@ const Gpracticas = () => {
             <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-6 text-center">
                 Gestión de Prácticas
             </h1>
-            <div className="mb-4 flex flex-col md:flex-row justify-center">
+            <div className="mb-4 flex flex-col md:flex-row justify-center gap-2">
                 <button
                     onClick={() => setActiveComponent('lista')}
-                    className={`mr-0 md:mr-2 mb-2 md:mb-0 px-4 py-2 ${currentTheme.primaryButton} text-white rounded transition-colors duration-300 
+                    className={`px-4 py-2 ${currentTheme.primaryButton} text-white rounded transition-colors duration-300 
                         ${currentTheme.buttonHoverPrimary} focus:outline-none focus:ring-2 ${currentTheme.focusRing}`}
                 >
                     Ver Prácticas
@@ -78,6 +84,15 @@ const Gpracticas = () => {
                 >
                     Crear Práctica
                 </button>
+                {activeComponent === 'postulantes' && (
+                    <button
+                        onClick={() => setActiveComponent('lista')}
+                        className={`px-4 py-2 ${currentTheme.secondaryButton} text-white rounded transition-colors duration-300 
+                            ${currentTheme.buttonHoverSecondary} focus:outline-none focus:ring-2 ${currentTheme.focusRing}`}
+                    >
+                        Volver a Lista
+                    </button>
+                )}
             </div>
             <div className="w-full">{renderComponent()}</div>
         </div>

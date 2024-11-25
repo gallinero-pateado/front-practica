@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Edit, Trash } from 'lucide-react';
+import { Edit, Trash, Users } from 'lucide-react';
 import Cookies from 'js-cookie';
 
-const Dpractica = () => {
+const Dpractica = ({ onViewPostulantes }) => {
     const [practicas, setPracticas] = useState([]);
     const [error, setError] = useState(null);
     const [successMessage, setSuccessMessage] = useState(null);
@@ -110,8 +110,9 @@ const Dpractica = () => {
     };
 
     const actionButtons = {
-        edit: 'bg-[#7b4b94] hover:bg-[#9b6ab4]', // Color púrpura con hover más claro
-        delete: 'bg-[#ffd166] hover:bg-[#ffdc85]' // Color amarillo con hover más claro
+        edit: 'bg-[#7b4b94] hover:bg-[#9b6ab4]',
+        delete: 'bg-[#ffd166] hover:bg-[#ffdc85]',
+        view: 'bg-[#a3d9d3] hover:bg-[#26f6c0]' // Nuevo color para el botón de ver postulantes
     };
 
     const currentTheme = themeColors[theme];
@@ -214,18 +215,27 @@ const Dpractica = () => {
                                 <td className={`border p-2 ${currentTheme.tableBorder}`}>{practica.Id}</td>
                                 <td className={`border p-2 ${currentTheme.tableBorder}`}>{practica.Titulo}</td>
                                 <td className={`border p-2 ${currentTheme.tableBorder}`}>{practica.Descripcion}</td>
-                                <td className={`border p-2 ${currentTheme.tableBorder}`}>
+                                <td className={`border p-2 ${currentTheme.tableBorder} flex gap-2`}>
                                     <button
                                         onClick={() => handleEdit(practica)}
-                                        className={`${actionButtons.edit} text-white font-bold py-1 px-2 rounded mr-2 transition-colors duration-300`}
+                                        className={`${actionButtons.edit} text-white font-bold py-1 px-2 rounded transition-colors duration-300`}
+                                        title="Editar práctica"
                                     >
                                         <Edit size={20} />
                                     </button>
                                     <button
                                         onClick={() => handleDelete(practica.Id)}
                                         className={`${actionButtons.delete} text-white font-bold py-1 px-2 rounded transition-colors duration-300`}
+                                        title="Eliminar práctica"
                                     >
                                         <Trash size={20} />
+                                    </button>
+                                    <button
+                                        onClick={() => onViewPostulantes(practica.Id)}
+                                        className={`${actionButtons.view} text-white font-bold py-1 px-2 rounded transition-colors duration-300`}
+                                        title="Ver postulantes"
+                                    >
+                                        <Users size={20} />
                                     </button>
                                 </td>
                             </tr>
