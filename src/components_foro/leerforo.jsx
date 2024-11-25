@@ -71,6 +71,11 @@ const Comentario = ({
         setMostrarFormRespuesta(!mostrarFormRespuesta);
     };
 
+    const formatUserName = (user) => {
+        if (!user) return 'Usuario Anónimo';
+        return `${user.nombres} ${user.apellidos}`.trim() || user.email || 'Usuario Anónimo';
+    };
+
     return (
         <div className="w-full">
             <div className={`
@@ -85,7 +90,7 @@ const Comentario = ({
                 `}>
                     <div className="mb-2">
                         <p className={`text-sm font-medium ${currentTheme.commentText}`}>
-                            Por: {comentario.autor}
+                            Por: {formatUserName(comentario.usuario)}
                         </p>
                         <p className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-[#1D4157]/70'}`}>
                             {formatDate(comentario.fechaCreacion)}
@@ -141,6 +146,7 @@ const Comentario = ({
                             </button>
                         )}
                     </div>
+
                 </div>
 
                 {mostrarFormRespuesta && (
@@ -157,7 +163,6 @@ const Comentario = ({
                         </div>
                     </div>
                 )}
-
                 {mostrarRespuestas && comentario.respuestas && comentario.respuestas.length > 0 && (
                     <div className="w-full">
                         {comentario.respuestas.map(respuesta => (
@@ -329,32 +334,50 @@ const TemasList = () => {
     const handleEliminar = async (e, comentarioId) => {
         e.stopPropagation();
         try {
-            const token = localStorage.getItem('authToken');
+            // Obtener el token de las cookies
+            const getCookie = (name) => {
+                const value = `; ${document.cookie}`;
+                const parts = value.split(`; ${name}=`);
+                if (parts.length === 2) {
+                    return parts.pop().split(';').shift();
+                }
+                return null;
+            };
+
+            const token = getCookie('authToken');
             if (!token) {
                 throw new Error('No estás autenticado');
             }
 
+            // Realizar la petición DELETE
             const response = await fetch(`http://localhost:8080/comentarios/${comentarioId}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
-                }
+                },
+                // Incluir credenciales para cookies
+                credentials: 'include'
             });
 
+            // Manejar respuesta no exitosa
             if (!response.ok) {
-                const errorData = await response.json();
+                const errorData = await response.json().catch(() => ({}));
                 throw new Error(errorData.error || 'Error al eliminar el comentario');
             }
 
-            Object.keys(temasExpandidos).forEach(temaId => {
-                if (temasExpandidos[temaId]) {
-                    cargarComentarios(temaId);
-                }
-            });
+            // Recargar comentarios solo si la eliminación fue exitosa
+            if (temasExpandidos) {
+                Object.entries(temasExpandidos).forEach(([temaId, expandido]) => {
+                    if (expandido) {
+                        cargarComentarios(temaId);
+                    }
+                });
+            }
 
             alert('Comentario eliminado exitosamente');
         } catch (err) {
+            console.error('Error al eliminar comentario:', err);
             setError(err.message);
             alert(err.message);
         }

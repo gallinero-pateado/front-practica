@@ -70,6 +70,11 @@ const RegisterEm = () => {
         setError('');
         setSuccess('');
 
+        if (formData.Password.length < 6) {
+            setError('La contraseña debe tener al menos 6 caracteres');
+            return;
+        }
+
         // Verificar que las contraseñas coincidan
         if (formData.Password !== formData.ConfirmPassword) {
             setError('Las contraseñas no coinciden');

@@ -7,6 +7,7 @@ const CrearComentario = ({ temaId, onComentarioCreado }) => {
     const [contenido, setContenido] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState('');
+    const maxCaracteres = 70;
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -80,6 +81,7 @@ const CrearComentario = ({ temaId, onComentarioCreado }) => {
                         value={contenido}
                         onChange={(e) => setContenido(e.target.value)}
                         placeholder="Escribe tu comentario..."
+                        maxLength={maxCaracteres} // Límite de caracteres
                         className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#0092BC]
                                   transition-colors duration-300
                                   bg-white dark:bg-gray-800
@@ -89,6 +91,9 @@ const CrearComentario = ({ temaId, onComentarioCreado }) => {
                                   min-h-[100px] resize-y"
                         disabled={isSubmitting}
                     />
+                    <div className="text-right text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        {contenido.length}/{maxCaracteres} caracteres
+                    </div>
                 </div>
 
                 {error && (

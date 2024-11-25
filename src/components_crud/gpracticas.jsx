@@ -20,7 +20,7 @@ const Gpracticas = () => {
             setTheme(savedTheme);
         };
 
-        const interval = setInterval(handleThemeChange, 1000);
+        const interval = setInterval(handleThemeChange, 1);
         return () => clearInterval(interval);
     }, []);
 
@@ -60,7 +60,7 @@ const Gpracticas = () => {
                 return <PostulantesList practicaId={selectedPracticaId} theme={theme} />;
             case 'lista':
             default:
-                return <Dpractica onViewPostulantes={handleViewPostulantes} />;
+                return <Dpractica onViewPostulantes={handleViewPostulantes} theme={theme} />;
         }
     };
 

@@ -71,6 +71,11 @@ const Register = () => {
         setError('');
         setSuccess('');
 
+        if (formData.Password.length < 6) {
+            setError('La contraseña debe tener al menos 6 caracteres');
+            return;
+        }
+
         // Comprobar coincidencia en las contraseñas
         if (formData.password !== formData.confirmPassword) {
             setError('Las contraseñas no coinciden');

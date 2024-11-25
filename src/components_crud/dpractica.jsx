@@ -70,15 +70,9 @@ const Dpractica = ({ onViewPostulantes }) => {
         fetchPracticas();
         const savedTheme = Cookies.get('theme') || 'light';
         setTheme(savedTheme);
-
-        const handleThemeChange = () => {
-            const savedTheme = Cookies.get('theme') || 'light';
-            setTheme(savedTheme);
-        };
-
-        const interval = setInterval(handleThemeChange, 1000);
-        return () => clearInterval(interval);
+        document.documentElement.classList.toggle('dark', savedTheme === 'dark');
     }, []);
+
 
     const themeColors = {
         light: {
@@ -112,7 +106,7 @@ const Dpractica = ({ onViewPostulantes }) => {
     const actionButtons = {
         edit: 'bg-[#7b4b94] hover:bg-[#9b6ab4]',
         delete: 'bg-[#ffd166] hover:bg-[#ffdc85]',
-        view: 'bg-[#a3d9d3] hover:bg-[#26f6c0]' // Nuevo color para el botón de ver postulantes
+        view: 'bg-[#a3d9d3] hover:bg-[#26f6c0]'
     };
 
     const currentTheme = themeColors[theme];
@@ -155,7 +149,6 @@ const Dpractica = ({ onViewPostulantes }) => {
         });
         setIsEditMode(true);
     };
-
 
     // Manejar el cambio en los campos del formulario
     const handleChange = (e) => {
@@ -205,7 +198,7 @@ const Dpractica = ({ onViewPostulantes }) => {
                         <tr className={currentTheme.tableHeader}>
                             <th className={`border p-2 ${currentTheme.tableBorder}`}>ID</th>
                             <th className={`border p-2 ${currentTheme.tableBorder}`}>Título</th>
-                            <th className={`border p-2 ${currentTheme.tableBorder}`}>Descripcion</th>
+                            <th className={`border p-2 ${currentTheme.tableBorder}`}>Descripción</th>
                             <th className={`border p-2 ${currentTheme.tableBorder}`}>Acciones</th>
                         </tr>
                     </thead>

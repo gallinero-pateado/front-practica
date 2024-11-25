@@ -7,6 +7,7 @@ const ReplyComment = ({ temaId, comentarioPadreId, onComentarioCreado }) => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const [theme, setTheme] = useState('light');
+    const maxCaracteres = 80;
 
     useEffect(() => {
         const savedTheme = Cookies.get('theme') || 'light';
@@ -98,6 +99,7 @@ const ReplyComment = ({ temaId, comentarioPadreId, onComentarioCreado }) => {
                     value={contenido}
                     onChange={(e) => setContenido(e.target.value)}
                     placeholder="Escribe tu respuesta aquí..."
+                    maxLength={maxCaracteres} // Límite de caracteres
                     className={`w-full p-2 border rounded-lg focus:ring-1 focus:ring-[#0092BC] focus:border-[#0092BC] text-sm transition-colors duration-300
                 ${theme === 'dark'
                             ? 'bg-gray-700 border-gray-600 text-gray-200 placeholder-gray-400'
@@ -117,6 +119,9 @@ const ReplyComment = ({ temaId, comentarioPadreId, onComentarioCreado }) => {
                         <X className="w-3 h-3" />
                     </button>
                 )}
+                <div className="text-right text-xs mt-1 text-gray-500 dark:text-gray-400">
+                    {contenido.length}/{maxCaracteres} caracteres
+                </div>
             </div>
 
             {error && (

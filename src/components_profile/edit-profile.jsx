@@ -12,6 +12,11 @@ const EditProfile = () => {
         id_carrera: '',
     });
 
+    const [errors, setErrors] = useState({
+        fecha_nacimiento: '',
+        ano_ingreso: '',
+    });
+
     const cookieOptions = {
         expires: 7,
         secure: window.location.protocol === 'https:',
@@ -121,17 +126,66 @@ const EditProfile = () => {
         fetchProfileData();
     }, [navigate]);
 
+    const validateBirthDate = (date) => {
+        if (!date) return '';
+
+        const selectedDate = new Date(date);
+        const today = new Date();
+        const minDate = new Date();
+        minDate.setFullYear(today.getFullYear() - 100);
+        const maxDate = new Date();
+        maxDate.setFullYear(today.getFullYear() - 15);
+
+        if (selectedDate > today) {
+            return 'Error en Fecha de Nacimiento: Has seleccionado una fecha en el futuro. Por favor, selecciona una fecha válida.';
+        }
+        if (selectedDate < minDate) {
+            return 'Error en Fecha de Nacimiento: La edad ingresada supera los 100 años. Por favor, verifica la fecha.';
+        }
+        if (selectedDate > maxDate) {
+            return 'Error en Fecha de Nacimiento: Debes tener al menos 15 años. La fecha ingresada indica una edad menor.';
+        }
+        return '';
+    };
+
+    const validateEntryYear = (year) => {
+        if (!year) return '';
+
+        const currentYear = new Date().getFullYear();
+        const yearNum = parseInt(year);
+
+        if (isNaN(yearNum)) {
+            return 'Error en Año de Ingreso: El valor ingresado no es un número válido.';
+        }
+        if (yearNum < 1970) {
+            return 'Error en Año de Ingreso: El año debe ser posterior a 1970.';
+        }
+        if (yearNum > currentYear + 1) {
+            return `Error en Año de Ingreso: No puedes seleccionar un año posterior a ${currentYear + 1}.`;
+        }
+        return '';
+    };
+
     const handleChange = (e) => {
         const { name, value } = e.target;
+        let validationError = '';
+
         if (name === 'fecha_nacimiento') {
-            // Ajustar la fecha para manejar el timezone
             const date = new Date(value);
-            // Ajustar a la zona horaria local
             date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
             const formattedDate = date.toISOString().split('T')[0];
+            validationError = validateBirthDate(formattedDate);
+
             setProfileData(prevData => ({
                 ...prevData,
                 [name]: formattedDate,
+            }));
+        } else if (name === 'ano_ingreso') {
+            validationError = validateEntryYear(value);
+
+            setProfileData(prevData => ({
+                ...prevData,
+                [name]: value,
             }));
         } else {
             setProfileData(prevData => ({
@@ -139,15 +193,37 @@ const EditProfile = () => {
                 [name]: value,
             }));
         }
+
+        setErrors(prevErrors => ({
+            ...prevErrors,
+            [name]: validationError
+        }));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        // Validar todos los campos antes de enviar
+        const birthDateError = validateBirthDate(profileData.fecha_nacimiento);
+        const entryYearError = validateEntryYear(profileData.ano_ingreso);
+
+        setErrors({
+            fecha_nacimiento: birthDateError,
+            ano_ingreso: entryYearError,
+        });
+
+        if (birthDateError || entryYearError) {
+            // Mostrar alerta específica con los errores encontrados
+            let errorMessage = "Se encontraron los siguientes errores:\n\n";
+            if (birthDateError) errorMessage += `${birthDateError}\n`;
+            if (entryYearError) errorMessage += `${entryYearError}\n`;
+            alert(errorMessage);
+            return;
+        }
+
         // Prepare the data according to the backend's expected format
         const updatedData = {};
         if (profileData.fecha_nacimiento) {
-            // Asegurarse de que la fecha se envíe en el formato correcto
             const date = new Date(profileData.fecha_nacimiento);
             date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
             updatedData.fecha_nacimiento = date.toISOString().split('T')[0];
@@ -170,6 +246,7 @@ const EditProfile = () => {
             }
         }
     };
+
 
     return (
         <main className="flex-grow p-4">

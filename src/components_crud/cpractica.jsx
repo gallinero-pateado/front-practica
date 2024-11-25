@@ -21,23 +21,20 @@ const Cpractica = () => {
     const [submitMessage, setSubmitMessage] = useState(null);
 
     const cookieOptions = {
-        expires: 7, // Cookie expires in 7 days
-        secure: true, // Only transmitted over HTTPS
-        sameSite: 'strict', // Protect against CSRF
-        path: '/' // Available across the entire site
+        expires: 7,
+        secure: true,
+        sameSite: 'strict',
+        path: '/'
     };
 
-    // Function to set authentication token in cookies
     const setAuthToken = (token) => {
         Cookies.set('authToken', token, cookieOptions);
     };
 
-    // Function to get authentication token from cookies
     const getAuthToken = () => {
         return Cookies.get('authToken');
     };
 
-    // Function to remove authentication token from cookies
     const removeAuthToken = () => {
         Cookies.remove('authToken', { path: '/' });
     };
@@ -45,17 +42,6 @@ const Cpractica = () => {
     useEffect(() => {
         const savedTheme = Cookies.get('theme') || 'light';
         setTheme(savedTheme);
-    }, []);
-
-
-    useEffect(() => {
-        const handleThemeChange = () => {
-            const savedTheme = Cookies.get('theme') || 'light';
-            setTheme(savedTheme);
-        };
-
-        const interval = setInterval(handleThemeChange, 1000);
-        return () => clearInterval(interval);
     }, []);
 
     const themeColors = {
@@ -119,7 +105,6 @@ const Cpractica = () => {
         e.preventDefault();
         if (validate()) {
             try {
-                // Get token from cookies instead of localStorage
                 const token = getAuthToken();
                 if (!token) {
                     setSubmitMessage({ type: 'error', text: 'No se encontró el token de autenticación.' });
@@ -134,14 +119,13 @@ const Cpractica = () => {
                     Fecha_expiracion: new Date(formData.Fecha_expiracion).toISOString(),
                 };
 
-                // Create axios instance with default headers
                 const axiosInstance = axios.create({
                     baseURL: 'http://localhost:8080',
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
                     },
-                    withCredentials: true // Important for sending cookies with cross-origin requests
+                    withCredentials: true
                 });
 
                 const response = await axiosInstance.post('/Create-practicas', formattedData);
@@ -162,7 +146,6 @@ const Cpractica = () => {
                     Jornada: ''
                 });
             } catch (error) {
-                // Handle token expiration
                 if (error.response?.status === 401) {
                     removeAuthToken();
                     setSubmitMessage({ type: 'error', text: 'Sesión expirada. Por favor, inicie sesión nuevamente.' });
@@ -172,7 +155,6 @@ const Cpractica = () => {
             }
         }
     };
-
 
     return (
         <div className={`max-w-md mx-auto mt-10 p-6 ${currentTheme.background} rounded-lg shadow-xl font-ubuntu transition-colors duration-300`}>

@@ -12,14 +12,15 @@ const CrearTemaForm = ({ onClose, onTemaCreado }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(true);
     const [theme, setTheme] = useState('light');
 
+    const MAX_TITULO_LENGTH = 60; // Límite de caracteres para el título
+    const MAX_DESCRIPCION_LENGTH = 80; // Límite de caracteres para la descripción
+
     useEffect(() => {
-        // Check for token in cookies instead of localStorage
         const token = Cookies.get('authToken');
         if (!token) {
             setIsAuthenticated(false);
         }
 
-        // Inicializar y escuchar cambios del tema
         const savedTheme = Cookies.get('theme') || 'light';
         setTheme(savedTheme);
 
@@ -32,9 +33,13 @@ const CrearTemaForm = ({ onClose, onTemaCreado }) => {
         return () => clearInterval(interval);
     }, []);
 
-
     const handleChange = (e) => {
         const { name, value } = e.target;
+
+        // Validar límites de caracteres antes de actualizar el estado
+        if (name === 'titulo' && value.length > MAX_TITULO_LENGTH) return;
+        if (name === 'descripcion' && value.length > MAX_DESCRIPCION_LENGTH) return;
+
         setTema(prev => ({
             ...prev,
             [name]: value
@@ -46,7 +51,6 @@ const CrearTemaForm = ({ onClose, onTemaCreado }) => {
         setError(null);
         setLoading(true);
 
-        // Retrieve token from cookies
         const token = Cookies.get('authToken');
 
         if (!token) {
@@ -70,7 +74,6 @@ const CrearTemaForm = ({ onClose, onTemaCreado }) => {
             if (!response.ok) {
                 if (response.status === 401) {
                     setError('Sesión expirada. Por favor, vuelve a iniciar sesión.');
-                    // Remove token from cookies on authentication failure
                     Cookies.remove('authToken');
                     setIsAuthenticated(false);
                 } else {
@@ -95,22 +98,6 @@ const CrearTemaForm = ({ onClose, onTemaCreado }) => {
         }
     };
 
-    const handleLogin = (token) => {
-        // Set secure, SameSite cookie with appropriate configurations
-        Cookies.set('authToken', token, {
-            expires: 7, // Token expires in 7 days
-            secure: true, // Only send cookie over HTTPS
-            sameSite: 'strict' // Prevent CSRF attacks
-        });
-        setIsAuthenticated(true);
-    };
-
-    // Function to handle logout
-    const handleLogout = () => {
-        // Remove the authentication cookie
-        Cookies.remove('authToken');
-        setIsAuthenticated(false);
-    };
     if (!isAuthenticated) {
         return (
             <div className="bg-white rounded-lg shadow-sm border border-[#A3D9D3] p-6 mb-6">
@@ -126,6 +113,7 @@ const CrearTemaForm = ({ onClose, onTemaCreado }) => {
             </div>
         );
     }
+
     return (
         <div className={`rounded-lg shadow-sm p-6 mb-6 transition-colors duration-300
             ${theme === 'dark'
@@ -144,7 +132,7 @@ const CrearTemaForm = ({ onClose, onTemaCreado }) => {
                         htmlFor="titulo"
                         className={`block text-sm font-medium mb-1 transition-colors
                             ${theme === 'dark' ? 'text-gray-300' : 'text-[#1D4157]'}`}>
-                        Título
+                        Título ({tema.titulo.length}/{MAX_TITULO_LENGTH})
                     </label>
                     <input
                         type="text"
@@ -152,6 +140,7 @@ const CrearTemaForm = ({ onClose, onTemaCreado }) => {
                         name="titulo"
                         value={tema.titulo}
                         onChange={handleChange}
+                        maxLength={MAX_TITULO_LENGTH}
                         required
                         className={`w-full p-3 rounded-lg focus:ring-2 focus:ring-[#0092BC] min-h-[50px] resize-y transition-colors duration-300
                             ${theme === 'dark'
@@ -166,13 +155,14 @@ const CrearTemaForm = ({ onClose, onTemaCreado }) => {
                         htmlFor="descripcion"
                         className={`block text-sm font-medium mb-1 transition-colors
                             ${theme === 'dark' ? 'text-gray-300' : 'text-[#1D4157]'}`}>
-                        Descripción
+                        Descripción ({tema.descripcion.length}/{MAX_DESCRIPCION_LENGTH})
                     </label>
                     <textarea
                         id="descripcion"
                         name="descripcion"
                         value={tema.descripcion}
                         onChange={handleChange}
+                        maxLength={MAX_DESCRIPCION_LENGTH}
                         required
                         rows="4"
                         className={`w-full p-3 rounded-lg focus:ring-2 focus:ring-[#0092BC] min-h-[100px] resize-y transition-colors duration-300
