@@ -10,12 +10,9 @@ Sprint3 conectado al backend sin problema. Postulacion a practica funciona corre
 Sprint4 conectado al backend con exito. Creacion de temas y comentarios para el foro sin problema, funcionalidad de eliminar, editar y leer los comentarios y leer temas esta correctamente. Un usuario cualquiera no puede eliminar el comentario de otra persona.
 
 
-**ARREGLE 6/11 LO QUE ME PIDIO EL QA, FALTA CORREGIR 2, QUE ES EL RESTO**
 
 **HACER CAMBIOS A LOS COLORES AHORA QUE SE AGRANDO LA PALETA DE COLORES ÑEHEHEH**
 
-
-***por arreglar  edit-profile ***
 
 
 ***SE DEBE VERIFICAR EL CORREO SI O SI, LUEGO DE REGISTRARSE EN LA WEB***
@@ -30,7 +27,8 @@ para usar el codigo es necesario instalar lo siguiente en el terminal:
 ---npm install axios.
 ---npm create vite@latest.
 ---npm install react-router-dom.
----npm install firebase.
+---npm install firebase
+---npm install js-cookie
 
 //PARA TAILWINDCSS//
 ---npm install -D tailwindcss postcss autoprefixer.

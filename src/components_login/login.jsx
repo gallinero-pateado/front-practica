@@ -79,8 +79,9 @@ const Login = () => {
         setLoading(true);
 
         try {
+            // 1. Login Request - matches backend LoginHandler endpoint
             const loginResponse = await axios.post('http://localhost:8080/login', {
-                email,
+                email: email.trim().toLowerCase(), // Match backend email normalization
                 password
             }, {
                 headers: {
@@ -88,62 +89,54 @@ const Login = () => {
                 }
             });
 
-            console.log('Respuesta del inicio de sesión:', loginResponse.data);
-
             const { token, uid } = loginResponse.data;
 
             if (!token || !uid) {
-                throw new Error('No se recibieron las credenciales necesarias');
+                throw new Error('Credenciales incompletas del servidor');
             }
 
-            // Guardar credenciales en cookies
+            // Store credentials
             Cookies.set('authToken', token, cookieOptions);
             Cookies.set('uid', uid, cookieOptions);
 
-            console.log('Token and UID stored in cookies');
+            // Determine if it's an employee login
+            const isEmployeeLogin = window.location.pathname.includes('login_em');
 
-            // Redirección basada en el componente
-            if (loginResponse.config.url.includes('LoginEm')) {
+            if (isEmployeeLogin) {
                 navigate('/gpracticas');
             } else {
-                // Verificar estado del perfil para usuario normal
                 try {
+                    // 2. Profile Status Check - matches GetProfileStatusHandler endpoint
                     const profileResponse = await axios.get('http://localhost:8080/profile-status', {
                         headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
                         }
                     });
 
-                    console.log('Estado del perfil:', profileResponse.data);
+                    const { perfil_completado } = profileResponse.data;
 
-                    if (profileResponse.data && profileResponse.data.PerfilCompletado === false) {
-                        console.log('Perfil incompleto, redirigiendo a complete_profile');
-                        navigate('/complete_profile');
-                    } else {
-                        console.log('Perfil completo, redirigiendo a search');
-                        navigate('/search');
-                    }
+                    // Direct navigation based on profile status
+                    navigate(perfil_completado ? '/search' : '/complete_profile');
+
                 } catch (profileError) {
-                    console.error('Error al verificar el estado del perfil:', profileError);
-                    navigate('/search');
+                    console.error('Error al verificar el perfil:', profileError);
+                    setError('Error al verificar el estado del perfil');
+                    navigate('/complete_profile');
                 }
             }
         } catch (error) {
-            console.error('Error al iniciar sesión:', error);
-            if (error.response) {
-                setError(error.response.data.error || 'Error al iniciar sesión. Por favor verifica tus credenciales.');
-            } else if (error.message) {
-                setError(error.message);
-            } else {
-                setError('Error de conexión');
-            }
+            console.error('Error de autenticación:', error);
+            const errorMessage = error.response?.data?.error || 'Error de conexión';
+            setError(errorMessage);
+
+            // Clean up cookies on error
             Cookies.remove('authToken', { path: '/' });
             Cookies.remove('uid', { path: '/' });
         } finally {
             setLoading(false);
         }
     };
+
 
     return (
         <div className={`min-h-screen flex flex-col items-center justify-center ${theme === 'dark' ? 'bg-gray-900' : 'bg-[#DAEDF2]'} transition-colors duration-300 font-ubuntu`}>

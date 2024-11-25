@@ -12,10 +12,10 @@ const LoginEm = () => {
     const navigate = useNavigate();
 
     const cookieOptions = {
-        expires: 7, // Cookie expires in 7 days
-        secure: window.location.protocol === 'https:', // Only send cookie over HTTPS
-        sameSite: 'Lax', // Provides some CSRF protection while allowing normal navigation
-        path: '/' // Cookie available across the entire site
+        expires: 7,
+        secure: window.location.protocol === 'https:',
+        sameSite: 'Lax',
+        path: '/'
     };
 
     useEffect(() => {
@@ -39,15 +39,94 @@ const LoginEm = () => {
         return () => observer.disconnect();
     }, []);
 
-    useEffect(() => {
-        axios.interceptors.request.use((config) => {
-            const token = Cookies.get('authToken');
-            if (token) {
-                config.headers.Authorization = `Bearer ${token}`;
-            }
-            return config;
+    const checkProfileStatus = async (token, uid) => {
+        try {
+            console.log('Checking profile status with token:', token);
+            const response = await axios.get('http://localhost:8080/profile-status/empresa', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            console.log('Profile status response:', response.data);
+            return response.data.perfil_completado;
+        } catch (error) {
+            console.error('Error checking profile status:', error.response || error);
+            return false;
+        }
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError('');
+        setLoading(true);
+
+        // Log the request data
+        console.log('Attempting login with:', {
+            email: email.trim().toLowerCase(),
+            // No logueamos la contraseña por seguridad
         });
-    }, []);
+
+        try {
+            const loginResponse = await axios.post('http://localhost:8080/login', {
+                email: email.trim().toLowerCase(),
+                password
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            console.log('Login response:', loginResponse.data);
+
+            const { token, uid } = loginResponse.data;
+
+            if (!token || !uid) {
+                console.error('Missing token or uid in response');
+                throw new Error('No se recibieron las credenciales necesarias');
+            }
+
+            // Guardar credenciales en cookies
+            Cookies.set('authToken', token, cookieOptions);
+            Cookies.set('uid', uid, cookieOptions);
+
+            console.log('Credentials stored in cookies');
+
+            // Verificar el estado del perfil
+            const isProfileComplete = await checkProfileStatus(token, uid);
+            console.log('Profile complete status:', isProfileComplete);
+
+            // Redirigir según el estado del perfil
+            if (!isProfileComplete) {
+                navigate('/complete_profile_em');
+            } else {
+                navigate('/gpracticas');
+            }
+        } catch (error) {
+            console.error('Full error object:', error);
+            console.error('Error response:', error.response);
+
+            let errorMessage = 'Error de conexión';
+
+            if (error.response) {
+                console.log('Error status:', error.response.status);
+                console.log('Error data:', error.response.data);
+
+                if (error.response.status === 401) {
+                    errorMessage = 'Credenciales incorrectas';
+                } else if (error.response.data && error.response.data.error) {
+                    errorMessage = error.response.data.error;
+                } else {
+                    errorMessage = 'Error al iniciar sesión';
+                }
+            }
+
+            setError(errorMessage);
+            Cookies.remove('authToken', { path: '/' });
+            Cookies.remove('uid', { path: '/' });
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const themeColors = {
         light: {
@@ -72,63 +151,11 @@ const LoginEm = () => {
 
     const currentTheme = themeColors[theme];
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setError('');
-        setLoading(true);
-
-        try {
-            const response = await axios.post('http://localhost:8080/login', {
-                email,
-                password
-            }, {
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            });
-
-            console.log('Respuesta del inicio de sesión:', response.data);
-
-            const { token, uid, isProfileComplete } = response.data;
-
-            if (!token || !uid) {
-                throw new Error('No se recibieron las credenciales necesarias');
-            }
-
-            // Guardar credenciales en cookies
-            Cookies.set('authToken', token, cookieOptions);
-            Cookies.set('uid', uid, cookieOptions);
-
-            console.log('Token and UID stored in cookies');
-
-            // Redirige según si el perfil está completo o no
-            if (!isProfileComplete) {
-                navigate('/complete_profile_em');
-            } else {
-                navigate('/gpracticas');
-            }
-        } catch (error) {
-            console.error('Error al iniciar sesión:', error);
-            if (error.response) {
-                setError(error.response.data.error || 'Error al iniciar sesión. Por favor verifica tus credenciales.');
-            } else if (error.message) {
-                setError(error.message);
-            } else {
-                setError('Error de conexión');
-            }
-            // Limpiamos las cookies en caso de error
-            Cookies.remove('authToken', { path: '/' });
-            Cookies.remove('uid', { path: '/' });
-        } finally {
-            setLoading(false);
-        }
-    };
-
     return (
         <div className={`min-h-screen flex flex-col items-center justify-center ${theme === 'dark' ? 'bg-gray-900' : 'bg-[#DAEDF2]'} transition-colors duration-300 font-ubuntu`}>
             <form onSubmit={handleSubmit} className={`${currentTheme.background} shadow-lg rounded-lg px-16 pt-12 pb-12 mb-8 w-full max-w-md transition-colors duration-300`}>
                 <h2 className={`text-4xl font-bold mb-12 ${theme === 'dark' ? 'text-[#A3D9D3]' : 'text-[#0092BC]'} text-center`}>
-                    Iniciar Sesión
+                    Iniciar Sesión Empresa
                 </h2>
 
                 {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
@@ -141,7 +168,7 @@ const LoginEm = () => {
                         className={`shadow appearance-none border ${currentTheme.inputBorder} rounded-lg w-full py-4 px-5 ${currentTheme.inputText} leading-tight focus:outline-none focus:shadow-outline focus:border-[#0092BC] ${currentTheme.inputBg}`}
                         id="email"
                         type="email"
-                        placeholder="Ingresa tu email"
+                        placeholder="Ingresa tu email empresarial"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
