@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Edit, Trash } from 'lucide-react'; // Iconos de editar y eliminar
+import { Edit, Trash, Users } from 'lucide-react';
+import Cookies from 'js-cookie';
 
-const Dpractica = () => {
+const Dpractica = ({ onViewPostulantes }) => {
     const [practicas, setPracticas] = useState([]);
     const [error, setError] = useState(null);
     const [successMessage, setSuccessMessage] = useState(null);
     const [isEditMode, setIsEditMode] = useState(false);
     const [selectedPractica, setSelectedPractica] = useState(null);
+    const [theme, setTheme] = useState('light');
     const [formData, setFormData] = useState({
         Titulo: '',
         Descripcion: '',
@@ -21,58 +23,126 @@ const Dpractica = () => {
         Jornada: ''
     });
 
+    const cookieOptions = {
+        expires: 7,
+        secure: true,
+        sameSite: 'strict',
+        path: '/'
+    };
+
+    // Token management functions
+    const getAuthToken = () => {
+        return Cookies.get('authToken');
+    };
+
+    const removeAuthToken = () => {
+        Cookies.remove('authToken', { path: '/' });
+    };
+
+    // Create axios instance with default configuration
+    const axiosInstance = axios.create({
+        baseURL: import.meta.env.VITE_API_URL,
+        withCredentials: true
+    });
+
+    // Add request interceptor to include token
+    axiosInstance.interceptors.request.use((config) => {
+        const token = getAuthToken();
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    });
+
+    // Add response interceptor to handle token expiration
+    axiosInstance.interceptors.response.use(
+        response => response,
+        error => {
+            if (error.response?.status === 401) {
+                removeAuthToken();
+                setError('Sesión expirada. Por favor, inicie sesión nuevamente.');
+            }
+            return Promise.reject(error);
+        }
+    );
+
     useEffect(() => {
         fetchPracticas();
+        const savedTheme = Cookies.get('theme') || 'light';
+        setTheme(savedTheme);
+        document.documentElement.classList.toggle('dark', savedTheme === 'dark');
     }, []);
+
+
+    const themeColors = {
+        light: {
+            background: 'bg-[#DAEDF2]',
+            text: 'text-black',
+            tableHeader: 'bg-[#0092BC] text-white',
+            tableRow: 'hover:bg-gray-100',
+            tableBorder: 'border-gray',
+            formBackground: 'bg-white',
+            inputBorder: 'border-gray-300',
+            primaryButton: 'bg-[#0092BC] hover:bg-[#A3D9D3]',
+            secondaryButton: 'bg-[#A3D9D3] hover:bg-[#0092BC]',
+            successAlert: 'bg-green-100 border-green-400 text-green-700',
+            errorAlert: 'bg-red-100 border-red-400 text-red-700'
+        },
+        dark: {
+            background: 'bg-gray-900',
+            text: 'text-white',
+            tableHeader: 'bg-gray-800 text-white',
+            tableRow: 'hover:bg-gray-700',
+            tableBorder: 'border-gray-600',
+            formBackground: 'bg-gray-800',
+            inputBorder: 'border-gray-600',
+            primaryButton: 'bg-blue-600 hover:bg-blue-700',
+            secondaryButton: 'bg-gray-600 hover:bg-gray-700',
+            successAlert: 'bg-green-900 border-green-600 text-green-200',
+            errorAlert: 'bg-red-900 border-red-600 text-red-200'
+        }
+    };
+
+    const actionButtons = {
+        edit: 'bg-[#7b4b94] hover:bg-[#9b6ab4]',
+        delete: 'bg-[#ffd166] hover:bg-[#ffdc85]',
+        view: 'bg-[#a3d9d3] hover:bg-[#26f6c0]'
+    };
+
+    const currentTheme = themeColors[theme];
 
     // Obtener las prácticas de la empresa
     const fetchPracticas = async () => {
         try {
-            const token = localStorage.getItem('authToken');
-            if (token) {
-                const response = await axios.get('http://localhost:8080/Get-practicas-empresa', {
-                    headers: { 'Authorization': `Bearer ${token}` },
-                });
-                setPracticas(response.data);
-            } else {
-                setError('No se encontró el token de autenticación');
-            }
+            const response = await axiosInstance.get('/Get-practicas-empresa');
+            setPracticas(response.data);
         } catch (err) {
-            setError('Error al cargar las prácticas');
-            console.error(err);
+            setError('Error al cargar las prácticas: ' + (err.response?.data?.error || err.message));
         }
     };
 
-    // Eliminar una práctica
+    // Updated delete function using axiosInstance
     const handleDelete = async (id) => {
         try {
-            const token = localStorage.getItem('authToken');
-            if (token) {
-                await axios.delete(`http://localhost:8080/Delete-practica/${id}`, {
-                    headers: { 'Authorization': `Bearer ${token}` },
-                });
-                setSuccessMessage('La práctica fue eliminada exitosamente');
-                fetchPracticas(); // Recargar la lista después de eliminar
-            } else {
-                setError('No se encontró el token de autenticación');
-            }
+            await axiosInstance.delete(`/Delete-practica/${id}`);
+            setSuccessMessage('La práctica fue eliminada exitosamente');
+            fetchPracticas();
         } catch (err) {
-            setError('Error al eliminar la práctica');
-            console.error(err);
+            setError('Error al eliminar la práctica: ' + (err.response?.data?.error || err.message));
         }
     };
 
-    // Manejar la edición de la práctica
+    // Handle edit remains the same
     const handleEdit = (practica) => {
         setSelectedPractica(practica);
         setFormData({
             Titulo: practica.Titulo,
             Descripcion: practica.Descripcion,
             Ubicacion: practica.Ubicacion,
-            Fecha_inicio: practica.Fecha_inicio.split('T')[0], // Formato de fecha correcto
-            Fecha_fin: practica.Fecha_fin.split('T')[0], // Formato de fecha correcto
+            Fecha_inicio: practica.Fecha_inicio.split('T')[0],
+            Fecha_fin: practica.Fecha_fin.split('T')[0],
             Requisitos: practica.Requisitos,
-            Fecha_expiracion: practica.Fecha_expiracion.split('T')[0], // Formato de fecha correcto
+            Fecha_expiracion: practica.Fecha_expiracion.split('T')[0],
             Modalidad: practica.Modalidad,
             Area_practica: practica.Area_practica,
             Jornada: practica.Jornada
@@ -92,78 +162,73 @@ const Dpractica = () => {
     // Manejar la actualización de la práctica
     const handleUpdate = async (e) => {
         e.preventDefault();
-
         try {
-            const token = localStorage.getItem('authToken');
-            if (token) {
-                // Aseguramos que las fechas estén en el formato correcto
-                const updatedFormData = {
-                    ...formData,
-                    Fecha_inicio: new Date(formData.Fecha_inicio).toISOString(),
-                    Fecha_fin: new Date(formData.Fecha_fin).toISOString(),
-                    Fecha_expiracion: new Date(formData.Fecha_expiracion).toISOString(),
-                };
+            const updatedFormData = {
+                ...formData,
+                Fecha_inicio: new Date(formData.Fecha_inicio).toISOString(),
+                Fecha_fin: new Date(formData.Fecha_fin).toISOString(),
+                Fecha_expiracion: new Date(formData.Fecha_expiracion).toISOString(),
+            };
 
-                await axios.put(`http://localhost:8080/Update-practicas/${selectedPractica.Id}`, updatedFormData, {
-                    headers: { 'Authorization': `Bearer ${token}` },
-                });
-                setSuccessMessage('La práctica fue actualizada exitosamente');
-                setIsEditMode(false);
-                fetchPracticas(); // Recargar la lista después de actualizar
-            } else {
-                setError('No se encontró el token de autenticación');
-            }
+            await axiosInstance.put(`/Update-practicas/${selectedPractica.Id}`, updatedFormData);
+            setSuccessMessage('La práctica fue actualizada exitosamente');
+            setIsEditMode(false);
+            fetchPracticas();
         } catch (err) {
-            setError('Error al actualizar la práctica');
-            console.error(err);
+            setError('Error al actualizar la práctica: ' + (err.response?.data?.error || err.message));
         }
     };
 
     return (
-        <div className="container mx-auto p-4 bg-[#DAEDF2] font-ubuntu">
+        <div className={`container mx-auto p-4 ${currentTheme.background} ${currentTheme.text} font-ubuntu`}>
             <h1 className="text-2xl font-bold mb-4">Lista de Prácticas</h1>
             {error && (
-                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" role="alert">
+                <div className={`border px-4 py-3 rounded mb-4 ${currentTheme.errorAlert}`} role="alert">
                     {error}
                 </div>
             )}
             {successMessage && (
-                <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4" role="alert">
+                <div className={`border px-4 py-3 rounded mb-4 ${currentTheme.successAlert}`} role="alert">
                     {successMessage}
                 </div>
             )}
             {!isEditMode ? (
-                <table className="w-full border-collapse bg-white">
+                <table className={`w-full border-collapse ${currentTheme.formBackground}`}>
                     <thead>
-                        <tr className="bg-[#0092BC]">
-                            <th className="border p-2 border-gray text-white">ID</th>
-                            <th className="border p-2 border-gray text-white">Título</th>
-                            <th className="border p-2 border-gray text-white">Descripcion</th>
-
-
-                            <th className="border p-2 border-gray text-white">Acciones</th>
+                        <tr className={currentTheme.tableHeader}>
+                            <th className={`border p-2 ${currentTheme.tableBorder}`}>ID</th>
+                            <th className={`border p-2 ${currentTheme.tableBorder}`}>Título</th>
+                            <th className={`border p-2 ${currentTheme.tableBorder}`}>Descripción</th>
+                            <th className={`border p-2 ${currentTheme.tableBorder}`}>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         {practicas.map((practica) => (
-                            <tr key={practica.Id} className="hover:bg-gray-100">
-                                <td className="border p-2 border-gray">{practica.Id}</td>
-                                <td className="border p-2 border-gray">{practica.Titulo}</td>
-                                <td className="border p-2 border-gray">{practica.Descripcion}</td>
-
-
-                                <td className="border p-2 border-gray">
+                            <tr key={practica.Id} className={currentTheme.tableRow}>
+                                <td className={`border p-2 ${currentTheme.tableBorder}`}>{practica.Id}</td>
+                                <td className={`border p-2 ${currentTheme.tableBorder}`}>{practica.Titulo}</td>
+                                <td className={`border p-2 ${currentTheme.tableBorder}`}>{practica.Descripcion}</td>
+                                <td className={`border p-2 ${currentTheme.tableBorder} flex gap-2`}>
                                     <button
                                         onClick={() => handleEdit(practica)}
-                                        className="bg-blue-300 text-white font-bold py-1 px-2 rounded mr-2 transition-colors duration-300"
+                                        className={`${actionButtons.edit} text-white font-bold py-1 px-2 rounded transition-colors duration-300`}
+                                        title="Editar práctica"
                                     >
-                                        <Edit size={20} /> {/* Icono de editar */}
+                                        <Edit size={20} />
                                     </button>
                                     <button
                                         onClick={() => handleDelete(practica.Id)}
-                                        className="bg-red-300 text-white font-bold py-1 px-2 rounded transition-colors duration-300"
+                                        className={`${actionButtons.delete} text-white font-bold py-1 px-2 rounded transition-colors duration-300`}
+                                        title="Eliminar práctica"
                                     >
-                                        <Trash size={20} /> {/* Icono de eliminar */}
+                                        <Trash size={20} />
+                                    </button>
+                                    <button
+                                        onClick={() => onViewPostulantes(practica.Id)}
+                                        className={`${actionButtons.view} text-white font-bold py-1 px-2 rounded transition-colors duration-300`}
+                                        title="Ver postulantes"
+                                    >
+                                        <Users size={20} />
                                     </button>
                                 </td>
                             </tr>
@@ -171,44 +236,34 @@ const Dpractica = () => {
                     </tbody>
                 </table>
             ) : (
-                <form onSubmit={handleUpdate} className="bg-white p-6 rounded shadow-md">
+                <form onSubmit={handleUpdate} className={`${currentTheme.formBackground} p-6 rounded shadow-md`}>
                     <h2 className="text-xl font-bold mb-4">Actualizar Práctica</h2>
                     {Object.keys(formData).map((key) => (
                         <div key={key} className="mb-4">
-                            <label htmlFor={key} className="block text-sm font-medium text-gray-700">
+                            <label htmlFor={key} className="block text-sm font-medium">
                                 {key.charAt(0).toUpperCase() + key.slice(1)}
                             </label>
-                            {key.includes('Fecha') ? (
-                                <input
-                                    type="date"
-                                    id={key}
-                                    name={key}
-                                    value={formData[key]}
-                                    onChange={handleChange}
-                                    className="mt-1 p-2 border rounded w-full"
-                                />
-                            ) : (
-                                <input
-                                    type="text"
-                                    id={key}
-                                    name={key}
-                                    value={formData[key]}
-                                    onChange={handleChange}
-                                    className="mt-1 p-2 border rounded w-full"
-                                />
-                            )}
+                            <input
+                                type={key.includes('Fecha') ? "date" : "text"}
+                                id={key}
+                                name={key}
+                                value={formData[key]}
+                                onChange={handleChange}
+                                maxLength={key === 'Ubicacion' ? 30 : undefined}
+                                className={`mt-1 p-2 border rounded w-full ${currentTheme.formBackground} ${currentTheme.text} ${currentTheme.inputBorder}`}
+                            />
                         </div>
                     ))}
                     <button
                         type="submit"
-                        className="bg-[#0092BC] hover:bg-[#A3D9D3] text-white font-bold py-2 px-4 rounded transition-colors duration-300"
+                        className={`${currentTheme.primaryButton} text-white font-bold py-2 px-4 rounded transition-colors duration-300`}
                     >
                         Actualizar
                     </button>
                     <button
                         type="button"
                         onClick={() => setIsEditMode(false)}
-                        className="ml-4 bg-[#A3D9D3] hover:bg-[#0092BC] text-white font-bold py-2 px-4 rounded transition-colors duration-300"
+                        className={`ml-4 ${currentTheme.secondaryButton} text-white font-bold py-2 px-4 rounded transition-colors duration-300`}
                     >
                         Cancelar
                     </button>
