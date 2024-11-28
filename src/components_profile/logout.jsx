@@ -66,8 +66,9 @@ const Logout = () => {
         // Remove cookies with the same options used in login
         const cookieOptions = {
             path: '/',
-            secure: window.location.protocol === 'https:',
-            sameSite: 'Lax'
+            secure: true ,
+            sameSite: 'Strict',
+            domain: ".tssw.info"
         };
 
         Cookies.remove('authToken', cookieOptions);

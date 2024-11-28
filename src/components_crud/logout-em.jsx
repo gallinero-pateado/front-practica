@@ -65,9 +65,10 @@ const Logout = () => {
 
         // Configuración de seguridad para las cookies
         const cookieOptions = {
-            secure: true,      // Solo HTTPS
-            sameSite: 'strict', // Protección contra CSRF
-            expires: 7         // Expira en 7 días
+            path: '/',
+            secure: true ,
+            sameSite: 'Strict',
+            domain: ".tssw.info"
         };
 
         // Eliminar las cookies de autenticación
