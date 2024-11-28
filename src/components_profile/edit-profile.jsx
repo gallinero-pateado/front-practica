@@ -107,7 +107,9 @@ const EditProfile = () => {
             }
 
             try {
-                const response = await axios.get(`http://localhost:8080/usuarios/${uid}`);
+                const API_URL = import.meta.env.VITE_API_URL;
+                
+                const response = await axios.get(`${API_URL}/usuarios/${uid}`);
                 setProfileData({
                     fecha_nacimiento: response.data.Fecha_Nacimiento || '',
                     ano_ingreso: response.data.Ano_Ingreso || '',
@@ -232,7 +234,9 @@ const EditProfile = () => {
         if (profileData.id_carrera) updatedData.id_carrera = parseInt(profileData.id_carrera);
 
         try {
-            await axios.patch('http://localhost:8080/edit-profile', updatedData);
+            const API_URL = import.meta.env.VITE_API_URL;
+
+            await axios.patch(`${API_URL}/edit-profile`, updatedData);
             alert('Perfil actualizado exitosamente');
             navigate('/user-profile');
         } catch (error) {

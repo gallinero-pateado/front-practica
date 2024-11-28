@@ -35,8 +35,9 @@ const CommentEdit = ({ commentId, initialContent, onUpdateSuccess }) => {
             if (!token) {
                 throw new Error('No estás autenticado');
             }
+            const API_URL = import.meta.env.VITE_API_URL;
 
-            const response = await fetch(`http://localhost:8080/comentarios/${commentId}`, {
+            const response = await fetch(`${API_URL}/comentarios/${commentId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

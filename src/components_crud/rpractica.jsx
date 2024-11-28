@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const Rpractica = () => {
     const [practicas, setPracticas] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -30,7 +32,7 @@ const Rpractica = () => {
                     }
                 };
 
-                const response = await axios.get('http://localhost:8080/Get-practicas', config);
+                const response = await axios.get(`${API_URL}/Get-practicas`, config);
                 console.log(response.data);
                 setPracticas(response.data);
                 setLoading(false);
@@ -58,7 +60,7 @@ const Rpractica = () => {
                 }
             };
 
-            await axios.post(`http://localhost:8080/Rpracticas/${practicaId}/apply`, {}, config);
+            await axios.post(`${API_URL}/Rpracticas/${practicaId}/apply`, {}, config);
             alert('Solicitud enviada con éxito');
         } catch (err) {
             console.error('Error:', err);

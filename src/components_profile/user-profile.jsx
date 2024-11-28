@@ -147,7 +147,9 @@ const UserProfile = () => {
             }
 
             try {
-                const response = await axios.get(`http://localhost:8080/usuarios/${uid}`);
+                const API_URL = import.meta.env.VITE_API_URL;
+
+                const response = await axios.get(`${API_URL}/usuarios/${uid}`);
                 console.log('Profile Response:', response.data);
                 setProfileData({
                     fotoPerfil: response.data.Foto_Perfil || null,

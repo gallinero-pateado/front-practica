@@ -21,8 +21,9 @@ const CrearComentario = ({ temaId, onComentarioCreado }) => {
             if (!token) {
                 throw new Error('No estás autenticado');
             }
+            const API_URL = import.meta.env.VITE_API_URL;
 
-            const response = await fetch(`http://localhost:8080/temas/${temaId}/comentarios`, {
+            const response = await fetch(`${API_URL}/temas/${temaId}/comentarios`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,

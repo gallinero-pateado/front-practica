@@ -65,8 +65,9 @@ const PostulacionPractica = ({ practicaId, onPostulacionExitosa }) => {
             if (!authToken) {
                 throw new Error('No se encontró el token de autenticación');
             }
+            const API_URL = import.meta.env.VITE_API_URL;
 
-            const response = await axios.post(`http://localhost:8080/postulacion-practicas/${practicaId}`, {
+            const response = await axios.post(`${API_URL}/postulacion-practicas/${practicaId}`, {
                 mensaje
             }, {
                 headers: {
