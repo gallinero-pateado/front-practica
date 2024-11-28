@@ -19,6 +19,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Crear archivo .env
+        run: echo "VITE_API_URL=\"${{ vars.VITE_API_URL }}\"" > .env
+
       - name: Autenticarse con gcloud CLI
         uses: google-github-actions/auth@v1
         with:
