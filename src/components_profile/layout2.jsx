@@ -56,7 +56,7 @@ const Layout2 = ({ children }) => {
             {/* Header */}
             <header className="bg-[#0092BC] text-white p-6 relative z-20">
                 <div className="flex justify-between items-center mx-auto">
-                    <Link to="/search" className="text-5xl font-bold italic">ULINK</Link>
+                    <Link to="/" className="text-5xl font-bold italic">ULINK</Link>
                     <div className="flex items-center space-x-4">
                         {/* Dark Mode Toggle */}
                         <div
@@ -97,7 +97,7 @@ const Layout2 = ({ children }) => {
                         Perfil
                     </Link>
                     <Link
-                        to="/search"
+                        to="/"
                         className="block py-4 px-2 rounded-md transition-colors duration-200 hover:bg-[#DAEDF2] hover:text-[#0092BC] active:bg-[#DAEDF2] active:text-[#0092BC]"
                     >
                         Buscar
