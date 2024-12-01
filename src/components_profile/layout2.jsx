@@ -108,6 +108,12 @@ const Layout2 = ({ children }) => {
                     >
                         Foro
                     </Link>
+                    <a
+                        href="https://ulink.tssw.info/unificacion"
+                        className="block py-4 px-2 rounded-md transition-colors duration-200 hover:bg-[#DAEDF2] hover:text-[#0092BC] active:bg-[#DAEDF2] active:text-[#0092BC]"
+                    >
+                        Volver Atras
+                    </a>
                     <Link
                         to="/logout"
                         className="block py-4 px-2 rounded-md transition-colors duration-200 hover:bg-[#DAEDF2] hover:text-[#0092BC] active:bg-[#DAEDF2] active:text-[#0092BC]"

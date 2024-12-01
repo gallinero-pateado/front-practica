@@ -7,16 +7,26 @@ import ReplyComment from './respondercomentario';
 import Cookies from 'js-cookie';
 import axios from 'axios';
 
-// Función de utilidad para formatear fechas de forma segura
 const formatDate = (dateString) => {
     try {
-        const date = new Date(dateString);
+        const timestamp = typeof dateString === 'number' ? dateString * 1000 : dateString;
+        const date = new Date(timestamp);
+
         // Verificar si la fecha es válida
         if (isNaN(date.getTime())) {
             return 'Fecha no disponible';
         }
-        return date.toLocaleString();
+
+        // Opciones de formateo más legibles
+        return date.toLocaleString('es-ES', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
     } catch (error) {
+        console.error('Error al formatear fecha:', error);
         return 'Fecha no disponible';
     }
 };
@@ -71,11 +81,6 @@ const Comentario = ({
         setMostrarFormRespuesta(!mostrarFormRespuesta);
     };
 
-    const formatUserName = (user) => {
-        if (!user) return 'Usuario Anónimo';
-        return `${user.nombres} ${user.apellidos}`.trim() || user.email || 'Usuario Anónimo';
-    };
-
     return (
         <div className="w-full">
             <div className={`
@@ -89,9 +94,6 @@ const Comentario = ({
                     ${currentTheme.commentText}
                 `}>
                     <div className="mb-2">
-                        <p className={`text-sm font-medium ${currentTheme.commentText}`}>
-                            Por: {formatUserName(comentario.usuario)}
-                        </p>
                         <p className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-[#1D4157]/70'}`}>
                             {formatDate(comentario.fechaCreacion)}
                         </p>
@@ -282,7 +284,7 @@ const TemasList = () => {
         try {
             const API_URL = import.meta.env.VITE_API_URL;
 
-            const response = await fetch(`${API_URL}/temas`); 
+            const response = await fetch(`${API_URL}/temas`);
             if (!response.ok) {
                 throw new Error('Error al cargar los temas');
             }
