@@ -190,6 +190,7 @@ const PracticasList = () => {
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 placeholder="Buscar prácticas..."
                                 className={`flex-grow w-full p-2 border rounded-lg text-lg font-ubuntu 
+                                         truncate overflow-ellipsis max-w-full 
                                          ${currentTheme === 'dark' ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-300' :
                                         'bg-white text-[#1D4157] placeholder-gray-400'}`}
                             />

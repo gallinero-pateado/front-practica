@@ -423,12 +423,16 @@ const TemasList = () => {
 
     return (
         <main className={`min-h-screen ${currentTheme.background}`}>
-            <div className="max-w-4xl mx-auto p-6">
-                <h1 className={`text-3xl font-bold mb-6 ${currentTheme.text}`}>
+            <div className="max-w-4xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6">
+                <h1 className={`text-2xl sm:text-3xl md:text-4xl font-bold mb-6 ${currentTheme.text}`}>
                     Foro de Discusión
                 </h1>
-                <CrearTemaForm onClose={() => { }} onTemaCreado={handleTemaCreado} />
-                <div className="space-y-4 mt-6">
+                <CrearTemaForm
+                    onClose={() => { }}
+                    onTemaCreado={handleTemaCreado}
+                    className="w-full"
+                />
+                <div className="grid grid-cols-1 gap-4 mt-6">
                     {temas.map(tema => (
                         <div
                             key={tema.id}
@@ -439,12 +443,12 @@ const TemasList = () => {
                                 ${currentTheme.cardShadow}
                             `}
                         >
-                            <div className="flex items-center justify-between">
-                                <div className="flex-grow">
-                                    <h2 className={`text-xl font-semibold ${currentTheme.text}`}>
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0">
+                                <div className="flex-grow w-full sm:pr-4">
+                                    <h2 className={`text-lg sm:text-xl font-semibold ${currentTheme.text}`}>
                                         {tema.titulo}
                                     </h2>
-                                    <p className={`${currentTheme.dateText} mt-1`}>
+                                    <p className={`${currentTheme.dateText} mt-1 text-sm`}>
                                         {tema.descripcion}
                                     </p>
                                     <p className={`text-xs ${currentTheme.dateText} mt-1`}>
@@ -453,17 +457,18 @@ const TemasList = () => {
                                 </div>
                                 <button
                                     onClick={(e) => toggleComentarios(e, tema.id)}
-                                    className={`p-2 rounded-full transition-colors 
+                                    className={`
+                                        p-2 rounded-full transition-colors 
                                         ${currentTheme.buttonBackground} 
                                         ${currentTheme.buttonText}
                                         hover:bg-opacity-80
+                                        self-end sm:self-auto
                                     `}
                                     title="Ver comentarios"
                                 >
-                                    <MessageSquare className="w-5 h-5" />
+                                    <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5" />
                                 </button>
                             </div>
-
 
                             {temasExpandidos[tema.id] && (
                                 <div className="mt-4 space-y-3">
@@ -489,7 +494,7 @@ const TemasList = () => {
                                             ))}
                                         </div>
                                     ) : (
-                                        <p className={`text-center py-4 ${theme === 'dark' ? 'text-gray-400' : 'text-[#1D4157]/60'}`}>
+                                        <p className={`text-center py-4 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-[#1D4157]/60'}`}>
                                             No hay comentarios en este tema.
                                         </p>
                                     )}
