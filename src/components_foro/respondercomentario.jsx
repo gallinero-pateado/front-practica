@@ -1,4 +1,4 @@
-import { Reply, Send, X } from 'lucide-react';
+import { Reply, Send, X } from 'lucide-react'; 
 import { useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
 
@@ -88,7 +88,7 @@ const ReplyComment = ({ temaId, comentarioPadreId, onComentarioCreado }) => {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-3 p-3">
+        <form onSubmit={handleSubmit} className="space-y-3 p-3 sm:p-6">
             <div className={`flex items-center gap-2 text-sm ${theme === 'dark' ? 'text-gray-200' : 'text-[#1D4157]'
                 }`}>
                 <Reply className="w-4 h-4" />
@@ -105,7 +105,8 @@ const ReplyComment = ({ temaId, comentarioPadreId, onComentarioCreado }) => {
                 ${theme === 'dark'
                             ? 'bg-gray-700 border-gray-600 text-gray-200 placeholder-gray-400'
                             : 'bg-white border-gray-300 text-[#1D4157] placeholder-gray-500'
-                        }`}
+                        }
+                sm:text-base sm:p-3`}
                     rows={3}
                 />
                 {contenido && (

@@ -83,7 +83,7 @@ const CrearComentario = ({ temaId, onComentarioCreado }) => {
                         onChange={(e) => setContenido(e.target.value)}
                         placeholder="Escribe tu comentario..."
                         maxLength={maxCaracteres} // Límite de caracteres
-                        className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#0092BC]
+                        className={`w-full p-2 sm:p-3 border rounded-lg focus:ring-2 focus:ring-[#0092BC]
                             transition-colors duration-300
                             ${theme === 'dark'
                                 ? 'bg-gray-700 border-gray-600 text-gray-200 placeholder-gray-400'

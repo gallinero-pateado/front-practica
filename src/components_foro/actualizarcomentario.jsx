@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'; 
 import { Pencil, Save, X, AlertCircle } from 'lucide-react';
 import Cookies from 'js-cookie';
 
@@ -76,7 +76,7 @@ const CommentEdit = ({ commentId, initialContent, onUpdateSuccess }) => {
     };
 
     return (
-        <div className={`rounded-lg shadow-sm p-6 mb-6 transition-colors duration-300
+        <div className={`rounded-lg shadow-sm p-4 sm:p-6 mb-4 sm:mb-6 transition-colors duration-300
             ${theme === 'dark'
                 ? 'bg-gray-800 border-gray-700'
                 : 'bg-white border-[#A3D9D3]'}`}>
@@ -93,7 +93,7 @@ const CommentEdit = ({ commentId, initialContent, onUpdateSuccess }) => {
                             onChange={handleContentChange}
                             maxLength={MAX_CHARS}
                             disabled={isLoading}
-                            className={`w-full p-3 rounded-lg focus:ring-2 focus:ring-[#0092BC] min-h-[100px] resize-y transition-colors duration-300
+                            className={`w-full p-2 sm:p-3 rounded-lg focus:ring-2 focus:ring-[#0092BC] min-h-[100px] resize-y transition-colors duration-300
                                 ${theme === 'dark'
                                     ? 'bg-gray-700 border-gray-600 text-gray-200 placeholder-gray-400'
                                     : 'bg-white border-gray-300 text-[#1D4157]'}`}

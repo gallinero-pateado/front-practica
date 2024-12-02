@@ -423,25 +423,23 @@ const TemasList = () => {
 
     return (
         <main className={`min-h-screen ${currentTheme.background}`}>
-            <div className="max-w-4xl mx-auto p-6">
-                <h1 className={`text-3xl font-bold mb-6 ${currentTheme.text}`}>
+            <div className="max-w-4xl mx-auto p-4 sm:p-6">
+                <h1 className={`text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 ${currentTheme.text}`}>
                     Foro de Discusión
                 </h1>
                 <CrearTemaForm onClose={() => { }} onTemaCreado={handleTemaCreado} />
-                <div className="space-y-4 mt-6">
+                <div className="space-y-4 mt-4 sm:mt-6">
                     {temas.map(tema => (
                         <div
                             key={tema.id}
-                            className={`
-                                border rounded-lg p-4 transition-all duration-300
+                            className={`border rounded-lg p-3 sm:p-4 transition-all duration-300
                                 ${currentTheme.cardBackground} 
                                 ${currentTheme.cardBorder} 
-                                ${currentTheme.cardShadow}
-                            `}
+                                ${currentTheme.cardShadow}`}
                         >
                             <div className="flex items-center justify-between">
                                 <div className="flex-grow">
-                                    <h2 className={`text-xl font-semibold ${currentTheme.text}`}>
+                                    <h2 className={`text-lg sm:text-xl font-semibold ${currentTheme.text}`}>
                                         {tema.titulo}
                                     </h2>
                                     <p className={`${currentTheme.dateText} mt-1`}>
@@ -456,8 +454,7 @@ const TemasList = () => {
                                     className={`p-2 rounded-full transition-colors 
                                         ${currentTheme.buttonBackground} 
                                         ${currentTheme.buttonText}
-                                        hover:bg-opacity-80
-                                    `}
+                                        hover:bg-opacity-80`}
                                     title="Ver comentarios"
                                 >
                                     <MessageSquare className="w-5 h-5" />
