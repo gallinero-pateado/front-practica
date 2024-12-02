@@ -52,7 +52,6 @@ const UserProfile = () => {
         fecha_nacimiento: '',
         ano_ingreso: '',
         id_carrera: null,
-        cv: null
     });
 
     const cookieOptions = {
@@ -160,7 +159,7 @@ const UserProfile = () => {
                     fecha_nacimiento: response.data.Fecha_Nacimiento || '',
                     ano_ingreso: response.data.Ano_Ingreso || '',
                     id_carrera: parseInt(response.data.Id_carrera) || null,
-                    cv: response.data.CV || null  // Add CV to the profile data
+
                 });
 
             } catch (error) {
@@ -269,28 +268,6 @@ const UserProfile = () => {
                                     <p className={`${theme === 'dark' ? 'text-gray-200' : 'text-black'}`}>
                                         {profileData.ano_ingreso || 'No especificado'}
                                     </p>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <label className={`block font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                                        Curriculum Vitae
-                                    </label>
-                                    {profileData.cv ? (
-                                        <div className="flex items-center space-x-2">
-                                            <a
-                                                href={profileData.cv}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className={`${theme === 'dark' ? 'text-[#A3D9D3] hover:text-[#8ec3c0]' : 'text-[#0092BC] hover:text-[#007a9a]'} underline`}
-                                            >
-                                                Ver Curriculum Vitae
-                                            </a>
-                                        </div>
-                                    ) : (
-                                        <p className={`${theme === 'dark' ? 'text-gray-200' : 'text-black'}`}>
-                                            No se ha subido un CV
-                                        </p>
-                                    )}
                                 </div>
 
                             </div>
