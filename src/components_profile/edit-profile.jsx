@@ -11,11 +11,14 @@ const EditProfile = () => {
         ano_ingreso: '',
         id_carrera: '',
         fotoPerfil: null,
+        cv: null,
     });
 
     const [errors, setErrors] = useState({
         fecha_nacimiento: '',
         ano_ingreso: '',
+        fileUpload: '',
+        cvUpload: '',
     });
 
     const cookieOptions = {
@@ -102,6 +105,25 @@ const EditProfile = () => {
         const file = event.target.files[0];
         if (!file) return;
 
+        const validImageTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        const maxSize = 5 * 1024 * 1024; // 5MB
+
+        if (!validImageTypes.includes(file.type)) {
+            setErrors(prev => ({
+                ...prev,
+                fileUpload: 'Por favor, selecciona una imagen válida (JPEG, PNG, GIF)'
+            }));
+            return;
+        }
+
+        if (file.size > maxSize) {
+            setErrors(prev => ({
+                ...prev,
+                fileUpload: 'La imagen no debe superar los 5MB'
+            }));
+            return;
+        }
+
         const formData = new FormData();
         formData.append('file', file);
 
@@ -120,11 +142,73 @@ const EditProfile = () => {
                 fotoPerfil: response.data.url
             }));
 
+            setErrors(prev => ({
+                ...prev,
+                fileUpload: ''
+            }));
+
             // Optional: Show success message
             alert('Imagen de perfil actualizada exitosamente');
         } catch (error) {
             console.error('Error uploading image:', error);
             alert('No se pudo actualizar la imagen de perfil');
+        }
+    };
+
+    const handleCVUpload = async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        // Validate PDF file
+        if (!file.name.toLowerCase().endsWith('.pdf')) {
+            setErrors(prev => ({
+                ...prev,
+                cvUpload: 'Por favor, selecciona un archivo PDF'
+            }));
+            return;
+        }
+
+        // Optional: File size validation
+        const maxSize = 10 * 1024 * 1024; // 10MB
+        if (file.size > maxSize) {
+            setErrors(prev => ({
+                ...prev,
+                cvUpload: 'El archivo PDF no debe superar los 10MB'
+            }));
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const API_URL = import.meta.env.VITE_API_URL;
+            const response = await axios.post(`${API_URL}/upload-pdf`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${Cookies.get('authToken')}`
+                }
+            });
+
+            // Update profile data with the new CV URL
+            setProfileData(prevData => ({
+                ...prevData,
+                cv: response.data.url
+            }));
+
+            // Clear any previous upload errors
+            setErrors(prev => ({
+                ...prev,
+                cvUpload: ''
+            }));
+
+            alert('CV actualizado exitosamente');
+        } catch (error) {
+            console.error('Error uploading CV:', error);
+            setErrors(prev => ({
+                ...prev,
+                cvUpload: 'No se pudo actualizar el CV'
+            }));
         }
     };
 
@@ -303,6 +387,15 @@ const EditProfile = () => {
                             onChange={handleImageUpload}
                         />
 
+                        {/* CV Upload Input */}
+                        <input
+                            type="file"
+                            ref={cvInputRef}
+                            className="hidden"
+                            accept=".pdf"
+                            onChange={handleCVUpload}
+                        />
+
                         {/* Profile Image Upload Section */}
                         <div className="relative mb-4">
                             {profileData.fotoPerfil ? (
@@ -325,6 +418,37 @@ const EditProfile = () => {
                             </button>
                         </div>
 
+                        {/* Error message for image upload */}
+                        {errors.fileUpload && (
+                            <p className="text-red-500 text-sm mb-4">{errors.fileUpload}</p>
+                        )}
+
+                        {/* CV Upload Section */}
+                        <div className="relative mb-4">
+                            <button
+                                type="button"
+                                onClick={() => triggerFileInput(cvInputRef)}
+                                className={`px-4 py-2 rounded-md shadow-sm text-sm font-medium 
+                                    ${theme === 'dark'
+                                        ? 'bg-gray-700 text-white hover:bg-gray-600'
+                                        : 'bg-[#0092BC] text-white hover:bg-[#A3D9D3]'
+                                    } transition-colors`}
+                            >
+                                {profileData.cv ? 'Actualizar CV' : 'Subir CV'}
+                            </button>
+
+                            {/* Display CV status */}
+                            {profileData.cv && (
+                                <p className={`text-sm mt-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                                    CV subido ✅
+                                </p>
+                            )}
+                        </div>
+
+                        {/* Error message for CV upload */}
+                        {errors.cvUpload && (
+                            <p className="text-red-500 text-sm mb-4">{errors.cvUpload}</p>
+                        )}
                     </div>
 
                     <h2 className={`text-lg font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-[#1D4157]'}`}>

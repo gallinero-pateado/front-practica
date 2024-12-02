@@ -52,6 +52,7 @@ const UserProfile = () => {
         fecha_nacimiento: '',
         ano_ingreso: '',
         id_carrera: null,
+        cv: null,
     });
 
     const cookieOptions = {
@@ -159,6 +160,7 @@ const UserProfile = () => {
                     fecha_nacimiento: response.data.Fecha_Nacimiento || '',
                     ano_ingreso: response.data.Ano_Ingreso || '',
                     id_carrera: parseInt(response.data.Id_carrera) || null,
+                    cv: response.data.CV || null
 
                 });
 
@@ -268,6 +270,42 @@ const UserProfile = () => {
                                     <p className={`${theme === 'dark' ? 'text-gray-200' : 'text-black'}`}>
                                         {profileData.ano_ingreso || 'No especificado'}
                                     </p>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className={`block font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                                        Curriculum Vitae
+                                    </label>
+                                    {profileData.cv ? (
+                                        <div className="flex items-center space-x-2">
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                className={`h-6 w-6 ${theme === 'dark' ? 'text-gray-200' : 'text-gray-700'}`}
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth={2}
+                                                    d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0013.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                                                />
+                                            </svg>
+                                            <a
+                                                href={profileData.cv}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className={`${theme === 'dark' ? 'text-blue-300 hover:text-blue-200' : 'text-blue-600 hover:text-blue-800'} underline`}
+                                            >
+                                                Ver CV
+                                            </a>
+                                        </div>
+                                    ) : (
+                                        <p className={`${theme === 'dark' ? 'text-gray-200' : 'text-black'}`}>
+                                            No se ha subido un CV
+                                        </p>
+                                    )}
                                 </div>
 
                             </div>
