@@ -442,7 +442,7 @@ const TemasList = () => {
                                     <h2 className={`text-lg sm:text-xl font-semibold ${currentTheme.text}`}>
                                         {tema.titulo}
                                     </h2>
-                                    <p className={`${currentTheme.dateText} mt-1`}>
+                                    <p className={`${currentTheme.dateText} mt-1 break-words`} style={{ wordBreak: 'break-word' }}>
                                         {tema.descripcion}
                                     </p>
                                     <p className={`text-xs ${currentTheme.dateText} mt-1`}>
