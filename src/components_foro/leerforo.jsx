@@ -7,16 +7,26 @@ import ReplyComment from './respondercomentario';
 import Cookies from 'js-cookie';
 import axios from 'axios';
 
-// Función de utilidad para formatear fechas de forma segura
 const formatDate = (dateString) => {
     try {
-        const date = new Date(dateString);
+        const timestamp = typeof dateString === 'number' ? dateString * 1000 : dateString;
+        const date = new Date(timestamp);
+
         // Verificar si la fecha es válida
         if (isNaN(date.getTime())) {
             return 'Fecha no disponible';
         }
-        return date.toLocaleString();
+
+        // Opciones de formateo más legibles
+        return date.toLocaleString('es-ES', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
     } catch (error) {
+        console.error('Error al formatear fecha:', error);
         return 'Fecha no disponible';
     }
 };
@@ -71,11 +81,6 @@ const Comentario = ({
         setMostrarFormRespuesta(!mostrarFormRespuesta);
     };
 
-    const formatUserName = (user) => {
-        if (!user) return 'Usuario Anónimo';
-        return `${user.nombres} ${user.apellidos}`.trim() || user.email || 'Usuario Anónimo';
-    };
-
     return (
         <div className="w-full">
             <div className={`
@@ -89,9 +94,6 @@ const Comentario = ({
                     ${currentTheme.commentText}
                 `}>
                     <div className="mb-2">
-                        <p className={`text-sm font-medium ${currentTheme.commentText}`}>
-                            Por: {formatUserName(comentario.usuario)}
-                        </p>
                         <p className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-[#1D4157]/70'}`}>
                             {formatDate(comentario.fechaCreacion)}
                         </p>
@@ -282,7 +284,7 @@ const TemasList = () => {
         try {
             const API_URL = import.meta.env.VITE_API_URL;
 
-            const response = await fetch(`${API_URL}/temas`); 
+            const response = await fetch(`${API_URL}/temas`);
             if (!response.ok) {
                 throw new Error('Error al cargar los temas');
             }
@@ -421,28 +423,26 @@ const TemasList = () => {
 
     return (
         <main className={`min-h-screen ${currentTheme.background}`}>
-            <div className="max-w-4xl mx-auto p-6">
-                <h1 className={`text-3xl font-bold mb-6 ${currentTheme.text}`}>
+            <div className="max-w-4xl mx-auto p-4 sm:p-6">
+                <h1 className={`text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 ${currentTheme.text}`}>
                     Foro de Discusión
                 </h1>
                 <CrearTemaForm onClose={() => { }} onTemaCreado={handleTemaCreado} />
-                <div className="space-y-4 mt-6">
+                <div className="space-y-4 mt-4 sm:mt-6">
                     {temas.map(tema => (
                         <div
                             key={tema.id}
-                            className={`
-                                border rounded-lg p-4 transition-all duration-300
+                            className={`border rounded-lg p-3 sm:p-4 transition-all duration-300
                                 ${currentTheme.cardBackground} 
                                 ${currentTheme.cardBorder} 
-                                ${currentTheme.cardShadow}
-                            `}
+                                ${currentTheme.cardShadow}`}
                         >
                             <div className="flex items-center justify-between">
                                 <div className="flex-grow">
-                                    <h2 className={`text-xl font-semibold ${currentTheme.text}`}>
+                                    <h2 className={`text-lg sm:text-xl font-semibold ${currentTheme.text}`}>
                                         {tema.titulo}
                                     </h2>
-                                    <p className={`${currentTheme.dateText} mt-1`}>
+                                    <p className={`${currentTheme.dateText} mt-1 break-words`} style={{ wordBreak: 'break-word' }}>
                                         {tema.descripcion}
                                     </p>
                                     <p className={`text-xs ${currentTheme.dateText} mt-1`}>
@@ -454,8 +454,7 @@ const TemasList = () => {
                                     className={`p-2 rounded-full transition-colors 
                                         ${currentTheme.buttonBackground} 
                                         ${currentTheme.buttonText}
-                                        hover:bg-opacity-80
-                                    `}
+                                        hover:bg-opacity-80`}
                                     title="Ver comentarios"
                                 >
                                     <MessageSquare className="w-5 h-5" />

@@ -117,12 +117,12 @@ const CrearTemaForm = ({ onClose, onTemaCreado }) => {
     }
 
     return (
-        <div className={`rounded-lg shadow-sm p-6 mb-6 transition-colors duration-300
+        <div className={`rounded-lg shadow-sm p-4 sm:p-6 mb-4 sm:mb-6 transition-colors duration-300
             ${theme === 'dark'
                 ? 'bg-gray-800 border-gray-700'
                 : 'bg-white border-[#A3D9D3]'}`}>
             <div className="flex justify-between items-center mb-4">
-                <h2 className={`text-xl font-semibold transition-colors
+                <h2 className={`text-lg sm:text-xl font-semibold transition-colors
                     ${theme === 'dark' ? 'text-gray-200' : 'text-[#1D4157]'}`}>
                     Crear Nuevo Tema
                 </h2>
@@ -144,7 +144,7 @@ const CrearTemaForm = ({ onClose, onTemaCreado }) => {
                         onChange={handleChange}
                         maxLength={MAX_TITULO_LENGTH}
                         required
-                        className={`w-full p-3 rounded-lg focus:ring-2 focus:ring-[#0092BC] min-h-[50px] resize-y transition-colors duration-300
+                        className={`w-full p-2 sm:p-3 rounded-lg focus:ring-2 focus:ring-[#0092BC] min-h-[50px] resize-y transition-colors duration-300
                             ${theme === 'dark'
                                 ? 'bg-gray-700 border-gray-600 text-gray-200 placeholder-gray-400'
                                 : 'bg-white border-gray-300 text-[#1D4157]'}`}

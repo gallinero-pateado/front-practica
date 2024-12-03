@@ -10,6 +10,8 @@ const EditProfile = () => {
         fecha_nacimiento: '',
         ano_ingreso: '',
         id_carrera: '',
+        fotoPerfil: null,
+        cv: null,
     });
 
     const [errors, setErrors] = useState({
@@ -97,6 +99,81 @@ const EditProfile = () => {
 
     const currentTheme = themeColors[theme];
 
+    const handleImageUpload = async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const API_URL = import.meta.env.VITE_API_URL;
+            const response = await axios.post(`${API_URL}/update-image`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${Cookies.get('authToken')}`
+                }
+            });
+
+            // Update profile data with the new image URL
+            setProfileData(prevData => ({
+                ...prevData,
+                fotoPerfil: response.data.url
+            }));
+
+            // Optional: Show success message
+            alert('Imagen de perfil actualizada exitosamente');
+        } catch (error) {
+            console.error('Error uploading image:', error);
+            alert('No se pudo actualizar la imagen de perfil');
+        }
+    };
+
+    const handlePDFUpload = async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        // Validate file type
+        if (!file.name.toLowerCase().endsWith('.pdf')) {
+            alert('Por favor, sube solo archivos PDF');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const API_URL = import.meta.env.VITE_API_URL;
+            const response = await axios.post(`${API_URL}/update-pdf`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${Cookies.get('authToken')}`
+                }
+            });
+
+            // Update profile data with the new PDF URL
+            setProfileData(prevData => ({
+                ...prevData,
+                cv: response.data.url
+            }));
+
+            // Show success message
+            alert('CV actualizado exitosamente');
+        } catch (error) {
+            console.error('Error uploading PDF:', error);
+            alert('No se pudo actualizar el CV');
+        }
+    };
+
+
+    const triggerFileInput = () => {
+        fileInputRef.current.click();
+    };
+
+    const triggerPDFInput = () => {
+        pdfInputRef.current.click();
+    };
+
     useEffect(() => {
         const fetchProfileData = async () => {
             const uid = Cookies.get('uid');
@@ -108,12 +185,14 @@ const EditProfile = () => {
 
             try {
                 const API_URL = import.meta.env.VITE_API_URL;
-                
+
                 const response = await axios.get(`${API_URL}/usuarios/${uid}`);
                 setProfileData({
                     fecha_nacimiento: response.data.Fecha_Nacimiento || '',
                     ano_ingreso: response.data.Ano_Ingreso || '',
                     id_carrera: response.data.Id_carrera || '',
+                    fotoPerfil: response.data.Foto_Perfil || null,
+                    cv: response.data.CV || null,
                 });
             } catch (error) {
                 console.error('Error al obtener datos del perfil:', error);
@@ -256,13 +335,76 @@ const EditProfile = () => {
         <main className="flex-grow p-4">
             <div className="max-w-3xl mx-auto">
                 <form onSubmit={handleSubmit} className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} shadow-md rounded-lg p-6 transition-colors duration-300`}>
+                    <div className="flex flex-col items-center mb-6 relative">
+                        {/* Profile Image Upload Input */}
+                        <input
+                            type="file"
+                            ref={fileInputRef}
+                            className="hidden"
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                        />
+                        {/* PDF Upload Input */}
+                        <input
+                            type="file"
+                            ref={pdfInputRef}
+                            className="hidden"
+                            accept=".pdf"
+                            onChange={handlePDFUpload}
+                        />
+
+                        {/* Profile Image Upload Section */}
+                        <div className="relative mb-4">
+                            {profileData.fotoPerfil ? (
+                                <img
+                                    src={profileData.fotoPerfil}
+                                    alt="avatar"
+                                    className="w-24 h-24 sm:w-32 sm:h-32 rounded-full border border-gray-300 object-cover"
+                                />
+                            ) : (
+                                <div className={`w-24 h-24 sm:w-32 sm:h-32 rounded-full border-2 border-dashed ${theme === 'dark' ? 'border-gray-600' : 'border-gray-300'} flex items-center justify-center ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'}`}>
+                                    <span className="text-gray-400 text-4xl">📷</span>
+                                </div>
+                            )}
+                            <button
+                                type="button"
+                                onClick={triggerFileInput}
+                                className="absolute bottom-0 right-0 bg-[#0092BC] text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-[#A3D9D3] transition-colors"
+                            >
+                                ✏️
+                            </button>
+                        </div>
+
+                        {/* PDF Upload Section */}
+                        <div className="relative mb-4">
+                            <div className={`w-full p-4 rounded-lg border-2 border-dashed ${theme === 'dark' ? 'border-gray-600 bg-gray-700' : 'border-gray-300 bg-gray-50'} flex items-center justify-between`}>
+                                <div className="flex items-center">
+                                    <span className="mr-4 text-gray-400">📄</span>
+                                    <span className="text-gray-600">
+                                        {profileData.cv
+                                            ? "CV cargado"
+                                            : "Cargar CV (PDF)"}
+                                    </span>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={triggerPDFInput}
+                                    className="bg-[#0092BC] text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-[#A3D9D3] transition-colors"
+                                >
+                                    ✏️
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
                     <h2 className={`text-lg font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-[#1D4157]'}`}>
                         Editar Perfil
                     </h2>
+
                     <div className="grid grid-cols-1 gap-4">
                         {[
                             { label: 'Fecha de Nacimiento:', name: 'fecha_nacimiento', type: 'date' },
-                            { label: 'Año de Ingreso:', name: 'ano_ingreso', type: 'text' },
+                            { label: 'Año de Ingreso:', name: 'ano_ingreso', type: 'number' },
                             { label: 'ID de Carrera:', name: 'id_carrera', type: 'number' },
                         ].map((field) => (
                             <div key={field.name}>
@@ -279,9 +421,13 @@ const EditProfile = () => {
                                         : 'bg-white text-[#1D4157] border-gray-300 focus:border-blue-500'
                                         }`}
                                 />
+                                {errors[field.name] && (
+                                    <p className="text-red-500 text-sm mt-1">{errors[field.name]}</p>
+                                )}
                             </div>
                         ))}
                     </div>
+
                     <div className="mt-6 flex justify-end">
                         <button
                             type="submit"

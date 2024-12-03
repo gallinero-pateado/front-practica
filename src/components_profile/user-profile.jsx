@@ -10,38 +10,38 @@ const UserProfile = () => {
     ///LISTA DE CARRERAS UWU//
 
     const carrerasList = [
-        { id: 1, nombre: "Ingeniería en Informatica" },
-        { id: 2, nombre: "Ingeniería Civil Biomedica" },
-        { id: 3, nombre: "Bachillerato en Ciencias de la Ingenieria" },
-        { id: 4, nombre: "Ingenieria Civil en Computacion, mencion Informatica" },
-        { id: 5, nombre: "Ingenieria Civil Industrial" },
-        { id: 6, nombre: "Ingenieria Civil en Ciencias de Datos" },
-        { id: 7, nombre: "Ingenieria Civil en Electronica" },
-        { id: 8, nombre: "Ingenieria Civil en Mecanica" },
-        { id: 9, nombre: "Ingenieria en Geomensura" },
-        { id: 10, nombre: "Ingenieria Industrial" },
+        { id: 1, nombre: "Ingeniería en Informática" },
+        { id: 2, nombre: "Ingeniería Civil Biomédica" },
+        { id: 3, nombre: "Bachillerato en Ciencias de la Ingeniería" },
+        { id: 4, nombre: "Ingeniería Civil en Computación, mención Informática" },
+        { id: 5, nombre: "Ingeniería Civil Industrial" },
+        { id: 6, nombre: "Ingeniería Civil en Ciencias de Datos" },
+        { id: 7, nombre: "Ingeniería Civil en Electrónica" },
+        { id: 8, nombre: "Ingeniería Civil en Mecánica" },
+        { id: 9, nombre: "Ingeniería en Geomensura" },
+        { id: 10, nombre: "Ingeniería Industrial" },
         { id: 11, nombre: "Dibujante Proyectista" },
-        { id: 12, nombre: "Diseño en Comunicacion Visual" },
+        { id: 12, nombre: "Diseño en Comunicación Visual" },
         { id: 13, nombre: "Diseño Industrial" },
         { id: 14, nombre: "Trabajo Social" },
-        { id: 15, nombre: "Ingenieria Civil Quimica" },
-        { id: 16, nombre: "Ingeniería Civil Matematica" },
-        { id: 17, nombre: "Quimica y Farmacia" },
-        { id: 18, nombre: "Ingenieria en Biotecnologia" },
-        { id: 19, nombre: "Ingenieria en Alimentos" },
-        { id: 20, nombre: "Quimica Industrial" },
+        { id: 15, nombre: "Ingeniería Civil Química" },
+        { id: 16, nombre: "Ingeniería Civil Matemática" },
+        { id: 17, nombre: "Química y Farmacia" },
+        { id: 18, nombre: "Ingeniería en Biotecnología" },
+        { id: 19, nombre: "Ingeniería en Alimentos" },
+        { id: 20, nombre: "Química Industrial" },
         { id: 21, nombre: "Arquitectura" },
-        { id: 22, nombre: "Ingenieria Civil en Obras Civiles" },
-        { id: 23, nombre: "Ingenieria en Construccion" },
-        { id: 24, nombre: "Ingenieria Civil en Prevencion de Riesgos y Medioambiente" },
-        { id: 25, nombre: "Administracion Publica" },
-        { id: 26, nombre: "Bibliotecologia y Documentacion" },
-        { id: 27, nombre: "Contador Publico y Auditor" },
-        { id: 28, nombre: "Ingenieria Comercial" },
-        { id: 29, nombre: "Ingenieria en Comercio Internacional" },
-        { id: 30, nombre: "Ingenieria en Gestion Turistica" },
+        { id: 22, nombre: "Ingeniería Civil en Obras Civiles" },
+        { id: 23, nombre: "Ingeniería en Construcción" },
+        { id: 24, nombre: "Ingeniería Civil en Prevención de Riesgos y Medioambiente" },
+        { id: 25, nombre: "Administración Pública" },
+        { id: 26, nombre: "Bibliotecología y Documentación" },
+        { id: 27, nombre: "Contador Público y Auditor" },
+        { id: 28, nombre: "Ingeniería Comercial" },
+        { id: 29, nombre: "Ingeniería en Comercio Internacional" },
+        { id: 30, nombre: "Ingeniería en Gestión Turística" },
         { id: 31, nombre: "Derecho" },
-        { id: 32, nombre: "Psicologia" }
+        { id: 32, nombre: "Psicología" }
     ];
 
     const [profileData, setProfileData] = useState({
@@ -52,6 +52,7 @@ const UserProfile = () => {
         fecha_nacimiento: '',
         ano_ingreso: '',
         id_carrera: null,
+        cv: null
     });
 
     const cookieOptions = {
@@ -159,7 +160,9 @@ const UserProfile = () => {
                     fecha_nacimiento: response.data.Fecha_Nacimiento || '',
                     ano_ingreso: response.data.Ano_Ingreso || '',
                     id_carrera: parseInt(response.data.Id_carrera) || null,
+                    cv: response.data.CV || null  // Add CV to the profile data
                 });
+
             } catch (error) {
                 console.error('Error al obtener datos del perfil:', error);
                 if (error.response && error.response.status === 401) {
@@ -267,6 +270,29 @@ const UserProfile = () => {
                                         {profileData.ano_ingreso || 'No especificado'}
                                     </p>
                                 </div>
+
+                                <div className="space-y-2">
+                                    <label className={`block font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                                        Curriculum Vitae
+                                    </label>
+                                    {profileData.cv ? (
+                                        <div className="flex items-center space-x-2">
+                                            <a
+                                                href={profileData.cv}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className={`${theme === 'dark' ? 'text-[#A3D9D3] hover:text-[#8ec3c0]' : 'text-[#0092BC] hover:text-[#007a9a]'} underline`}
+                                            >
+                                                Ver Curriculum Vitae
+                                            </a>
+                                        </div>
+                                    ) : (
+                                        <p className={`${theme === 'dark' ? 'text-gray-200' : 'text-black'}`}>
+                                            No se ha subido un CV
+                                        </p>
+                                    )}
+                                </div>
+
                             </div>
                         </div>
                     </div>
