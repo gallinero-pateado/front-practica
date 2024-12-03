@@ -430,6 +430,7 @@ const TemasList = () => {
                 <CrearTemaForm
                     onClose={() => { }}
                     onTemaCreado={handleTemaCreado}
+                    theme={theme}
                     className="w-full"
                 />
                 <div className="grid grid-cols-1 gap-4 mt-6">
@@ -474,6 +475,7 @@ const TemasList = () => {
                                 <div className="mt-4 space-y-3">
                                     <CrearComentario
                                         temaId={tema.id}
+                                        theme={theme}
                                         onComentarioCreado={(nuevoComentario) =>
                                             handleComentarioCreado(tema.id, nuevoComentario)
                                         }
