@@ -3,7 +3,7 @@ import { Send } from 'lucide-react';
 import Cookies from 'js-cookie';
 
 
-const CrearComentario = ({ temaId, onComentarioCreado }) => {
+const CrearComentario = ({ temaId, onComentarioCreado, theme }) => {
     const [contenido, setContenido] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState('');

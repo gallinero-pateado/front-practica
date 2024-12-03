@@ -104,6 +104,7 @@ const Comentario = ({
                             commentId={comentario.id}
                             initialContent={comentario.contenido}
                             onUpdateSuccess={onUpdateSuccess}
+                            theme={theme} // Pass the theme prop
                         />
                     </div>
 
@@ -469,6 +470,7 @@ const TemasList = () => {
                                         onComentarioCreado={(nuevoComentario) =>
                                             handleComentarioCreado(tema.id, nuevoComentario)
                                         }
+                                        theme={theme} // Pass the theme prop
                                     />
 
                                     {comentariosPorTema[tema.id]?.length > 0 ? (

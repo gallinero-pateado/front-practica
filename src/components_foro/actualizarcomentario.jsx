@@ -1,10 +1,10 @@
-import React, { useState } from 'react'; 
+import React, { useState } from 'react';
 import { Pencil, Save, X, AlertCircle } from 'lucide-react';
 import Cookies from 'js-cookie';
 
 const MAX_CHARS = 70;
 
-const CommentEdit = ({ commentId, initialContent, onUpdateSuccess }) => {
+const CommentEdit = ({ commentId, initialContent, onUpdateSuccess, theme }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [content, setContent] = useState(initialContent);
     const [error, setError] = useState('');
