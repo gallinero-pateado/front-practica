@@ -439,7 +439,7 @@ const TemasList = () => {
                         >
                             <div className="flex items-center justify-between">
                                 <div className="flex-grow">
-                                    <h2 className={`text-lg sm:text-xl font-semibold ${currentTheme.text}`}>
+                                    <h2 className={`text-lg sm:text-xl font-semibold ${currentTheme.text} break-words`} style={{ wordBreak: 'break-word'}}>
                                         {tema.titulo}
                                     </h2>
                                     <p className={`${currentTheme.dateText} mt-1 break-words`} style={{ wordBreak: 'break-word' }}>
