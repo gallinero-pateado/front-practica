@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
 const EditProfile = () => {
     const navigate = useNavigate();
+    const fileInputRef = useRef(null);
+    const cvInputRef = useRef(null);
     const [theme, setTheme] = useState('light');
     const [profileData, setProfileData] = useState({
         fecha_nacimiento: '',
@@ -212,8 +214,10 @@ const EditProfile = () => {
         }
     };
 
-    const triggerFileInput = () => {
-        fileInputRef.current.click();
+    const triggerFileInput = (ref) => {
+        if (ref && ref.current) {
+            ref.current.click();
+        }
     };
 
 
@@ -411,7 +415,7 @@ const EditProfile = () => {
                             )}
                             <button
                                 type="button"
-                                onClick={triggerFileInput}
+                                onClick={() => triggerFileInput(fileInputRef)}  // Pass fileInputRef
                                 className="absolute bottom-0 right-0 bg-[#0092BC] text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-[#A3D9D3] transition-colors"
                             >
                                 ✏️
@@ -427,9 +431,9 @@ const EditProfile = () => {
                         <div className="relative mb-4">
                             <button
                                 type="button"
-                                onClick={() => triggerFileInput(cvInputRef)}
+                                onClick={() => triggerFileInput(cvInputRef)}  // Pass cvInputRef
                                 className={`px-4 py-2 rounded-md shadow-sm text-sm font-medium 
-                                    ${theme === 'dark'
+            ${theme === 'dark'
                                         ? 'bg-gray-700 text-white hover:bg-gray-600'
                                         : 'bg-[#0092BC] text-white hover:bg-[#A3D9D3]'
                                     } transition-colors`}
