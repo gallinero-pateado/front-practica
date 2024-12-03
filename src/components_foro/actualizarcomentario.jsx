@@ -98,6 +98,7 @@ const CommentEdit = ({ commentId, initialContent, onUpdateSuccess, theme }) => {
                                     ? 'bg-gray-700 border-gray-600 text-gray-200 placeholder-gray-400'
                                     : 'bg-white border-gray-300 text-[#1D4157]'}`}
                             placeholder="Escribe tu comentario aquí..."
+                            style={{ wordBreak: 'break-word' }}
                         />
                         <div className={`text-right text-sm mt-1 ${getCharacterCountColor()}`}>
                             {content.length}/{MAX_CHARS} caracteres
@@ -138,8 +139,9 @@ const CommentEdit = ({ commentId, initialContent, onUpdateSuccess, theme }) => {
                 </form>
             ) : (
                 <div className="flex items-start gap-2">
-                    <p className={`flex-1 transition-colors
-                        ${theme === 'dark' ? 'text-gray-200' : 'text-[#1D4157]'}`}>
+                    <p className={`flex-1 transition-colors break-words
+                        ${theme === 'dark' ? 'text-gray-200' : 'text-[#1D4157]'}`}
+                        style={{ wordBreak: 'break-word' }}>
                         {content}
                     </p>
                     <button

@@ -99,7 +99,7 @@ const Comentario = ({
                         </p>
                     </div>
 
-                    <div className={`mt-2 ${currentTheme.commentText}`}>
+                    <div className={`mt-2 ${currentTheme.commentText} break-words`}>
                         <CommentEdit
                             commentId={comentario.id}
                             initialContent={comentario.contenido}

@@ -101,13 +101,14 @@ const ReplyComment = ({ temaId, comentarioPadreId, onComentarioCreado }) => {
                     onChange={(e) => setContenido(e.target.value)}
                     placeholder="Escribe tu respuesta aquí..."
                     maxLength={maxCaracteres} // Límite de caracteres
-                    className={`w-full p-2 border rounded-lg focus:ring-1 focus:ring-[#0092BC] focus:border-[#0092BC] text-sm transition-colors duration-300
+                    className={`w-full p-2 border rounded-lg focus:ring-1 focus:ring-[#0092BC] focus:border-[#0092BC] text-sm transition-colors duration-300 break-words
                 ${theme === 'dark'
                             ? 'bg-gray-700 border-gray-600 text-gray-200 placeholder-gray-400'
                             : 'bg-white border-gray-300 text-[#1D4157] placeholder-gray-500'
                         }
                 sm:text-base sm:p-3`}
                     rows={3}
+                    style={{ wordBreak: 'break-word' }}
                 />
                 {contenido && (
                     <button
