@@ -6,6 +6,25 @@ import Cookies from 'js-cookie';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
+const Regiones_Chile = [
+    'Arica y Parinacota',
+    'Tarapacá',
+    'Antofagasta',
+    'Atacama',
+    'Coquimbo',
+    'Valparaíso',
+    'Metropolitana de Santiago',
+    'Libertador General Bernardo O\'Higgins',
+    'Maule',
+    'Ñuble',
+    'Biobío',
+    'La Araucanía',
+    'Los Ríos',
+    'Los Lagos',
+    'Aysén del General Carlos Ibáñez del Campo',
+    'Magallanes y de la Antártica Chilena'
+];
+
 const PracticasList = () => {
     const [practicas, setPracticas] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -210,17 +229,35 @@ const PracticasList = () => {
                                             <label className={`block mb-1 ${currentTheme === 'dark' ? 'text-gray-300' : 'text-[#1D4157]'}`}>
                                                 {label}
                                             </label>
-                                            <input
-                                                type="text"
-                                                name={key}
-                                                value={filters[key]}
-                                                onChange={handleFilterChange}
-                                                className={`w-full p-2 border rounded
-                                                         ${currentTheme === 'dark' ?
-                                                        'bg-gray-700 border-gray-600 text-white placeholder-gray-300' :
-                                                        'bg-white text-[#1D4157] placeholder-gray-400'}`}
-                                                placeholder={key === 'jornada' ? 'Ej. Part-time' : key === 'modalidad' ? 'Ej. Remoto' : ''}
-                                            />
+                                            {key === 'ubicacion' ? (
+                                                <select
+                                                    name={key}
+                                                    value={filters[key]}
+                                                    onChange={handleFilterChange}
+                                                    className={`w-full p-2 border rounded
+                                                             ${currentTheme === 'dark' ?
+                                                            'bg-gray-700 border-gray-600 text-white' :
+                                                            'bg-white text-[#1D4157]'}`}
+                                                >
+                                                    {Regiones_Chile.map((region) => (
+                                                        <option key={region.value} value={region.value}>
+                                                            {region.label}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            ) : (
+                                                <input
+                                                    type="text"
+                                                    name={key}
+                                                    value={filters[key]}
+                                                    onChange={handleFilterChange}
+                                                    className={`w-full p-2 border rounded
+                                                             ${currentTheme === 'dark' ?
+                                                            'bg-gray-700 border-gray-600 text-white placeholder-gray-300' :
+                                                            'bg-white text-[#1D4157] placeholder-gray-400'}`}
+                                                    placeholder={key === 'jornada' ? 'Ej. Part-time' : key === 'modalidad' ? 'Ej. Remoto' : ''}
+                                                />
+                                            )}
                                         </div>
                                     ))}
                                     <div>
