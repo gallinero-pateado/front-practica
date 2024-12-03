@@ -120,7 +120,7 @@ const CommentEdit = ({ commentId, initialContent, onUpdateSuccess, theme }) => {
                             className="flex items-center gap-2 px-4 py-2 bg-[#7B4B94] text-white rounded-md hover:opacity-90 transition-opacity disabled:opacity-50"
                         >
                             <Save className="w-4 h-4" />
-                            {loading ? 'Guardando...' : 'Guardar'}
+                            {isLoading ? 'Guardando...' : 'Guardar'}
                         </button>
                         <button
                             type="button"
