@@ -3,7 +3,7 @@ import { Send } from 'lucide-react';
 import Cookies from 'js-cookie';
 
 
-const CrearComentario = ({ temaId, onComentarioCreado }) => {
+const CrearComentario = ({ temaId, onComentarioCreado, theme }) => {
     const [contenido, setContenido] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState('');
@@ -84,11 +84,12 @@ const CrearComentario = ({ temaId, onComentarioCreado }) => {
                         placeholder="Escribe tu comentario..."
                         maxLength={maxCaracteres} // Límite de caracteres
                         className={`w-full p-2 sm:p-3 border rounded-lg focus:ring-2 focus:ring-[#0092BC]
-                            transition-colors duration-300
+                            transition-colors duration-300 break-words
                             ${theme === 'dark'
                                 ? 'bg-gray-700 border-gray-600 text-gray-200 placeholder-gray-400'
                                 : 'bg-white border-gray-300 text-[#1D4157]'}`}
                         disabled={isSubmitting}
+                        style={{ wordBreak: 'break-word' }}
                     />
                     <div className="text-right text-sm text-gray-500 dark:text-gray-400 mt-1">
                         {contenido.length}/{maxCaracteres} caracteres
