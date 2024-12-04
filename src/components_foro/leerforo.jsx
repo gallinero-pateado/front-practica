@@ -423,19 +423,13 @@ const TemasList = () => {
     );
 
     return (
-        <main className={`min-h-screen ${currentTheme.background}
-            <div className="max-w-4xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6">
-                <h1 className={`text-2xl sm:text-3xl md:text-4xl font-bold mb-6 ${currentTheme.text}`}>
+        <main className={`min-h-screen ${currentTheme.background}`}>
+            <div className="max-w-4xl mx-auto p-4 sm:p-6">
+                <h1 className={`text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 ${currentTheme.text}`}>
                     Foro de Discusión
                 </h1>
-                <CrearTemaForm
-                    onClose={() => { }}
-                    onTemaCreado={handleTemaCreado}
-                    theme={theme}
-                    className="w-full"
-                />
-                <div className="grid grid-cols-1 gap-4 mt-6">
-
+                <CrearTemaForm onClose={() => { }} onTemaCreado={handleTemaCreado} />
+                <div className="space-y-4 mt-4 sm:mt-6">
                     {temas.map(tema => (
                         <div
                             key={tema.id}
@@ -444,14 +438,12 @@ const TemasList = () => {
                                 ${currentTheme.cardBorder} 
                                 ${currentTheme.cardShadow}`}
                         >
-
                             <div className="flex items-center justify-between">
                                 <div className="flex-grow">
                                     <h2 className={`text-lg sm:text-xl font-semibold ${currentTheme.text} break-words`} style={{ wordBreak: 'break-word'}}>
-
                                         {tema.titulo}
                                     </h2>
-                                    <p className={`${currentTheme.dateText} mt-1 text-sm`}>
+                                    <p className={`${currentTheme.dateText} mt-1 break-words`} style={{ wordBreak: 'break-word' }}>
                                         {tema.descripcion}
                                     </p>
                                     <p className={`text-xs ${currentTheme.dateText} mt-1`}>
@@ -460,26 +452,21 @@ const TemasList = () => {
                                 </div>
                                 <button
                                     onClick={(e) => toggleComentarios(e, tema.id)}
-                                    className={`
-                                        p-2 rounded-full transition-colors 
+                                    className={`p-2 rounded-full transition-colors 
                                         ${currentTheme.buttonBackground} 
                                         ${currentTheme.buttonText}
-
-                                        hover:bg-opacity-80
-                                        self-end sm:self-auto
-                                    `}
-
+                                        hover:bg-opacity-80`}
                                     title="Ver comentarios"
                                 >
-                                    <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5" />
+                                    <MessageSquare className="w-5 h-5" />
                                 </button>
                             </div>
+
 
                             {temasExpandidos[tema.id] && (
                                 <div className="mt-4 space-y-3">
                                     <CrearComentario
                                         temaId={tema.id}
-                                        theme={theme}
                                         onComentarioCreado={(nuevoComentario) =>
                                             handleComentarioCreado(tema.id, nuevoComentario)
                                         }
@@ -501,7 +488,7 @@ const TemasList = () => {
                                             ))}
                                         </div>
                                     ) : (
-                                        <p className={`text-center py-4 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-[#1D4157]/60'}`}>
+                                        <p className={`text-center py-4 ${theme === 'dark' ? 'text-gray-400' : 'text-[#1D4157]/60'}`}>
                                             No hay comentarios en este tema.
                                         </p>
                                     )}

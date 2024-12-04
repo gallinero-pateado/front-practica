@@ -7,22 +7,22 @@ import Cookies from 'js-cookie';
 const API_URL = import.meta.env.VITE_API_URL;
 
 const Regiones_Chile = [
-    { value: 'Arica y Parinacota', label: 'Arica y Parinacota' },
-    { value: 'Tarapacá', label: 'Tarapacá' },
-    { value: 'Antofagasta', label: 'Antofagasta' },
-    { value: 'Atacama', label: 'Atacama' },
-    { value: 'Coquimbo', label: 'Coquimbo' },
-    { value: 'Valparaíso', label: 'Valparaíso' },
-    { value: 'Metropolitana de Santiago', label: 'Metropolitana de Santiago' },
-    { value: 'Libertador General Bernardo O\'Higgins', label: 'Libertador General Bernardo O\'Higgins' },
-    { value: 'Maule', label: 'Maule' },
-    { value: 'Ñuble', label: 'Ñuble' },
-    { value: 'Biobío', label: 'Biobío' },
-    { value: 'La Araucanía', label: 'La Araucanía' },
-    { value: 'Los Ríos', label: 'Los Ríos' },
-    { value: 'Los Lagos', label: 'Los Lagos' },
-    { value: 'Aysén del General Carlos Ibáñez del Campo', label: 'Aysén del General Carlos Ibáñez del Campo' },
-    { value: 'Magallanes y de la Antártica Chilena', label: 'Magallanes y de la Antártica Chilena' }
+    'Arica y Parinacota',
+    'Tarapacá',
+    'Antofagasta',
+    'Atacama',
+    'Coquimbo',
+    'Valparaíso',
+    'Metropolitana de Santiago',
+    'Libertador General Bernardo O\'Higgins',
+    'Maule',
+    'Ñuble',
+    'Biobío',
+    'La Araucanía',
+    'Los Ríos',
+    'Los Lagos',
+    'Aysén del General Carlos Ibáñez del Campo',
+    'Magallanes y de la Antártica Chilena'
 ];
 
 const PracticasList = () => {
@@ -187,22 +187,12 @@ const PracticasList = () => {
                             <input
                                 type="text"
                                 value={searchTerm}
-                                onChange={(e) => {
-                                    if (e.target.value.length <= 50) {
-                                        setSearchTerm(e.target.value);
-                                    }
-                                }}
-                                maxLength={50}
+                                onChange={(e) => setSearchTerm(e.target.value)}
                                 placeholder="Buscar prácticas..."
                                 className={`flex-grow w-full p-2 border rounded-lg text-lg font-ubuntu 
-                     truncate overflow-ellipsis max-w-full 
-                     ${currentTheme === 'dark' ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-300' :
+                                         ${currentTheme === 'dark' ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-300' :
                                         'bg-white text-[#1D4157] placeholder-gray-400'}`}
                             />
-                            <div className={`absolute right-2 top-1/2 transform -translate-y-1/2 text-sm 
-                     ${currentTheme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                                {searchTerm.length}/50
-                            </div>
                             <div className="flex space-x-2 w-full sm:w-auto">
                                 <button
                                     type="submit"
@@ -249,7 +239,6 @@ const PracticasList = () => {
                                                             'bg-gray-700 border-gray-600 text-white' :
                                                             'bg-white text-[#1D4157]'}`}
                                                 >
-                                                    <option value="">Selecciona una región</option>
                                                     {Regiones_Chile.map((region) => (
                                                         <option key={region.value} value={region.value}>
                                                             {region.label}
