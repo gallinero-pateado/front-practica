@@ -99,11 +99,12 @@ const Comentario = ({
                         </p>
                     </div>
 
-                    <div className={`mt-2 ${currentTheme.commentText}`}>
+                    <div className={`mt-2 ${currentTheme.commentText} break-words`}>
                         <CommentEdit
                             commentId={comentario.id}
                             initialContent={comentario.contenido}
                             onUpdateSuccess={onUpdateSuccess}
+                            theme={theme} // Pass the theme prop
                         />
                     </div>
 
@@ -444,9 +445,10 @@ const TemasList = () => {
                                 ${currentTheme.cardShadow}`}
                         >
 
-                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0">
-                                <div className="flex-grow w-full sm:pr-4">
-                                    <h2 className={`text-lg sm:text-xl font-semibold ${currentTheme.text}`}>
+                            <div className="flex items-center justify-between">
+                                <div className="flex-grow">
+                                    <h2 className={`text-lg sm:text-xl font-semibold ${currentTheme.text} break-words`} style={{ wordBreak: 'break-word'}}>
+
                                         {tema.titulo}
                                     </h2>
                                     <p className={`${currentTheme.dateText} mt-1 text-sm`}>
@@ -481,6 +483,7 @@ const TemasList = () => {
                                         onComentarioCreado={(nuevoComentario) =>
                                             handleComentarioCreado(tema.id, nuevoComentario)
                                         }
+                                        theme={theme} // Pass the theme prop
                                     />
 
                                     {comentariosPorTema[tema.id]?.length > 0 ? (

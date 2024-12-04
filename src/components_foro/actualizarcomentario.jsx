@@ -1,10 +1,10 @@
-import React, { useState } from 'react'; 
+import React, { useState } from 'react';
 import { Pencil, Save, X, AlertCircle } from 'lucide-react';
 import Cookies from 'js-cookie';
 
 const MAX_CHARS = 70;
 
-const CommentEdit = ({ commentId, initialContent, onUpdateSuccess }) => {
+const CommentEdit = ({ commentId, initialContent, onUpdateSuccess, theme }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [content, setContent] = useState(initialContent);
     const [error, setError] = useState('');
@@ -98,6 +98,7 @@ const CommentEdit = ({ commentId, initialContent, onUpdateSuccess }) => {
                                     ? 'bg-gray-700 border-gray-600 text-gray-200 placeholder-gray-400'
                                     : 'bg-white border-gray-300 text-[#1D4157]'}`}
                             placeholder="Escribe tu comentario aquí..."
+                            style={{ wordBreak: 'break-word' }}
                         />
                         <div className={`text-right text-sm mt-1 ${getCharacterCountColor()}`}>
                             {content.length}/{MAX_CHARS} caracteres
@@ -120,7 +121,7 @@ const CommentEdit = ({ commentId, initialContent, onUpdateSuccess }) => {
                             className="flex items-center gap-2 px-4 py-2 bg-[#7B4B94] text-white rounded-md hover:opacity-90 transition-opacity disabled:opacity-50"
                         >
                             <Save className="w-4 h-4" />
-                            {loading ? 'Guardando...' : 'Guardar'}
+                            {isLoading ? 'Guardando...' : 'Guardar'}
                         </button>
                         <button
                             type="button"
@@ -138,8 +139,9 @@ const CommentEdit = ({ commentId, initialContent, onUpdateSuccess }) => {
                 </form>
             ) : (
                 <div className="flex items-start gap-2">
-                    <p className={`flex-1 transition-colors
-                        ${theme === 'dark' ? 'text-gray-200' : 'text-[#1D4157]'}`}>
+                    <p className={`flex-1 transition-colors break-words
+                        ${theme === 'dark' ? 'text-gray-200' : 'text-[#1D4157]'}`}
+                        style={{ wordBreak: 'break-word' }}>
                         {content}
                     </p>
                     <button
