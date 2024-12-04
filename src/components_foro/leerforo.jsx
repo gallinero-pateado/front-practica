@@ -422,7 +422,7 @@ const TemasList = () => {
     );
 
     return (
-        <main className={`min-h-screen ${currentTheme.background}`}>
+        <main className={`min-h-screen ${currentTheme.background}
             <div className="max-w-4xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6">
                 <h1 className={`text-2xl sm:text-3xl md:text-4xl font-bold mb-6 ${currentTheme.text}`}>
                     Foro de Discusión
@@ -434,16 +434,16 @@ const TemasList = () => {
                     className="w-full"
                 />
                 <div className="grid grid-cols-1 gap-4 mt-6">
+
                     {temas.map(tema => (
                         <div
                             key={tema.id}
-                            className={`
-                                border rounded-lg p-4 transition-all duration-300
+                            className={`border rounded-lg p-3 sm:p-4 transition-all duration-300
                                 ${currentTheme.cardBackground} 
                                 ${currentTheme.cardBorder} 
-                                ${currentTheme.cardShadow}
-                            `}
+                                ${currentTheme.cardShadow}`}
                         >
+
                             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0">
                                 <div className="flex-grow w-full sm:pr-4">
                                     <h2 className={`text-lg sm:text-xl font-semibold ${currentTheme.text}`}>
@@ -462,9 +462,11 @@ const TemasList = () => {
                                         p-2 rounded-full transition-colors 
                                         ${currentTheme.buttonBackground} 
                                         ${currentTheme.buttonText}
+
                                         hover:bg-opacity-80
                                         self-end sm:self-auto
                                     `}
+
                                     title="Ver comentarios"
                                 >
                                     <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5" />
