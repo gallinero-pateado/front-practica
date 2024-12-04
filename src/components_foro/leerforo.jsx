@@ -501,5 +501,4 @@ const TemasList = () => {
         </main>
     );
 };
-
 export default TemasList;
