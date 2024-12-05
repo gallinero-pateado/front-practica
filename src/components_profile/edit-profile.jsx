@@ -260,7 +260,7 @@ const EditProfile = () => {
             }
 
             // Navigate back to profile page
-            navigate('/profile');
+            navigate('/user-profile');
 
         } catch (error) {
             console.error('Error updating profile:', error);
