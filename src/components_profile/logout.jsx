@@ -66,8 +66,9 @@ const Logout = () => {
         // Remove cookies with the same options used in login
         const cookieOptions = {
             path: '/',
-            secure: window.location.protocol === 'https:',
-            sameSite: 'Lax'
+            secure: true ,
+            sameSite: 'Strict',
+            domain: ".tssw.info"
         };
 
         Cookies.remove('authToken', cookieOptions);
@@ -118,11 +119,12 @@ const Logout = () => {
                 Gracias por usar ULINK. Esperamos verte pronto.
             </p>
             <button
-                onClick={() => navigate('/')}
-                className="px-6 py-2 text-white rounded-md shadow-sm bg-[#0092BC] hover:bg-[#A3D9D3] transition-colors"
-            >
-                Volver al inicio
-            </button>
+            onClick={() => (window.location.href = '/')}
+    className="px-6 py-2 text-white rounded-md shadow-sm bg-[#0092BC] hover:bg-[#A3D9D3] transition-colors"
+>
+    Volver al inicio
+</button>
+
         </div>
     );
 };
