@@ -1,447 +1,543 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import Cookies from 'js-cookie';
+import React, { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import Cookies from "js-cookie";
 
 const EditProfile = () => {
-    const navigate = useNavigate();
-    const [theme, setTheme] = useState('light');
-    const [profileData, setProfileData] = useState({
-        fecha_nacimiento: '',
-        ano_ingreso: '',
-        id_carrera: '',
-        fotoPerfil: null,
-        cv: null,
-    });
+  const navigate = useNavigate();
+  const fileInputRef = useRef(null);
+  const cvInputRef = useRef(null);
+  const [theme, setTheme] = useState("light");
+  const [profileData, setProfileData] = useState({
+    fecha_nacimiento: "",
+    ano_ingreso: "",
+    id_carrera: "",
+    fotoPerfil: null,
+    cv: null,
+  });
 
-    const [errors, setErrors] = useState({
-        fecha_nacimiento: '',
-        ano_ingreso: '',
-    });
+  const [errors, setErrors] = useState({
+    fecha_nacimiento: "",
+    ano_ingreso: "",
+    fileUpload: "",
+    cvUpload: "",
+  });
 
-    const cookieOptions = {
-        expires: 7,
-        secure: window.location.protocol === 'https:',
-        sameSite: 'Lax',
-        path: '/'
+  const cookieOptions = {
+    expires: 7,
+    secure: window.location.protocol === "https:",
+    sameSite: "Lax",
+    path: "/",
+  };
+
+  useEffect(() => {
+    const savedTheme = Cookies.get("theme") || "light";
+    setTheme(savedTheme);
+
+    const handleThemeChange = () => {
+      const newTheme = Cookies.get("theme") || "light";
+      setTheme(newTheme);
     };
 
-    useEffect(() => {
-        const savedTheme = Cookies.get('theme') || 'light';
-        setTheme(savedTheme);
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === "data-theme") {
+          handleThemeChange();
+        }
+      });
+    });
 
-        const handleThemeChange = () => {
-            const newTheme = Cookies.get('theme') || 'light';
-            setTheme(newTheme);
-        };
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
 
-        const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                if (mutation.attributeName === 'data-theme') {
-                    handleThemeChange();
-                }
-            });
-        });
+    return () => observer.disconnect();
+  }, []);
 
-        observer.observe(document.documentElement, {
-            attributes: true,
-            attributeFilter: ['data-theme']
-        });
+  useEffect(() => {
+    axios.interceptors.request.use(
+      (config) => {
+        const token = Cookies.get("authToken");
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+      },
+      (error) => {
+        return Promise.reject(error);
+      }
+    );
 
-        return () => observer.disconnect();
-    }, []);
+    axios.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (error.response && error.response.status === 401) {
+          Cookies.remove("authToken", { path: "/" });
+          Cookies.remove("uid", { path: "/" });
+          navigate("/login");
+        }
+        return Promise.reject(error);
+      }
+    );
+  }, [navigate]);
 
-    useEffect(() => {
-        axios.interceptors.request.use((config) => {
-            const token = Cookies.get('authToken');
-            if (token) {
-                config.headers.Authorization = `Bearer ${token}`;
-            }
-            return config;
-        }, (error) => {
-            return Promise.reject(error);
-        });
+  const themeColors = {
+    light: {
+      background: "bg-white",
+      text: "text-black",
+      accent: "text-[#0092BC]",
+      inputBg: "bg-white",
+      inputText: "text-black",
+      inputBorder: "border-gray-300",
+      card: "bg-white",
+    },
+    dark: {
+      background: "bg-gray-800",
+      text: "text-white",
+      accent: "text-[#A3D9D3]",
+      inputBg: "bg-gray-700",
+      inputText: "text-white",
+      inputBorder: "border-gray-600",
+      card: "bg-gray-800",
+      formWrapper: "bg-gray-900",
+    },
+  };
 
-        axios.interceptors.response.use(
-            response => response,
-            error => {
-                if (error.response && error.response.status === 401) {
-                    Cookies.remove('authToken', { path: '/' });
-                    Cookies.remove('uid', { path: '/' });
-                    navigate('/login');
-                }
-                return Promise.reject(error);
-            }
-        );
-    }, [navigate]);
+  const currentTheme = themeColors[theme];
 
-    const themeColors = {
-        light: {
-            background: 'bg-white',
-            text: 'text-black',
-            accent: 'text-[#0092BC]',
-            inputBg: 'bg-white',
-            inputText: 'text-black',
-            inputBorder: 'border-gray-300',
-            card: 'bg-white'
+  const handleImageUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const validImageTypes = ["image/jpeg", "image/png", "image/gif"];
+    const maxSize = 5 * 1024 * 1024; // 5MB
+
+    if (!validImageTypes.includes(file.type)) {
+      setErrors((prev) => ({
+        ...prev,
+        fileUpload: "Por favor, selecciona una imagen válida (JPEG, PNG, GIF)",
+      }));
+      return;
+    }
+
+    if (file.size > maxSize) {
+      setErrors((prev) => ({
+        ...prev,
+        fileUpload: "La imagen no debe superar los 5MB",
+      }));
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const API_URL = import.meta.env.VITE_API_URL;
+      const response = await axios.post(`${API_URL}/update-image`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${Cookies.get("authToken")}`,
         },
-        dark: {
-            background: 'bg-gray-800',
-            text: 'text-white',
-            accent: 'text-[#A3D9D3]',
-            inputBg: 'bg-gray-700',
-            inputText: 'text-white',
-            inputBorder: 'border-gray-600',
-            card: 'bg-gray-800',
-            formWrapper: 'bg-gray-900'
-        }
-    };
+      });
 
-    const currentTheme = themeColors[theme];
+      // Update profile data with the new image URL
+      setProfileData((prevData) => ({
+        ...prevData,
+        fotoPerfil: response.data.url,
+      }));
 
-    const handleImageUpload = async (event) => {
-        const file = event.target.files[0];
-        if (!file) return;
+      setErrors((prev) => ({
+        ...prev,
+        fileUpload: "",
+      }));
 
-        const formData = new FormData();
-        formData.append('file', file);
+      // Optional: Show success message
+      alert("Imagen de perfil actualizada exitosamente");
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      alert("No se pudo actualizar la imagen de perfil");
+    }
+  };
 
-        try {
-            const API_URL = import.meta.env.VITE_API_URL;
-            const response = await axios.post(`${API_URL}/update-image`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                    'Authorization': `Bearer ${Cookies.get('authToken')}`
-                }
-            });
+  const handleCVUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
 
-            // Update profile data with the new image URL
-            setProfileData(prevData => ({
-                ...prevData,
-                fotoPerfil: response.data.url
-            }));
+    // Validate PDF file
+    if (!file.name.toLowerCase().endsWith(".pdf")) {
+      setErrors((prev) => ({
+        ...prev,
+        cvUpload: "Por favor, selecciona un archivo PDF",
+      }));
+      return;
+    }
 
-            // Optional: Show success message
-            alert('Imagen de perfil actualizada exitosamente');
-        } catch (error) {
-            console.error('Error uploading image:', error);
-            alert('No se pudo actualizar la imagen de perfil');
-        }
-    };
+    // Optional: File size validation
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (file.size > maxSize) {
+      setErrors((prev) => ({
+        ...prev,
+        cvUpload: "El archivo PDF no debe superar los 10MB",
+      }));
+      return;
+    }
 
-    const handlePDFUpload = async (event) => {
-        const file = event.target.files[0];
-        if (!file) return;
+    const formData = new FormData();
+    formData.append("file", file);
 
-        // Validate file type
-        if (!file.name.toLowerCase().endsWith('.pdf')) {
-            alert('Por favor, sube solo archivos PDF');
-            return;
-        }
+    try {
+      const API_URL = import.meta.env.VITE_API_URL;
+      const response = await axios.post(`${API_URL}/upload-pdf`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${Cookies.get("authToken")}`,
+        },
+      });
 
-        const formData = new FormData();
-        formData.append('file', file);
+      // Update profile data with the new CV URL
+      setProfileData((prevData) => ({
+        ...prevData,
+        cv: response.data.url,
+      }));
 
-        try {
-            const API_URL = import.meta.env.VITE_API_URL;
-            const response = await axios.post(`${API_URL}/update-pdf`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                    'Authorization': `Bearer ${Cookies.get('authToken')}`
-                }
-            });
+      // Clear any previous upload errors
+      setErrors((prev) => ({
+        ...prev,
+        cvUpload: "",
+      }));
 
-            // Update profile data with the new PDF URL
-            setProfileData(prevData => ({
-                ...prevData,
-                cv: response.data.url
-            }));
+      alert("CV actualizado exitosamente");
+    } catch (error) {
+      console.error("Error uploading CV:", error);
+      setErrors((prev) => ({
+        ...prev,
+        cvUpload: "No se pudo actualizar el CV",
+      }));
+    }
+  };
 
-            // Show success message
-            alert('CV actualizado exitosamente');
-        } catch (error) {
-            console.error('Error uploading PDF:', error);
-            alert('No se pudo actualizar el CV');
-        }
-    };
+  const triggerFileInput = (ref) => {
+    if (ref && ref.current) {
+      ref.current.click();
+    }
+  };
 
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      const uid = Cookies.get("uid");
+      if (!uid) {
+        console.error("UID no encontrado");
+        navigate("/login");
+        return;
+      }
 
-    const triggerFileInput = () => {
-        fileInputRef.current.click();
-    };
+      try {
+        const API_URL = import.meta.env.VITE_API_URL;
 
-    const triggerPDFInput = () => {
-        pdfInputRef.current.click();
-    };
-
-    useEffect(() => {
-        const fetchProfileData = async () => {
-            const uid = Cookies.get('uid');
-            if (!uid) {
-                console.error('UID no encontrado');
-                navigate('/login');
-                return;
-            }
-
-            try {
-                const API_URL = import.meta.env.VITE_API_URL;
-
-                const response = await axios.get(`${API_URL}/usuarios/${uid}`);
-                setProfileData({
-                    fecha_nacimiento: response.data.Fecha_Nacimiento || '',
-                    ano_ingreso: response.data.Ano_Ingreso || '',
-                    id_carrera: response.data.Id_carrera || '',
-                    fotoPerfil: response.data.Foto_Perfil || null,
-                    cv: response.data.CV || null,
-                });
-            } catch (error) {
-                console.error('Error al obtener datos del perfil:', error);
-                if (error.response && error.response.status === 401) {
-                    Cookies.remove('authToken', { path: '/' });
-                    Cookies.remove('uid', { path: '/' });
-                    navigate('/login');
-                }
-            }
-        };
-
-        fetchProfileData();
-    }, [navigate]);
-
-    const validateBirthDate = (date) => {
-        if (!date) return '';
-
-        const selectedDate = new Date(date);
-        const today = new Date();
-        const minDate = new Date();
-        minDate.setFullYear(today.getFullYear() - 100);
-        const maxDate = new Date();
-        maxDate.setFullYear(today.getFullYear() - 15);
-
-        if (selectedDate > today) {
-            return 'Error en Fecha de Nacimiento: Has seleccionado una fecha en el futuro. Por favor, selecciona una fecha válida.';
-        }
-        if (selectedDate < minDate) {
-            return 'Error en Fecha de Nacimiento: La edad ingresada supera los 100 años. Por favor, verifica la fecha.';
-        }
-        if (selectedDate > maxDate) {
-            return 'Error en Fecha de Nacimiento: Debes tener al menos 15 años. La fecha ingresada indica una edad menor.';
-        }
-        return '';
-    };
-
-    const validateEntryYear = (year) => {
-        if (!year) return '';
-
-        const currentYear = new Date().getFullYear();
-        const yearNum = parseInt(year);
-
-        if (isNaN(yearNum)) {
-            return 'Error en Año de Ingreso: El valor ingresado no es un número válido.';
-        }
-        if (yearNum < 1970) {
-            return 'Error en Año de Ingreso: El año debe ser posterior a 1970.';
-        }
-        if (yearNum > currentYear + 1) {
-            return `Error en Año de Ingreso: No puedes seleccionar un año posterior a ${currentYear + 1}.`;
-        }
-        return '';
-    };
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        let validationError = '';
-
-        if (name === 'fecha_nacimiento') {
-            const date = new Date(value);
-            date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
-            const formattedDate = date.toISOString().split('T')[0];
-            validationError = validateBirthDate(formattedDate);
-
-            setProfileData(prevData => ({
-                ...prevData,
-                [name]: formattedDate,
-            }));
-        } else if (name === 'ano_ingreso') {
-            validationError = validateEntryYear(value);
-
-            setProfileData(prevData => ({
-                ...prevData,
-                [name]: value,
-            }));
-        } else {
-            setProfileData(prevData => ({
-                ...prevData,
-                [name]: value,
-            }));
-        }
-
-        setErrors(prevErrors => ({
-            ...prevErrors,
-            [name]: validationError
-        }));
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        // Validar todos los campos antes de enviar
-        const birthDateError = validateBirthDate(profileData.fecha_nacimiento);
-        const entryYearError = validateEntryYear(profileData.ano_ingreso);
-
-        setErrors({
-            fecha_nacimiento: birthDateError,
-            ano_ingreso: entryYearError,
+        const response = await axios.get(`${API_URL}/usuarios/${uid}`);
+        setProfileData({
+          fecha_nacimiento: response.data.Fecha_Nacimiento || "",
+          ano_ingreso: response.data.Ano_Ingreso || "",
+          id_carrera: response.data.Id_carrera || "",
+          fotoPerfil: response.data.Foto_Perfil || null,
         });
-
-        if (birthDateError || entryYearError) {
-            // Mostrar alerta específica con los errores encontrados
-            let errorMessage = "Se encontraron los siguientes errores:\n\n";
-            if (birthDateError) errorMessage += `${birthDateError}\n`;
-            if (entryYearError) errorMessage += `${entryYearError}\n`;
-            alert(errorMessage);
-            return;
+      } catch (error) {
+        console.error("Error al obtener datos del perfil:", error);
+        if (error.response && error.response.status === 401) {
+          Cookies.remove("authToken", { path: "/" });
+          Cookies.remove("uid", { path: "/" });
+          navigate("/login");
         }
-
-        // Prepare the data according to the backend's expected format
-        const updatedData = {};
-        if (profileData.fecha_nacimiento) {
-            const date = new Date(profileData.fecha_nacimiento);
-            date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
-            updatedData.fecha_nacimiento = date.toISOString().split('T')[0];
-        }
-        if (profileData.ano_ingreso) updatedData.ano_ingreso = profileData.ano_ingreso;
-        if (profileData.id_carrera) updatedData.id_carrera = parseInt(profileData.id_carrera);
-
-        try {
-            const API_URL = import.meta.env.VITE_API_URL;
-
-            await axios.patch(`${API_URL}/edit-profile`, updatedData);
-            alert('Perfil actualizado exitosamente');
-            navigate('/user-profile');
-        } catch (error) {
-            console.error('Error al actualizar el perfil:', error);
-            if (error.response && error.response.status === 401) {
-                Cookies.remove('authToken', { path: '/' });
-                Cookies.remove('uid', { path: '/' });
-                navigate('/login');
-            } else {
-                alert('No se pudo actualizar el perfil. Verifica los datos e intenta nuevamente.');
-            }
-        }
+      }
     };
 
+    fetchProfileData();
+  }, [navigate]);
 
-    return (
-        <main className="flex-grow p-4">
-            <div className="max-w-3xl mx-auto">
-                <form onSubmit={handleSubmit} className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} shadow-md rounded-lg p-6 transition-colors duration-300`}>
-                    <div className="flex flex-col items-center mb-6 relative">
-                        {/* Profile Image Upload Input */}
-                        <input
-                            type="file"
-                            ref={fileInputRef}
-                            className="hidden"
-                            accept="image/*"
-                            onChange={handleImageUpload}
-                        />
-                        {/* PDF Upload Input */}
-                        <input
-                            type="file"
-                            ref={pdfInputRef}
-                            className="hidden"
-                            accept=".pdf"
-                            onChange={handlePDFUpload}
-                        />
+  const validateBirthDate = (date) => {
+    if (!date) return "";
 
-                        {/* Profile Image Upload Section */}
-                        <div className="relative mb-4">
-                            {profileData.fotoPerfil ? (
-                                <img
-                                    src={profileData.fotoPerfil}
-                                    alt="avatar"
-                                    className="w-24 h-24 sm:w-32 sm:h-32 rounded-full border border-gray-300 object-cover"
-                                />
-                            ) : (
-                                <div className={`w-24 h-24 sm:w-32 sm:h-32 rounded-full border-2 border-dashed ${theme === 'dark' ? 'border-gray-600' : 'border-gray-300'} flex items-center justify-center ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'}`}>
-                                    <span className="text-gray-400 text-4xl">📷</span>
-                                </div>
-                            )}
-                            <button
-                                type="button"
-                                onClick={triggerFileInput}
-                                className="absolute bottom-0 right-0 bg-[#0092BC] text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-[#A3D9D3] transition-colors"
-                            >
-                                ✏️
-                            </button>
-                        </div>
+    const selectedDate = new Date(date);
+    const today = new Date();
+    const minDate = new Date();
+    minDate.setFullYear(today.getFullYear() - 100);
+    const maxDate = new Date();
+    maxDate.setFullYear(today.getFullYear() - 15);
 
-                        {/* PDF Upload Section */}
-                        <div className="relative mb-4">
-                            <div className={`w-full p-4 rounded-lg border-2 border-dashed ${theme === 'dark' ? 'border-gray-600 bg-gray-700' : 'border-gray-300 bg-gray-50'} flex items-center justify-between`}>
-                                <div className="flex items-center">
-                                    <span className="mr-4 text-gray-400">📄</span>
-                                    <span className="text-gray-600">
-                                        {profileData.cv
-                                            ? "CV cargado"
-                                            : "Cargar CV (PDF)"}
-                                    </span>
-                                </div>
-                                <button
-                                    type="button"
-                                    onClick={triggerPDFInput}
-                                    className="bg-[#0092BC] text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-[#A3D9D3] transition-colors"
-                                >
-                                    ✏️
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+    if (selectedDate > today) {
+      return "Error en Fecha de Nacimiento: Has seleccionado una fecha en el futuro. Por favor, selecciona una fecha válida.";
+    }
+    if (selectedDate < minDate) {
+      return "Error en Fecha de Nacimiento: La edad ingresada supera los 100 años. Por favor, verifica la fecha.";
+    }
+    if (selectedDate > maxDate) {
+      return "Error en Fecha de Nacimiento: Debes tener al menos 15 años. La fecha ingresada indica una edad menor.";
+    }
+    return "";
+  };
 
-                    <h2 className={`text-lg font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-[#1D4157]'}`}>
-                        Editar Perfil
-                    </h2>
+  const validateEntryYear = (year) => {
+    if (!year) return "";
 
-                    <div className="grid grid-cols-1 gap-4">
-                        {[
-                            { label: 'Fecha de Nacimiento:', name: 'fecha_nacimiento', type: 'date' },
-                            { label: 'Año de Ingreso:', name: 'ano_ingreso', type: 'number' },
-                            { label: 'ID de Carrera:', name: 'id_carrera', type: 'number' },
-                        ].map((field) => (
-                            <div key={field.name}>
-                                <label className={`block mb-1 ${theme === 'dark' ? 'text-gray-200' : 'text-[#1D4157]'}`}>
-                                    {field.label}
-                                </label>
-                                <input
-                                    type={field.type}
-                                    name={field.name}
-                                    value={profileData[field.name]}
-                                    onChange={handleChange}
-                                    className={`border rounded w-full p-2 transition-colors duration-300 ${theme === 'dark'
-                                        ? 'bg-gray-700 text-white border-gray-600 focus:border-blue-500'
-                                        : 'bg-white text-[#1D4157] border-gray-300 focus:border-blue-500'
-                                        }`}
-                                />
-                                {errors[field.name] && (
-                                    <p className="text-red-500 text-sm mt-1">{errors[field.name]}</p>
-                                )}
-                            </div>
-                        ))}
-                    </div>
+    const currentYear = new Date().getFullYear();
+    const yearNum = parseInt(year);
 
-                    <div className="mt-6 flex justify-end">
-                        <button
-                            type="submit"
-                            className="px-4 py-2 rounded-md shadow-sm text-sm font-medium text-white 
+    if (isNaN(yearNum)) {
+      return "Error en Año de Ingreso: El valor ingresado no es un número válido.";
+    }
+    if (yearNum < 1970) {
+      return "Error en Año de Ingreso: El año debe ser posterior a 1970.";
+    }
+    if (yearNum > currentYear + 1) {
+      return `Error en Año de Ingreso: No puedes seleccionar un año posterior a ${
+        currentYear + 1
+      }.`;
+    }
+    return "";
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    let validationError = "";
+
+    if (name === "fecha_nacimiento") {
+      const date = new Date(value);
+      date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
+      const formattedDate = date.toISOString().split("T")[0];
+      validationError = validateBirthDate(formattedDate);
+
+      setProfileData((prevData) => ({
+        ...prevData,
+        [name]: formattedDate,
+      }));
+    } else if (name === "ano_ingreso") {
+      validationError = validateEntryYear(value);
+
+      setProfileData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    } else {
+      setProfileData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: validationError,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Validar todos los campos antes de enviar
+    const birthDateError = validateBirthDate(profileData.fecha_nacimiento);
+    const entryYearError = validateEntryYear(profileData.ano_ingreso);
+
+    setErrors({
+      fecha_nacimiento: birthDateError,
+      ano_ingreso: entryYearError,
+    });
+
+    if (birthDateError || entryYearError) {
+      // Mostrar alerta específica con los errores encontrados
+      let errorMessage = "Se encontraron los siguientes errores:\n\n";
+      if (birthDateError) errorMessage += `${birthDateError}\n`;
+      if (entryYearError) errorMessage += `${entryYearError}\n`;
+      alert(errorMessage);
+      return;
+    }
+
+    // Prepare the data according to the backend's expected format
+    const updatedData = {};
+    if (profileData.fecha_nacimiento) {
+      const date = new Date(profileData.fecha_nacimiento);
+      date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
+      updatedData.fecha_nacimiento = date.toISOString().split("T")[0];
+    }
+    if (profileData.ano_ingreso)
+      updatedData.ano_ingreso = profileData.ano_ingreso;
+    if (profileData.id_carrera)
+      updatedData.id_carrera = parseInt(profileData.id_carrera);
+
+    try {
+      const API_URL = import.meta.env.VITE_API_URL;
+
+      await axios.patch(`${API_URL}/edit-profile`, updatedData);
+      alert("Perfil actualizado exitosamente");
+      navigate("/user-profile");
+    } catch (error) {
+      console.error("Error al actualizar el perfil:", error);
+      if (error.response && error.response.status === 401) {
+        Cookies.remove("authToken", { path: "/" });
+        Cookies.remove("uid", { path: "/" });
+        navigate("/login");
+      } else {
+        alert(
+          "No se pudo actualizar el perfil. Verifica los datos e intenta nuevamente."
+        );
+      }
+    }
+  };
+
+  return (
+    <main className="flex-grow p-4">
+      <div className="max-w-3xl mx-auto">
+        <form
+          onSubmit={handleSubmit}
+          className={`${
+            theme === "dark" ? "bg-gray-800" : "bg-white"
+          } shadow-md rounded-lg p-6 transition-colors duration-300`}
+        >
+          <div className="flex flex-col items-center mb-6 relative">
+            {/* Profile Image Upload Input */}
+            <input
+              type="file"
+              ref={fileInputRef}
+              className="hidden"
+              accept="image/*"
+              onChange={handleImageUpload}
+            />
+
+            {/* CV Upload Input */}
+            <input
+              type="file"
+              ref={cvInputRef}
+              className="hidden"
+              accept=".pdf"
+              onChange={handleCVUpload}
+            />
+
+            {/* Profile Image Upload Section */}
+            <div className="relative mb-4">
+              {profileData.fotoPerfil ? (
+                <img
+                  src={profileData.fotoPerfil}
+                  alt="avatar"
+                  className="w-24 h-24 sm:w-32 sm:h-32 rounded-full border border-gray-300 object-cover"
+                />
+              ) : (
+                <div
+                  className={`w-24 h-24 sm:w-32 sm:h-32 rounded-full border-2 border-dashed ${
+                    theme === "dark" ? "border-gray-600" : "border-gray-300"
+                  } flex items-center justify-center ${
+                    theme === "dark" ? "bg-gray-700" : "bg-gray-50"
+                  }`}
+                >
+                  <span className="text-gray-400 text-4xl">📷</span>
+                </div>
+              )}
+              <button
+                type="button"
+                onClick={() => triggerFileInput(fileInputRef)} // Pass fileInputRef
+                className="absolute bottom-0 right-0 bg-[#0092BC] text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-[#A3D9D3] transition-colors"
+              >
+                ✏️
+              </button>
+            </div>
+
+            {/* Error message for image upload */}
+            {errors.fileUpload && (
+              <p className="text-red-500 text-sm mb-4">{errors.fileUpload}</p>
+            )}
+
+            {/* CV Upload Section */}
+            <div className="relative mb-4">
+              <button
+                type="button"
+                onClick={() => triggerFileInput(cvInputRef)} // Pass cvInputRef
+                className={`px-4 py-2 rounded-md shadow-sm text-sm font-medium 
+            ${
+              theme === "dark"
+                ? "bg-gray-700 text-white hover:bg-gray-600"
+                : "bg-[#0092BC] text-white hover:bg-[#A3D9D3]"
+            } transition-colors`}
+              >
+                {profileData.cv ? "Actualizar CV" : "Subir CV"}
+              </button>
+
+              {/* Display CV status */}
+              {profileData.cv && (
+                <p
+                  className={`text-sm mt-2 ${
+                    theme === "dark" ? "text-gray-300" : "text-gray-600"
+                  }`}
+                >
+                  CV subido ✅
+                </p>
+              )}
+            </div>
+
+            {/* Error message for CV upload */}
+            {errors.cvUpload && (
+              <p className="text-red-500 text-sm mb-4">{errors.cvUpload}</p>
+            )}
+          </div>
+
+          <h2
+            className={`text-lg font-semibold mb-4 ${
+              theme === "dark" ? "text-white" : "text-[#1D4157]"
+            }`}
+          >
+            Editar Perfil
+          </h2>
+
+          <div className="grid grid-cols-1 gap-4">
+            {[
+              {
+                label: "Fecha de Nacimiento:",
+                name: "fecha_nacimiento",
+                type: "date",
+              },
+              { label: "Año de Ingreso:", name: "ano_ingreso", type: "number" },
+              { label: "ID de Carrera:", name: "id_carrera", type: "number" },
+            ].map((field) => (
+              <div key={field.name}>
+                <label
+                  className={`block mb-1 ${
+                    theme === "dark" ? "text-gray-200" : "text-[#1D4157]"
+                  }`}
+                >
+                  {field.label}
+                </label>
+                <input
+                  type={field.type}
+                  name={field.name}
+                  value={profileData[field.name]}
+                  onChange={handleChange}
+                  className={`border rounded w-full p-2 transition-colors duration-300 ${
+                    theme === "dark"
+                      ? "bg-gray-700 text-white border-gray-600 focus:border-blue-500"
+                      : "bg-white text-[#1D4157] border-gray-300 focus:border-blue-500"
+                  }`}
+                />
+                {errors[field.name] && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors[field.name]}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-6 flex justify-end">
+            <button
+              type="submit"
+              className="px-4 py-2 rounded-md shadow-sm text-sm font-medium text-white 
                                      bg-[#0092BC] hover:bg-[#A3D9D3] 
                                      transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                        >
-                            Guardar Cambios
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </main>
-    );
+            >
+              Guardar Cambios
+            </button>
+          </div>
+        </form>
+      </div>
+    </main>
+  );
 };
 
 export default EditProfile;
